@@ -1,0 +1,15 @@
+---
+title: "Irvin Rojas"
+image: "https://www.rojasirvin.com/uploads/8/0/9/9/80995658/published/autor-e2af47e969d117490336e5f0fb203571-1.jpg?1641156582"
+links:
+  - label: GitHub
+    url: "https://github.com/rojasirvin/"
+  - label: Email
+    url: "mailto:rojasirvin@gmail.com"
+  - label: Website
+    url: "https://www.rojasirvin.com/"
+output:
+  postcards::jolla
+---
+ 
+Soy un economista interesado en temas de desarrollo económico y métodos econometricos. Actualmente trabajo en el CIDE, donde imparto cursos de econometría y evaluación.

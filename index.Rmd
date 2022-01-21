@@ -1,0 +1,45 @@
+---
+title: |
+  Taller de Econometría
+  CIESTAAM-UACh 2022
+description: |
+  Bienvenidos al sitio del curso. Aquí encontrarán las diapositivas de clase, así como los scripts de R y archivos de datos usados en las sesiones.
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+# Learn more about publishing to GitHub Pages at:
+# https://rstudio.github.io/distill/publish_website.html#github-pages
+
+```
+
+# Descripción del curso
+
+El curso combina teoría y práctica en R. En las partes teóricas se enfatiza la intuición de resultados y, en mucho menor medida, las demostraciones. Las sesiones 1 y 2 son una introducción a R, puramente prácticas. Las sesiones 3 a 5 son sesiones 75% teóricas y 25% aplicadas en R. El resto de las sesiones, combinan aproximadamente 50% teoría y 50% práctica. Las sesiones tienen una duración efectiva de 2 horas, más un descanso de aproximadamente 15 minutos entre la primera y la segunda hora.
+
+# Prerrequisitos
+
+Para el mayor beneficio de los participantes, este curso considera que los mismos han tenido al menos un curso de econometría a nivel posgrado, o dos cursos de econometría a nivel licenciatura. El curso emplea conceptos de álgebra lineal, estadística, probabilidad y cálculo a nivel licenciatura. Cierta experiencia en programación en R, Stata, Matlab o SAS es útil, pero no indispensable.
+
+# Sesiones
+
+[Aquí](./sesiones.html) encontrarán las sesiones del curso.
+
+# Horario
+
+Nos reuniremos los martes y jueves de 17:00 a 19:00.
+
+# Plataforma
+
+Usaremos Zoom para las clases. La liga y credenciales para unirse serán distrbuidas por correo electrónico.
+
+# Contacto
+
+Pueden contactarme con dudas sobre el curso vía correo electrónico en [rojasirvin@gmail.com](mailto:rojasirvin@gmail.com)
+
+

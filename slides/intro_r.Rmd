@@ -1,0 +1,411 @@
+---
+title: "Introducción a R"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+.title[
+# Introducción a R
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+# Agenda
+
+1. Presentación mía y de ustedes
+
+1. Descripción general del curso
+
+1. R desce cero 
+
+---
+
+# Objetivo del curso
+
+Estudiar herramientas econométricas para el análisis de datos económicos y usar estas herramientas en R
+
+Este curso complementa los cursos de estadística y econometría básicos e intermedios con herramientas de programación en R
+
+Dotar a los alumnos de herramientas suficientes para tomar cursos de econometría avanzados
+
+... para comprender literatura económica especializada
+
+... para poder llevar a cabo proyectos de investigación económica que culminen con una tesis de posgrado
+
+---
+
+# Formato del curso
+
+26 sesiones teórico-prácticas (habrá algunas sesiones con más teoría que otras)
+
+Cada sesión tiene una duración de 120 minutos
+
+Cada sesión será autocontenida e incluirá elementos conceptuales de estadística y econometría, ejemplos aplicados en R y ejercicios para su ejecución en tiempo real
+
+El curso se impartirá a través de Zoom
+
+---
+
+# Participación
+
+A lo largo del curso pondré varios ejercicios que iremos resolviendo sobre la marcha
+
+Pregunten si tienen alguna duda
+
+
+Las sesiones en línea pueden ser muy aburridas si solo el profesor se la pasa hablando durante tres horas
+
+---
+
+# Prerrequisitos
+
+Al menos un curso de econometría a nivel posgrado o dos cursos a nivel licenciatura
+
+Conceptos de álgebra lineal, estadística, probabilidad y cálculo a nivel licenciatura
+
+No es requisito que los estudiantes hayan trabajado previamente en R
+
+Cualquier experiencia con otros programas es útil, pero en términos del trabajo en R comenzaremos desde cero
+
+---
+
+class: center, middle, inverse
+
+# R desde cero
+
+---
+
+# ¿Qué es R?
+
+R es un lenguaje y un entorno de cómputo para estadística
+
+Es un **lenguaje**: le decimos a la computadora que haga tareas específicas
+
+- Calcule la media de un conjunto de datos
+
+- Haga un histograma de un conjunto de datos
+
+- Corra una regresión lineal (estime la pendiente y de una línea de regresión y su error estándar asociado)
+
+
+Tenemos que aprender cómo *hablarle* a la computadora
+
+A diferencia de otros lenguajes, que se usan para muchas cosas, R se enfoca en estadística
+
+---
+
+# ¿Qué más debo saber?
+
+Pueden ver algo de la historia de R en su entrada [en Wikipedia](https://es.wikipedia.org/wiki/R_(lenguaje_de_programaci%C3%B3n))
+
+
+Piensen en para qué les sirve aprender *lenguajes*
+
+Van a comunicarse
+
+- Pedir ejecutar tareas
+
+- Con sus colegas
+
+- Con su *yo* del futuro
+
+
+Tenemos que tener unas reglas básicas comúnes
+
+
+---
+
+# Instalación de R
+
+Comenzaremos desde la instalación
+
+Den click [acá](https://cran.r-project.org/mirrors.html) y elijan una dirección de donde quieren descargar R
+
+Elijan ahora la versión para Windows o Mac
+
+Hay que ejecutar el archivo .exe (o .pkg, en el caso de los usuarios de Mac)
+
+Seleccionen un directorio y las opciones preestablecidas para instalar el programa en sus computadoras
+
+
+---
+
+# ¿Qué es RStudio?
+
+RStudio es un entorno de desarrollo integrado (IDE, en inglés)
+
+Nos permite trabajar de forma más amigable con R
+
+Nos permite editar código con herramientas que facilitan las tareas
+
+Nos permite administrar proyectos
+
+Imaginen que quieren hacer su tesis en WordPad
+
+Podemos hacer una analogía con la relación que hay entre WordPad y Word, por un lado, y R y RStudio por el otro
+
+---
+
+# Instalación de RStudio
+
+Descarguen el programa de [acá](https://rstudio.com/products/rstudio/download/)
+
+Ubiquen la versión apropiada (hasta arriba encontrarán la de Windows)
+
+Seleccionen un directorio y las opciones por defecto
+
+Con esto estamos listos para comenzar a trabajar
+
+---
+
+class: inverse, middle, center
+
+# El ambiente
+
+---
+
+# R por primera vez
+
+Si buscan en su lista de programas, encontrarán R, solito (podemos hacer un par de operaciones para ver que funciona)
+
+Podemos hacer ahí algunas cosas, pero en realidad nunca vamos a trabajar con R por sí solo en este curso
+
+Vayamos directo a RStudio
+
+---
+
+# Interfaz de RStudio
+
+Esencialmente tenemos cinco partes principales
+
+1. El editor (izquierda, arriba)
+
+1. La consola (izquierda, abajo)
+
+1. El entorno (derecha, arriba)
+
+1. Las herramientas (derecha abajo)
+
+1. La barra de menús y tareas
+
+---
+
+# El editor
+
+En el editor escribimos comandos, es decir, instrucciones
+
+A una serie de instrucciones guardadas en un archivo le llamamos *script*
+
+Cuando alguien dice *un script de R* se refiere a un archivo que contiene una colección de instrucciones
+
+Si escribimos lo siguiente en el editor, no pasa nada
+
+```{r include=T, evaluate=F, results=F, echo=T}
+1+2
+```
+
+También podemos dar la instrucción de que genere un *objeto* que se llame *cosa*
+
+```{r include=T, evaluate=F, results=F, echo=T}
+cosa <- 1+2
+```
+
+Pero hasta ahora, estas solo son instrucciones
+---
+
+# La consola
+
+La consola interpreta nuestras instrucciones y realiza una tarea
+
+Intenten escribir de nuevo
+```{r include=T, evaluate=F, results=F, echo=T}
+1+2
+```
+
+Ahora pidan crear de nuevo el objeto llamado *cosa*
+
+```{r include=T, evaluate=F, results=F, echo=T}
+cosa <- 1+2
+```
+
+Ahora escriban simplemente *cosa* en la consola
+
+El punto es, podríamos hacer todo desde la consola, pero sería impráctico
+
+En estadística y econometría frecuentemente hacemos cientos o miles de tareas para generar un resultado
+
+Los scripts nos permiten coleccionar instrucciones en vez de ponerlas una a una en la consola
+
+---
+
+# Las otras tres partes
+
+En el entorno podremos ver objetos cargados o creados
+
+
+En las utilidades veremos principalmente los paquetes usados, el directorio de trabajo y las gráficas que generemos
+
+
+La barra de herramientas nos permite hacer cosas sencillas como copiar y pegar, modificar la vista de la interfaz y controlar las opciones generales
+
+---
+
+class: inverse, middle, center
+
+# Los otros dos elementos del curso
+
+---
+
+# Los ingredientes principales
+
+La estadística y la econometría como parte fundamental de la ciencia económica
+
+**Estadística**: es la ciencia que se dedica al estudio y desarrollo de métodos para recolectar, analizar y presentar datos de la naturaleza
+
+La estadística interactúa con muchos campos: la biología, la física, la medicina, la economía, la ciencia política, la agronomía
+
+**Econometría**: es el campo de la economía que desarrolla métodos estadísticos para estimar relaciones económicas y probar teorías (Wooldridge, 2009)
+
+La econometría no existe por sí sola, sino que está íntimamente ligada a la teoría económica
+
+La econometría usa muchos métodos estaísticos comúnes a otras ciencias
+
+Pero también genera métodos y teorías que luego se *exportan* a otras disciplinas
+
+---
+
+# Estadística
+
+Frecuentemente dividimos el estudio de la estadística en dos grandes ramas
+
+**Descriptiva**: resumir los datos originados al observar la naturaleza (con estadísticas o con gráficos)
+
+Calcular la media y la varianza de la estatura de una muestra de alumnos
+
+Graficar el PIB per cápita de cada estado de 1990 a 2018
+
+Describir cómo ha evolucionado el número de goles por partido de un equipo de fútbol en la última década
+
+
+**Inferencial**: inferir características de una población a través de una muestra
+
+Inferir la estatura promedio de los estudiantes universitarios mexicanos
+
+Estimar la elasticidad del consumo de lácteos usando la ENIGH
+
+Estimar el efecto de un programa público en la obesidad, la pobreza o el rendimiento escolar
+
+
+---
+
+# Econometría
+
+Tenemos teorías (modelos)
+
+- Individuos
+
+- Empresas
+
+- Planeadores centrales
+
+¿Recuerdan algunas teorías económicas famosas?
+
+Tenemos datos
+
+Empleamos la econometría para validar las teorías
+
+Refinamos las teorías de acuerdo a nuestras validaciones empíricas
+
+
+---
+
+# El propósito del curso
+
+La mayor ventaja de los economistas respecto a otros científicos que usan datos es que los economistas saben teoría económica
+
+Es muy importante que sepan bien microeconomía y macroeconomía
+
+Es muy importante que formulen preguntas con contenido económico para que le puedan sacar juego a los datos
+
+En este curso aprenderemos algunas herramientas para sacarle jugo a cosas que ya saben
+
+---
+
+class: inverse, middle, center
+
+# Otros recursos
+
+---
+
+# Otros recursos
+
+Si la guía que aquí describí no fue suficiente, la red está llena de recursos con tutoriales y consejos para descargar e instalar R y RStudio
+
+ - [Para Windows](https://www.youtube.com/watch?v=IuTJyPW6bVQ)
+ - [Para Mac](https://www.youtube.com/watch?v=cVIb46LGJdU)
+ 
+ 
+Los siguientes recursos funcionan muy bien para responder a situaciones a las que se encuentren en la instalación y en el trabajo diario
+
+  - [stackoverflow](https://stackoverflow.com/)
+  - [r-bloggers](https://www.r-bloggers.com/)
+  - [The R Graph Gallery](https://www.r-graph-gallery.com/)
+  - [R for Data Science](https://r4ds.had.co.nz/)
+
+
+---
+
+# Próxima sesión
+
+Definiremos los distintos tipos de objetos que se pueden crear en R
+
+Aprenderemos a crear objetos matemáticos
+
+Usaremos R para realizar operaciones básicas e intermedias
+
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

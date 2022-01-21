@@ -1,0 +1,27 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "Irvin Rojas",
+      "author": [],
+      "contents": "\r\n\r\n          \r\n          \r\n          Taller de Econometría CIESTAAM-UACh 2022\r\n          \r\n          \r\n          Inicio\r\n          Sesiones\r\n          Instructor\r\n          ☰\r\n          \r\n          \r\n      \r\n        \r\n          \r\n            Irvin Rojas\r\n          \r\n          \r\n            \r\n              Soy un economista interesado en temas de desarrollo económico y métodos econometricos. Actualmente trabajo en el CIDE, donde imparto cursos de econometría y evaluación.\r\n            \r\n            \r\n              Soy un economista interesado en temas de desarrollo económico y métodos econometricos. Actualmente trabajo en el CIDE, donde imparto cursos de econometría y evaluación.\r\n            \r\n          \r\n\r\n          \r\n            \r\n              \r\n                  \r\n                    \r\n                      GitHub\r\n                    \r\n                  \r\n                \r\n                                \r\n                  \r\n                    \r\n                      Email\r\n                    \r\n                  \r\n                \r\n                                \r\n                  \r\n                    \r\n                      Website\r\n                    \r\n                  \r\n                \r\n                              \r\n          \r\n\r\n          \r\n            \r\n              \r\n                                \r\n                  \r\n                    GitHub\r\n                  \r\n                \r\n                                \r\n                  \r\n                    Email\r\n                  \r\n                \r\n                                \r\n                  \r\n                    Website\r\n                  \r\n                \r\n                              \r\n            \r\n          \r\n        \r\n      \r\n    \r\n\r\n    \r\n    \r\n    \r\n          © Copyright 2022 Irvin Rojas\r\n          \r\n          \r\n\r\n    \r\n  ",
+      "last_modified": "2022-01-21T13:12:22-06:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Taller de Econometría\nCIESTAAM-UACh 2022\n",
+      "description": "Bienvenidos al sitio del curso. Aquí encontrarán las diapositivas de clase, así como los scripts de R y archivos de datos usados en las sesiones.\n",
+      "author": [],
+      "contents": "\r\nDescripción del curso\r\nEl curso combina teoría y práctica en R. En las partes teóricas se enfatiza la intuición de resultados y, en mucho menor medida, las demostraciones. Las sesiones 1 y 2 son una introducción a R, puramente prácticas. Las sesiones 3 a 5 son sesiones 75% teóricas y 25% aplicadas en R. El resto de las sesiones, combinan aproximadamente 50% teoría y 50% práctica. Las sesiones tienen una duración efectiva de 2 horas, más un descanso de aproximadamente 15 minutos entre la primera y la segunda hora.\r\nPrerrequisitos\r\nPara el mayor beneficio de los participantes, este curso considera que los mismos han tenido al menos un curso de econometría a nivel posgrado, o dos cursos de econometría a nivel licenciatura. El curso emplea conceptos de álgebra lineal, estadística, probabilidad y cálculo a nivel licenciatura. Cierta experiencia en programación en R, Stata, Matlab o SAS es útil, pero no indispensable.\r\nSesiones\r\nAquí encontrarán las sesiones del curso.\r\nHorario\r\nNos reuniremos los martes y jueves de 17:00 a 19:00.\r\nPlataforma\r\nUsaremos Zoom para las clases. La liga y credenciales para unirse serán distrbuidas por correo electrónico.\r\nContacto\r\nPueden contactarme con dudas sobre el curso vía correo electrónico en rojasirvin@gmail.com\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-01-21T13:14:42-06:00"
+    },
+    {
+      "path": "sesiones.html",
+      "title": "Sesiones",
+      "author": [],
+      "contents": "\r\nIntroducción a R\r\nManejo de datos en R\r\nRevisión del modelo lineal con muestras finitas\r\nTeoría asintótica para MCO\r\nEstimadores m y estimadores de máxima verosimilitud\r\nModelos de variable dependiente binaria\r\nModelos de variable dependiente categórica\r\nModelos con variable dependiente de conteo\r\nModelos de riesgo y sobrevivencia\r\nModelos de selección\r\nVariables instrumentales\r\nMínimos cuadrados en dos etapas\r\nTemas de errores estándar\r\nBootstrap\r\nModelos de panel lineal\r\nEstimadores de panel lineal\r\nExtensiones de métodos de panel\r\nRegresión cuantil\r\nMétodos no paramétricos y semi paramétricos\r\nEconometría especial\r\nIntroducción a la inferencia causal\r\nMétodos experimentales\r\nDiferencia en diferencias\r\nPropensity score matching\r\nDiseños con discontinuidades\r\nControl sintético\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-01-21T13:12:27-06:00"
+    }
+  ],
+  "collections": []
+}
