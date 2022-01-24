@@ -1,6 +1,5 @@
 name: "ecn_ciestaam2022"
 title: "Taller de Econometría CIESTAAM-UACh 2022"
-theme: theme.css
 description: |
   Taller de Econometría para el CIESTAAM-UACh
 output_dir: "." #así no crea docs u otra carpeta
@@ -12,4 +11,6 @@ navbar:
       href: sesiones.html
     - text: "Instructor"
       href: about.html
+    - icon: fab fa-github
+      href: https://github.com/rojasirvin/ecn_ciestaam2022
 output: distill::distill_article
