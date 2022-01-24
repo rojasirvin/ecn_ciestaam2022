@@ -7,7 +7,7 @@ site: distill::distill_website
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-1. Introducción a R
+[1. Introducción a R](./slides/intro_r.html)
 2. Manejo de datos en R
 3. Revisión del modelo lineal con muestras finitas
 4. Teoría asintótica para MCO
