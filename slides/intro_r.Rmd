@@ -364,6 +364,8 @@ knitr::include_graphics("http://rioarriba.mx/public/images/articulos/article-2a8
 
 *Premio Nobel de Economía* para los cuates
 
+Escribí algo al respecto [aquí](https://rioarriba.mx/articulo.php?iden=les-hizo-justicia-la-revolucion)
+
 ---
 
 # Oficialmente
