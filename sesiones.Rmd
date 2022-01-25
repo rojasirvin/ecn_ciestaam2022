@@ -7,9 +7,9 @@ site: distill::distill_website
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[1. Introducción a R](./slides/intro_r.html)
+1. [Introducción a R](./slides/intro_r.html)
 
-2. Manejo de datos en R
+2. [Manejo de datos en R](./slides/manejo_datos_r.html)
 
 3. Revisión del modelo lineal con muestras finitas
 

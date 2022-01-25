@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Manejo de datos en R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Manejo de datos en R
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+
+# Agenda
+
+1. Aprenderemos las estructuras más usadas para trabajar con datos en R
+
+1. Aprenderemos a estructurar nuestro trabajo sobre scripts
+
+1. Aprenderemos a leer datos en R
+
+1. Manipularemos los datos para generar estadísticas descriptivas
+
+---
+
+# Nuestro primer script
+
+Antes hablamos sobre los script como una colección de órdenes
+
+Vamos a crear nuestro primer script
+
+En R, desde la barra de tareas creamos un script en blanco
+
+---
+
+# Comentarios al script
+
+Es de vital importancia que sus scripts estén comentados
+
+Para insertar un comentario simplemente escriban \# y el texto que le sigue no será leido como una instrucción
+
+
+```r
+# Esto es un comentario
+```
+
+Yo siempre escribo arriba el nombre del proyecto, la fecha, y alguna descripción
+
+Escribir código es como escribir en papel, cada quien tiene sus costumbres y la forma en que mejor se acomoda
+
+---
+
+# Objetos
+
+Un objeto es *algo* que existe en R
+
+Es buena idea familiarizarse con los nombres de los distintos objetos
+
+---
+
+# Constantes
+
+Podemos crear constantes usando la combinación de símbolos "&lt;-"
+
+Para escribir rápidamente "&lt;-" podemos usar el atajo Alt+(-) (es decir Alt y el símbolo de menos)
+
+Noten que las constantes creadas aparecen en el lado derecho
+
+Pueden usar combinaciones de constantes y números
+
+Los símbolos para hacer operaciones son los mismos que en cualquier otro paquete
+
+---
+
+# Constantes
+
+Para *ejecutar* las órdenes pueden seleccionar la parte que quieren ejecutar y presionar Ctrl+Enter
+
+Esto es lo mismo que seleccionar y dar click al botón Run en la barra de Menú
+
+
+```r
+a &lt;- 1
+b &lt;- 2
+
+#Sumas
+c &lt;- a+b
+d &lt;- a-b
+
+#Imprimir un elemento
+c
+```
+
+```
+## [1] 3
+```
+
+```r
+d
+```
+
+```
+## [1] -1
+```
+
+
+---
+
+# Operadores aritméticos
+
+Los símbolos de los operadores artiméticos son estándar
+
+| Símbolo | Operación |
+|:---:|:---:|
+| + | Suma |
+| - | Resta |
+| * | Producto |
+| / | División |
+| ^ | Potencia |  
+
+
+---
+
+# Ejercicio 1
+
+1. Un rectánculo tiene una base igual a 10 unidades y una altura igual a 4 unidades. Genere una constante llamada *area.rect* que indique el área del rectánculo
+
+1. ¿Qué pasa si el rectángulo ahora tiene una altura de 5? Genere la nueva área *area.rect.2*
+
+1. Un círculo tiene radio de 2.6. Genere una constante *a.circ* que indique el área del círculo y otra *p.circ* que indique el perímetro
+
+---
+
+# Vectores
+
+Un vector en R es una colección de elementos del mismo tipo
+
+
+```r
+x &lt;- c(3,4,5)
+x
+```
+
+```
+## [1] 3 4 5
+```
+
+Podemos hacer operaciones con los vectores cuando estos son numéricos
+
+
+```r
+(xx &lt;- x*2)
+```
+
+```
+## [1]  6  8 10
+```
+
+Es posible tener vectores de caracteres alfanuméricos, por ejemplo
+
+
+```r
+y &lt;- c("Pedro", "Andrea", "Ana")
+y
+```
+
+```
+## [1] "Pedro"  "Andrea" "Ana"
+```
+
+---
+
+# Matrices
+
+Una matriz es un objeto de dos dimensiones
+
+Para crear una matriz usamos la función *matrix*
+
+Más adelante veremos con detalle algunas funciones simples
+
+Una función requiere *argumentos*
+
+En este caso, los argumentos son los datos, el número de columnas y el número de filas
+
+
+
+```r
+(M &lt;- matrix(data=c(4,-2,1,6,0,5),
+             nrow=2,
+             ncol=3))
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    4    1    0
+## [2,]   -2    6    5
+```
+
+---
+
+# Matrices
+
+Noten que podemos crear una matriz gemela sin tener que especificar el nombre de los argumentos, simplemente conservando el orden
+
+
+```r
+(N &lt;- matrix(c(4,-2,1,6,0,5), 2, 3))
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    4    1    0
+## [2,]   -2    6    5
+```
+
+Es decir, la función matrix reconoce que el primer argumento contiene a los datos, el segundo al número de filas y el tercero al número de columnas
+
+Por supuesto podemos multiplicar matrices
+
+
+```r
+(N2 &lt;- matrix(c(4,-2,1,6,0,5), 2, 3)*2)
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    8    2    0
+## [2,]   -4   12   10
+```
+---
+
+# Guardar su script
+
+Ya han acumulado varias cosas nuevas
+
+En la práctica, un script puede ser
+
+- La limpieza de una base de datos
+
+- La generación de gráficas para su tesis
+
+- Una serie de regresiones y predicciones
+
+Queremos guardar todas esas instrucciones para poder repetirlas, compartirlas, publicarlas y editarlas
+
+Simplemente den click en el icono del disco y encuéntrenle un lugar
+
+Lo que yo acostumbro es tener una carpeta por proyecto
+
+Tengo una subcarpeta para los datos, otra para los scripts, otra para los borradores de mi trabajo, otra para los artículos que reviso...
+
+---
+
+# Directorio de trabajo
+
+El directorio de trabajo es el lugar de su disco duro donde se ubican los archivos de R
+
+Cuando leemos scripts, llamamos bases de datos, guardamos objetos, lo hacemos en el directorio de trabajo
+
+Para identificar dónde el directorio actual ejecutamos *getwd*
+
+
+```r
+getwd()
+```
+
+```
+## [1] "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022"
+```
+
+Una cosa que siempre hacemos al iniciar el trabajo es seleccionar un directorio de trabajo
+
+Para establecer un directorio de trabajo usamos *setwd*
+
+
+```r
+setwd("C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+Noten que usamos "/" en lugar "\\"
+
+---
+
+# Funciones
+
+Piensen en su clase de matemáticas: ¿cómo definen una función?
+
+En R, una función es una serie de operaciones
+
+Debemos pensar en las funciones como una serie de instrucciones
+
+Algunas funciones existen por default en la *base* de R
+
+¿Recuerdan el vector *x* que creamos antes?
+
+
+```r
+x
+```
+
+```
+## [1] 3 4 5
+```
+
+¿Qué se imaginan que hace la función *mean()*?
+
+
+```r
+mean(x)
+```
+
+```
+## [1] 4
+```
+
+---
+
+# Funciones
+
+¿Por qué decimos que las funciones son una serie de instrucciones?
+
+Obtendríamos lo mismo si sumáramos los tres componentes en *x* y lo dividiéramos entre tres
+
+Alguien ya se tomo el tiempo de programar que cuando se ejecute la función mean hay que sumar las entradas y luego dividir la suma por el número de entradas
+
+Trabajaremos con funciones cada vez más complejas
+
+Ustedes pueden crear sus propias funciones para realizar tareas específicas y luego compartirlas en la red
+
+
+---
+
+# Ayuda
+
+Casi nadie se sabe cómo funcionan exactamente todas las funciones en R
+
+Lo más normal es pedir ayuda
+
+Para ver la ayuda de una función ejecutamos "?" seguido del nombre de la función
+
+Si ejecutamos *?mean* obtendremos la ayuda de la función *mean*
+
+Busquen ayuda en internet usando el nombre del paquete
+
+[Stack Overflow](https://stackoverflow.com/questions/tagged/r) es un buen sitio que organiza preguntas de usuarios y donde otros usuarios ayudan a responder
+
+Hay que saber buscar y para saber buscar debemos entender qué queremos hacer
+
+---
+
+# Paquetes
+
+Un paquete es un conjunto de funciones, documentación y bases de datos que realizan tareas específicas
+
+Los paquetes son una serie de archivos que se encuentran en un repositorio llamado [CRAN](https://cran.r-project.org/), The Comprehensive R Archive Network
+
+Cuando alguien crea un paquete nuevo, lo envía a CRAN para que sea validado
+
+Podemos instalar paquetes desde CRAN usando la función *install.packages*
+
+Un paquete que usaremos mucho para hacer gráficas es *ggplot2*
+
+
+```r
+install.packages("ggplot2")
+```
+
+Instalar un paquete significa que ya lo tienen en su computadora, pero aún no está listo para usarse
+
+---
+
+# Paquetes
+
+Veamos cómo funciona la lógica de los paquetes con un ejemplo concreto
+
+Vamos a generar un vector que nos servirá como eje x y luego generamos un vector *y* igual al cubo de *x*
+
+
+```r
+x &lt;- c(-4,-3,-2,-1,0,1,2,3,4)
+potencia &lt;- 2
+y &lt;- x^potencia
+```
+
+La función *qplot* del paquete *ggplot2* sirve para hacer un gráfico muy sencillo de *x* contra *y*
+
+Intenten
+
+
+```r
+qplot(x, y)
+```
+---
+
+# Paquetes
+
+Antes de usar un paquete deben cargarlo
+
+
+```r
+library("ggplot2")
+```
+
+Ahora inténtenlo de nuevo
+
+Noten que R es muy quisquilloso con las comillas
+
+Una práctica común es cargar los paquetes que sabemos vamos a usar al inicio del script
+
+Aquí apreciamos la función del panel de utilidades que habíamos dejado pendiente
+
+En la pestaña *plots* veremos los gráficos generados
+
+En las pestaña *packages* se enlistan los paquetes instalados en su equipo
+
+Los paquetes activos aparecen con una palomita
+
+---
+
+# Tydiverse
+
+Muchas de las cosas que haremos en este curso se pueden realizar con una colección de paquetes incluidas en [tidyverse](https://www.tidyverse.org/)
+
+Tidyverse es una colección de paquetes para ciencia de datos que se acopla muy bien con los paquetes más usados para el análisis estadístico y la econometría
+
+Acá pueden ver la [lista de paquetes](https://www.tidyverse.org/packages/) que vienen en tidyverse
+
+Ya saben lo que tienen que hacer
+
+
+```r
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+Noten que cuando carguen *tidyverse* aparece la lista de paquetes que se están cargando (incluyendo *ggplot2*)
+
+
+---
+
+# De vuelta a los scripts
+
+Los scripts son esencialmente una colección de instrucciones guardadas como un archivo de texto con extensión .R
+
+Los podemos abrir con cualquier lector de textos, pero R los interpreta como código a ser ejectuado
+
+Les recomiendo ordernar siempre su trabajo en un script
+
+Esta es la forma en que pueden llevarlo a otras computadoras, compartirlo con sus equipos de investigación, publicarlo, someterlo a dictamente...
+
+
+Cada quien tiene sus reglas
+
+
+---
+
+# Ejercicio 2
+
+1. Genere un nuevo vector, *w*, que vaya del 1 al 10
+
+1. Genere un nuevo vector *lw* que sea igual al logaritmo natural de *w* (la función *log()* devuelve el logaritmo natural del argumento)
+
+1. Grafique *lw* en función de *w*
+
+1. Ahora genere *sw* que sea igual a la raíz cuadrada de *w* y grafíque los puntos (la función *sqrt()* devuelve la raíz cuadrada del argumento)
+
+
+---
+
+class: inverse, middle, center
+
+# Archivos de datos
+
+---
+
+# Archivos de datos
+
+Las archivos de datos son una colección de filas y columnas en donde guardamos información ordenada
+
+Nosotros nos topamos con archivos de datos todo el tiempo, aunque a veces no están siempre ordenadas
+
+- Lista del súper
+
+- Estadísticas del fútbol
+
+- Lista de asistencia a clase
+
+- Calificaciones escolares
+
+
+Nosotros queremos aprender a sacarle juego a los archivos de datos
+
+Creo que los archivos de datos son como un amigo con muy buena memoria pero muy tonto
+
+Tenemos que preguntarle a los datos exactamente lo que queremos saber
+
+---
+
+# Archivos de datos
+
+Vamos a comenzar *leyendo* un archivo de datos
+
+El archivo proviene de algún lugar y vamos a abrirlo en R para después manipularlo
+
+Vamos a abrir un archivo de datos que yo organicé para una investigación sobre el covid-19 en México
+
+Voy a leer este archivo y se la asignaré a un objeto llamado *mundata*
+
+
+```r
+mundata &lt;- read_csv(file = "./data/mundata.csv",
+                    locale = locale(encoding = "latin1"))
+```
+
+Noten que al construir el objeto **mundata** agregué una opción (*locale*) para indicar que estamos trabajando datos que tienen caracteres latinos
+
+La función *read_csv* nos permite leer un archivo que viene en formato .csv
+
+En R podemos leer muchos otros tipos de archivos (.dta, .xls, entre otros)
+
+---
+
+# Archivos de datos
+
+Noten que *mundata* aparece ahora en el panel derecho
+
+Podemos leer algunas de sus características: tiene 2,475 observaciones y 10 variables
+
+Es importante tener presente este lenguaje
+
+- Las filas son las **observaciones** y representan, en este caso, a los municipios
+
+- Las columnas son las **variables** y representan, en este caso, a las características de los municipios en términos de camas de hospital y UCI
+
+Si le dan doble click a *mundata* el panel principal despliega la base de datos
+
+Si le dan click al símbolo de "play" sobre el nombre *mundata* verán el numbre de las variables
+
+---
+
+# Archivos de datos
+
+En este caso, algunas variables son:
+
+- **clave**: indica la clave única que el INEGI le asigna a los municipios
+
+- **clave_ent**: indica la clave única que el INEGI le asigna a los estados
+
+- **nom_ent**: indica el nombre del estado
+
+- **mun**: indica el nombre del municipio
+
+- **pop**: indica la población del municipio
+
+- **beds**: indica el número de camas de hospital en el municipio
+
+- **icu**: indica el número de UCI en el municipio
+
+---
+
+# Archivos de datos
+
+Siempre exploren sus datos antes de empezar a trabajar con ellas
+
+Un error muy común es querer empezar a estimar regresiones sin antes haber conocido los datos
+
+La función *colnames()* les muestra el nombre de las columnas (variables, en econometría)
+
+
+```r
+colnames(mundata)
+```
+
+```
+## [1] "clave"     "clave_ent" "nom_ent"   "mun"       "pop"       "icu"      
+## [7] "beds"      "cve_sun"   "nom_sun"
+```
+
+---
+
+# Ejercicio 3
+
+1. Usen las siguientes funciones para explorar los datos en *mundata*
+
+
+```r
+head(mundata)
+head(mundata, n=10)
+tail(mundata)
+dim(mundata)
+nrow(mundata)
+ncol(mundata)
+str(mundata)
+```
+
+---
+
+# Tipos de datos
+
+Vale la pena entender el tipo de datos con los que nos vamos a encontrar
+
+Aquí revisaremos los más comunes y, con la práctica, quizás vaya topándose con otros tipos más complejos
+
+1. Entero (*integer*): números sin decimales
+
+1. Numérico (*numeric*): números posiblemente con decimales
+
+1. Cadena de texto (*character*): letras, números y símbolos (aparecen rodeados por comillas)
+
+1. Factor (*factor*): son datos numéricos etiquetados
+
+1. Faltante (*missing*): representado con NA, significa la ausencia de datos
+
+---
+
+# Operadores de relaciones
+
+Los operadores de relaciones más comúnes son:
+
+|Símbolo | Operación |
+|:---:|:---:|
+| &lt; | menor que |
+| &lt;= | menor o igual que |
+| &gt; | mayor que |
+| &gt;= | mayor o igual que |
+| == | igual que |
+| != | no es igual que |
+
+
+---
+
+# Operadores lógicos
+
+Vamos a introducir una serie de operadores lógicos
+
+Sirven para establecer relaciones entre objetos
+
+|Símbolo | Operación |
+|:---:|:---:|
+| &amp;#124;  | o |
+| &amp; | y |
+| ! | no |
+
+
+---
+
+# Dplyr
+
+Cuando cargamos los paquetes del *tidyverse* cargamos un paquete llamado [*dplyr*](https://dplyr.tidyverse.org/)
+
+*dplyr* es un paquete con herramientas para manipular bases de datos de manera eficiente
+
+Algo muy útil de los paquetes del *tidyverse* son estos [*acordeones*](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+
+
+Vamos a aprender a usar las funciones más comúnes, pero cuando tengan tareas más complicadas, no duden en recurrir a los *acordeones* o a la ayuda en línea
+
+---
+
+# filter()
+
+La función *filter()* nos permite seleccionar filas de acuerdo al valor de una variable (columna)
+
+Si queremos seleccionar a todos los municipios de Baja California, que tiene el valor de 2 en la variable **clave_ent**, ejecutamos:
+
+
+```r
+filter(mundata, clave_ent==2)
+```
+
+Muchas veces vamos a necesitar asignar este subconjunto a un nuevo objeto
+
+
+
+```r
+mun.bc &lt;- filter(mundata, clave_ent==3)
+```
+
+Noten que usamos "==" porque estamos haciendo una operación relacional
+
+---
+
+# filter()
+
+Podemos usar combinaciones de operadores lógicos y relacionales
+
+
+```r
+mun.peninsula.baja &lt;- filter(mundata, clave_ent==2 | clave_ent==3)
+```
+
+Si queremos usar muchos condicionales, podemos usar el atajo "%in%"
+
+
+```r
+estados.frontera &lt;- c("Baja California",
+                      "Sonora",
+                      "Chihuahua",
+                      "Coahuila",
+                      "Nuevo León",
+                      "Tamaulipas")
+
+
+mun.frontera &lt;- filter(mundata, nom_ent %in% estados.frontera)
+```
+
+---
+
+# Ejercicio 4
+
+1. Crea un nuevo objeto que tenga a los municipios del Estado de México con más de 10,000 habitantes
+
+1. Crea otro objeto que tenga a los municipios en los estados de la frontera y que tengan cada uno más de 100 camas de hospital (**beds**)
+
+1. Crea un nuevo objeto que tenga a todos los municipios de México que tengan entre 10 y 20 UCI
+
+---
+
+# arrange()
+
+La función *arrange()* sirve para ordenar los datos de acuerdo al valor de las variables
+
+Tomemos nuestro objeto que tiene a los municipios de Baja California y ordenémoslos de menor a mayor de acuerdo al número de camas de hospital
+
+
+```r
+arrange(mun.bc, beds)
+```
+
+Si queremos sustituir el objeto por uno que tenga las filas en el orden deseado usamos
+
+
+```r
+mun.bc &lt;- arrange(mun.bc, beds)
+```
+
+---
+
+# arrange()
+
+La función *arrange()* también nos sirve para ordenar en forma descendente
+
+
+
+```r
+mun.bc &lt;- arrange(mun.bc, desc(beds))
+```
+
+---
+
+# select()
+
+La función *select()* nos permite seleccionar variables
+
+Muchas veces las bases de datos contienen miles de variables y solo trabajamos con un puñado de ellas
+
+Es eficiente en términos computacionales seleccionar subconjuntos que nos son útiles
+
+Supongamos que solo queremos tener la clave INEGI y la población
+
+
+```r
+pob.mun &lt;- select(mundata, clave, pop)
+```
+
+---
+
+# rename()
+
+Usamos la función *rename()* para renombrar variables
+
+Es bueno trabajar con nombres intuitivos y seguir ciertas convenciones
+
+
+
+```r
+mundata &lt;- rename(mundata, nom_mun=mun)
+```
+
+---
+
+# mutate()
+
+Para crear nuevas variables usamos *mutate()*
+
+Creamos el número total de camas
+
+
+
+```r
+mundata &lt;- mutate(mundata, recursos=beds+icu)
+```
+
+---
+
+# mutate()
+
+Podemos generar variables condicionando en el valor de otras variables
+
+Por ejemplo, generemos una variable dicotómica que tome el valor de uno para los municipios en estados de la región que definimos por "frontera" y cero en otro caso
+
+En este caso hacemos uso de la función *ifelse()*
+
+
+```r
+mundata &lt;- mutate(mundata,
+                  frontera=ifelse(nom_ent %in% estados.frontera, 1, 0))
+```
+
+La función *ifelse()* requiere al menos tres argumentos
+
+- un condicional a evaluar
+- el valor que le asignaremos a la nueva variable **frontera** si la condición se cumple
+- el valor que le asignaremos a la nueva variable **frontera** si la condición n0 se cumple
+
+---
+
+# Ejercicio 5
+
+1. Genere un objeto que contenga los municipios del centro del país (Ciudad de México, Estado de México, Puebla, Tlaxcala y Morelos)
+
+1. En el nuevo objeto, genere una nueva variable que indique el logaritmo natural del número de camas de hospital por cada 100,000 habitantes en dichos municipios
+
+
+
+---
+
+# summarise()
+
+La función *summarise()* nos permite calcular estadísticas de las variables
+
+
+```r
+summarise(mundata, media.pop=mean(pop))
+```
+
+```
+## # A tibble: 1 x 1
+##   media.pop
+##       &lt;dbl&gt;
+## 1    52012.
+```
+
+Noten la sintaxis que se vuelve un poco más complicada aquí
+
+El primer argumento es la base o *data frame* del que queremos hablar
+
+*media.pop* es el nombre que le queremos dar a la estadística cuando aparezca en la pantalla
+
+Dentro de *mean()* decimos que la variable de la que queremos obtener la media es **pop**
+
+
+Si les digo que *sd()* nos da la desviación estándar, ¿cómo obtendrían la desviación estándar de la población en los municipios de Baja California?
+
+
+---
+
+# group_by
+
+Supongan que ahora quisiera obtener el promedio de habitantes por municipio de cada estado
+
+¿Qué se les ocurriría hacer?
+
+Con *group_by* agrupamos datos de acuerdo a cierta variable y luego hacemos la misma tarea para cada grupo
+
+
+
+```r
+por_estado &lt;- group_by(mundata,clave_ent)
+
+summarise(por_estado, media.pop=mean(pop))
+```
+
+
+Podemos guardar esto en un objeto
+
+
+```r
+por_estado &lt;- group_by(mundata,clave_ent)
+
+medias.estado &lt;- summarise(por_estado, media.pop=mean(pop))
+```
+---
+
+# Ejercicio 6
+
+1. Cargue la base original *mundata* (ya la hemos modificado mucho, así que podemos traerla como estaba originalmente)
+
+1. Quédese con todas las columnas, excepto **cve_sun** y **nom_sun**
+
+1. Generemos una nueva variable llamda **region** que tome los valores de acuerdo a la definición de regiones en el script de clase: 1 para la región, 2 para la región centro, 3 para la región centro-occidente y 4 para la región sureste
+
+1. Construya un objeto que reporte el promedio del número de camas por cada 100,000 habitantes de los municipios, por región
+
+---
+
+# Factores
+
+Recuerden que antes hablamos de las variables de factores
+
+Los factores toman una variable numérica y le ponen una etiqueta alfanumérica, además de ordenarla en el orden preferido
+
+Vamos a transformar la variable numérica de región en una variable factor
+
+
+
+
+
+```r
+mundata &lt;- mutate(mundata,
+                  region=factor(region,
+                                levels = c(1,2,3,4),
+                                labels = c("Región Norte",
+                                           "Región Centro",
+                                           "Región Centro-Occidente",
+                                           "Region Sureste")))
+```
+
+
+Los factores nos será muy útiles más adelante
+
+---
+
+# La pipa
+
+Cuando empecemos a hacer tareas más complejas usaremos mucho la pipa: " "%&gt;%"
+
+Pueden introducir este símbolo con la combinación Control+Alt+M
+
+La pipa nos sirve para combinar varias operaciones
+
+Antes de que ejecuten lo siguiente en R, ¿díganme con palabras qué esperan que resulte?
+
+
+```r
+mundata %&gt;% 
+  filter(region=="Región Centro") %&gt;%
+  mutate(recursos_totales=beds+icu) %&gt;% 
+  mutate(recursos_bajos=ifelse(recursos_totales&lt;100,1,0)) %&gt;%
+  group_by(nom_ent) %&gt;% 
+  summarize(prop.bajos=mean(recursos_bajos)) %&gt;% 
+  ungroup()
+```
+
+---
+
+# Valores NA
+
+Noten que algunos municipios de Oaxaca no tienen datos de camas o UCI
+
+Cuando queremos calcular la media y algún valor falta, R no se salta dicho valor y regresa un error a menos que lo pidamos explícitamente
+
+Debemos agregar la opción *na.rm=TRUE* en la función *mean*
+
+*na.rm=TRUE* significa "NA remove"
+
+
+
+```r
+mundata %&gt;% 
+  filter(region=="Región Centro") %&gt;%
+  mutate(recursos_totales=beds+icu) %&gt;% 
+  mutate(recursos_bajos=ifelse(recursos_totales&lt;100,1,0)) %&gt;%
+  group_by(nom_ent) %&gt;% 
+  summarize(prop.bajos=mean(recursos_bajos, na.rm=TRUE)) %&gt;% 
+  ungroup()
+```
+
+---
+
+
+# Estadística descriptiva
+
+Les recomiendo que siempre describan sus datos
+
+Es importante porque les ayuda a detectar patrones antes de dedicarse a hacer cosas más complejas
+
+Ayuda a identificar posibles errores
+
+¿Qué pasaría si nos damos cuenta que en nuestra base *mundata* hay un munocipio con -10 hospitales?
+
+
+---
+
+# mean()
+
+La media aritmética
+
+
+```
+## [1] NA
+```
+
+¿Por qué pasó esto? ¿Cómo lo resolverían?
+
+
+```
+## [1] 53.1148
+```
+
+Noten que se valen los atajos *T* en lugar de *TRUE* y *F* en lugar de *FALSE*
+
+Noten el uso del símbolo "$"
+
+---
+
+# sd()
+
+La desviación estándar
+
+
+```
+## [1] 269.638
+```
+
+Ya saben qué hacer cuando quieren asignarle el cálculo a un objeto
+
+
+```
+## [1] 269.638
+```
+
+---
+
+# aggregate()
+
+Podemos calcular estadística por grupos
+
+
+```r
+aggregate(mundata$beds,
+          by=list(Estado=mundata$nom_ent),
+          mean)
+```
+
+
+Si quisiéramos guardar esta tabla en un data frame
+
+
+```r
+mean.camas.mun &lt;- aggregate(mundata$beds,
+          by=list(Estado=mundata$nom_ent),
+          mean)
+```
+
+¿Qué pasó? ¿Cómo lo solucionamos?
+
+
+---
+
+# subset()
+
+Otra forma de quedarnos solo con una parte de los datos es con la opción *subset()*
+
+Recuerden que antes usamos *filter()* y *select()* con resultados parecidos
+
+
+```r
+mundata.baja &lt;- subset(mundata,
+                  nom_ent==c("Baja California","Baja California Sur"),
+                  select=c(nom_ent,mun, pop, beds, icu))
+```
+
+Ahora podemos calcular las camas promedio en cada estado
+
+
+```r
+mean.camas.baja &lt;- aggregate(mundata.baja$beds,
+                             by=list(Estado=mundata.baja$nom_ent),
+                             mean,
+                             na.rm=T)
+```
+
+Y luego tendríamos que ocuparnos de arreglar los nombres de las columnas
+
+---
+
+# Pipas para estadística descriptiva
+
+Se irán dando cuenta que hay varias formas de hacer lo mismo (calcular una media, por ejemplo)
+
+Las pipas nos ayudan a crear código que es mucho más fácil de leer
+
+No tenemos que crear objetos intermedios
+
+Las pipas nos son útiles en el cálculo de estadística descriptiva, sobre todo cuando las acompañamos de *group_by*
+
+
+
+
+
+```r
+subset(mundata,
+       nom_ent %in% c("Baja California","Baja California Sur"),
+       select=c(nom_ent,mun, pop, beds, icu)) %&gt;% 
+  group_by(nom_ent) %&gt;% 
+  summarise(media.camas=mean(beds)) %&gt;% 
+  ungroup()
+```
+
+```
+## # A tibble: 2 x 2
+##   nom_ent             media.camas
+##   &lt;chr&gt;                     &lt;dbl&gt;
+## 1 Baja California            797.
+## 2 Baja California Sur        218.
+```
+
+---
+
+# Más de una estadística
+
+En su investigación y en sus trabajos académicos muy frecuentemente presentarán tablas de estadística descriptiva
+
+
+```r
+tabla.desc &lt;- subset(mundata,
+                       nom_ent==c("Baja California","Baja California Sur"),
+                       select=c(nom_ent,mun, pop, beds, icu)) %&gt;% 
+  group_by(nom_ent) %&gt;% 
+  summarise(media.camas=mean(beds),
+            de.camas=sd(beds),
+            max.camas=max(beds),
+            min.camas=min(beds),
+            obs.camas=n()) %&gt;% 
+  ungroup()
+
+tabla.desc
+```
+
+```
+## # A tibble: 2 x 6
+##   nom_ent             media.camas de.camas max.camas min.camas obs.camas
+##   &lt;chr&gt;                     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;int&gt;
+## 1 Baja California           1645      769.      2189      1101         2
+## 2 Baja California Sur        158.     122.       244        71         2
+```
+
+---
+
+# Agregación a distintos niveles
+
+Con nuestra base municipal, podemos usar las claves de estado y de ciudad (SUN) para agregar datos a distintos niveles
+
+Por ejemplo, datos a nivel SUN
+
+
+```r
+sundata &lt;- mundata %&gt;% 
+  filter(!is.na(cve_sun)) %&gt;% 
+  group_by(cve_sun, nom_sun) %&gt;% 
+  summarise(pop=sum(pop,na.rm=TRUE),
+            beds=sum(beds,na.rm=TRUE),
+            icu=sum(icu,na.rm=TRUE)) %&gt;% 
+  ungroup()
+```
+
+---
+
+# Agregación a distintos niveles
+
+Y para nivel estatal
+
+
+```r
+statedata &lt;- mundata %&gt;% 
+  group_by(clave_ent, nom_ent) %&gt;% 
+  summarise(pop=sum(pop,na.rm=TRUE),
+            beds=sum(beds,na.rm=TRUE),
+            icu=sum(icu,na.rm=TRUE)) %&gt;% 
+  arrange(clave_ent) %&gt;%
+  ungroup() 
+```
+
+---
+
+# Ejercicio 7
+
+1. Genere un nuevo data frame que incluya el total de población, camas y UCI de cada estado y su participación porcentual respecto a los totales nacionales
+
+---
+
+# Próxima sesión
+
+Haremos un recordatorio del módelo clásico de MCO
+
+Regresen a sus apuntos de cursos anteriores y den un repaso
+
+¿Sobre qué supuestos recaen las propiedades del estimador de MCO?
+
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

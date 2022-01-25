@@ -9,6 +9,8 @@ navbar:
       href: index.html
     - text: "Sesiones"
       href: sesiones.html
+    - text: "Archivos"
+      href: archivos.html
     - text: "Instructor"
       href: about.html
     - icon: fab fa-github
