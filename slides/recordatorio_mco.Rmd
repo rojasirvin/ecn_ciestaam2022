@@ -1,0 +1,296 @@
+---
+title: "Revisión del modelo lineal con muestras finitas"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+library(broom)
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+.title[
+# Revisión del modelo lineal con muestras finitas
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+
+# Agenda
+
+1. Haremos un recordatorio de lo que ya saben sobre MCO
+
+1. Usaremos R para repasar la intución detrás de una regresión lineal
+
+1. Recordaremos los supuestos que nos permiten derivar propiedades deseables del estimador de MCO
+
+1. Reflexionaremos sobre lo restrictivo de estas propiedades
+
+---
+
+# Ilustración geométrica
+
+Existe una relación positiva entre los años de educación y el salario
+
+Este problema en economía es un problema de *retornos a la educación*
+
+Quisiéramos saber cómo cambia el ingreso cuando tenemos un año más de educación
+
+Más adelante trabajaremos con datos reales, pero ahora comenzaremos con una simulación
+
+En una simulación generamos datos a partir de un *proceso generador de datos* conocido
+
+Voy a construir una variable de salarios y una de educación con unos parámetros conocidos y les voy a añadir una perturbación aleatoria
+
+
+---
+
+# Simulación educación y salario
+
+.pull-left[
+
+Fijamos una semilla para poder replicar la simulación
+
+Construimos los datos generando un vector de educación y una perturbación aleatoria
+
+```{r echo=T, message=FALSE, warnings=FALSE, results=T}
+#Fijo una semilla
+set.seed(1234)
+
+#Genero el vector de educación y una perturbación normal
+educacion <-  rnorm(100,10,3)
+e <-  rnorm(100,0,8)
+
+#Genero el salario con parámetros conocidos (b0=100, b1=2)
+b0 <- 150
+b1 <- 2
+
+salario <- b0 + b1 * educacion + e 
+datos.salarios <- as.data.frame(cbind(salario, educacion))
+```
+]
+
+.pull-right[
+```{r echo=T, message=FALSE, warnings=FALSE, results=T}
+#Estimamos una regresión lineal usando lm
+
+(lm(salario ~ educacion))
+```
+]
+
+---
+
+# Representación gráfica
+
+.pull-left[
+Podemos representar la relación entre salario y educación en el plano
+
+Aquí usamos *ggplot*
+
+Noten que unimos instrucciones usando el símbolo +
+
+```{r echo=T, message=FALSE, warnings=FALSE,eval=FALSE}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")
+```
+]
+
+.pull-right[
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")
+```
+]
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+Existe una infinidad de líneas que puedo trazar intentando describir los puntos
+
+Cada línea está caracterizada por una ordenada al origen y una pendiente
+
+$$\hat{y}=\alpha+\beta X$$
+
+Esta recta describe el salario que esperaríamos dado un nivel de educación
+
+A la diferencia entre lo observado y lo ajustado le llamamos **errores**
+
+$$\hat{e}=y-\hat{y}$$
+
+]
+
+.pull-right[
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")
+```
+]
+
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+Yo puedo acumular el total de los errores, sumando simplemente $\sum_i \hat{e}_i$ para expresar una medida de discrepancia entre mi recta y los puntos observados
+
+Pero también me gustaría hacer que los errores más grandes *pesen* más que los más errores más pequeños
+
+$$L=\sum_i \hat{e}_i^2$$
+
+Sustituyendo lo que vale $\hat{e}$ y $\hat{y}$
+
+$$L=\sum_i \hat{e}_i^2=\sum_i (y_i-\hat{y}_i)^2=\sum_i (y_i-\alpha-\beta X_i)^2$$
+]
+
+
+.pull-right[
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")
+```
+]
+
+
+---
+
+# El principio de mínimos cuadrados
+
+
+.pull-left[
+El principio de MCO consiste en elegir el valor de $\alpha$ y $\beta$ que hagan $L$ lo más pequeño posible
+
+En otras palabras, escogemos $\alpha$ y $\beta$ que minimicen la suma de los errores que cometemos al ajustar la recta a los puntos, penalizando los errores más grandes
+
+A los valores de $\alpha$ y $\beta$ que minimizan la suma de los errores cuadráticos les conocemos como **estimadores de MCO**
+
+
+Los parámetros de la recta que cumplen con minimizar la suma de los errores cuadráticos pueden son estimados usando *lm*
+]
+
+.pull-right[
+```{r echo=T, message=FALSE, warnings=FALSE}
+reg1 <- lm(salario ~ educacion,
+           data=datos.salarios)
+
+summary(reg1)
+```
+]
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+
+Usamos *geom_smooth* dentro de *ggplot* para trazar la línea de regresión
+
+```{r echo=T, message=FALSE, warnings=FALSE, eval=F}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)
+``` 
+]
+
+
+
+
+.pull-right[
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)
+``` 
+]
+
+
+
+---
+
+# Visualización de residuales
+
+.pull-left[
+Con la función *geom_segment* del paquete *broom* podemos incluir los residuales estimados al objeto que tiene los datos
+
+```{r echo=T, message=FALSE, warnings=FALSE, results='asis', eval=F}
+datos.salarios <- augment(reg1)
+
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)+
+  geom_segment(aes(xend = educacion, yend = .fitted), color = "red", size = 0.3)
+```
+]
+
+.pull-right[
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+datos.salarios <- augment(reg1)
+
+datos.salarios %>% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)+
+  geom_segment(aes(xend = educacion, yend = .fitted), color = "red", size = 0.3)
+``` 
+]
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

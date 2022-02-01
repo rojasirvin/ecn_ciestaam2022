@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Revisión del modelo lineal con muestras finitas</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Revisión del modelo lineal con muestras finitas
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+
+# Agenda
+
+1. Haremos un recordatorio de lo que ya saben sobre MCO
+
+1. Usaremos R para repasar la intución detrás de una regresión lineal
+
+1. Recordaremos los supuestos que nos permiten derivar propiedades deseables del estimador de MCO
+
+1. Reflexionaremos sobre lo restrictivo de estas propiedades
+
+---
+
+# Ilustración geométrica
+
+Existe una relación positiva entre los años de educación y el salario
+
+Este problema en economía es un problema de *retornos a la educación*
+
+Quisiéramos saber cómo cambia el ingreso cuando tenemos un año más de educación
+
+Más adelante trabajaremos con datos reales, pero ahora comenzaremos con una simulación
+
+En una simulación generamos datos a partir de un *proceso generador de datos* conocido
+
+Voy a construir una variable de salarios y una de educación con unos parámetros conocidos y les voy a añadir una perturbación aleatoria
+
+
+---
+
+# Simulación educación y salario
+
+.pull-left[
+
+Fijamos una semilla para poder replicar la simulación
+
+Construimos los datos generando un vector de educación y una perturbación aleatoria
+
+
+```r
+#Fijo una semilla
+set.seed(1234)
+
+#Genero el vector de educación y una perturbación normal
+educacion &lt;-  rnorm(100,10,3)
+e &lt;-  rnorm(100,0,8)
+
+#Genero el salario con parámetros conocidos (b0=100, b1=2)
+b0 &lt;- 150
+b1 &lt;- 2
+
+salario &lt;- b0 + b1 * educacion + e 
+datos.salarios &lt;- as.data.frame(cbind(salario, educacion))
+```
+]
+
+.pull-right[
+
+```r
+#Estimamos una regresión lineal usando lm
+
+(lm(salario ~ educacion))
+```
+
+```
+## 
+## Call:
+## lm(formula = salario ~ educacion)
+## 
+## Coefficients:
+## (Intercept)    educacion  
+##      150.99         1.93
+```
+]
+
+---
+
+# Representación gráfica
+
+.pull-left[
+Podemos representar la relación entre salario y educación en el plano
+
+Aquí usamos *ggplot*
+
+Noten que unimos instrucciones usando el símbolo +
+
+
+```r
+datos.salarios %&gt;% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")
+```
+]
+
+.pull-right[
+![](figures/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+Existe una infinidad de líneas que puedo trazar intentando describir los puntos
+
+Cada línea está caracterizada por una ordenada al origen y una pendiente
+
+`$$\hat{y}=\alpha+\beta X$$`
+
+Esta recta describe el salario que esperaríamos dado un nivel de educación
+
+A la diferencia entre lo observado y lo ajustado le llamamos **errores**
+
+`$$\hat{e}=y-\hat{y}$$`
+
+]
+
+.pull-right[
+![](figures/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+Yo puedo acumular el total de los errores, sumando simplemente `\(\sum_i \hat{e}_i\)` para expresar una medida de discrepancia entre mi recta y los puntos observados
+
+Pero también me gustaría hacer que los errores más grandes *pesen* más que los más errores más pequeños
+
+`$$L=\sum_i \hat{e}_i^2$$`
+
+Sustituyendo lo que vale `\(\hat{e}\)` y `\(\hat{y}\)`
+
+`$$L=\sum_i \hat{e}_i^2=\sum_i (y_i-\hat{y}_i)^2=\sum_i (y_i-\alpha-\beta X_i)^2$$`
+]
+
+
+.pull-right[
+![](figures/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+# El principio de mínimos cuadrados
+
+
+.pull-left[
+El principio de MCO consiste en elegir el valor de `\(\alpha\)` y `\(\beta\)` que hagan `\(L\)` lo más pequeño posible
+
+En otras palabras, escogemos `\(\alpha\)` y `\(\beta\)` que minimicen la suma de los errores que cometemos al ajustar la recta a los puntos, penalizando los errores más grandes
+
+A los valores de `\(\alpha\)` y `\(\beta\)` que minimizan la suma de los errores cuadráticos les conocemos como **estimadores de MCO**
+
+
+Los parámetros de la recta que cumplen con minimizar la suma de los errores cuadráticos pueden son estimados usando *lm*
+]
+
+.pull-right[
+
+```r
+reg1 &lt;- lm(salario ~ educacion,
+           data=datos.salarios)
+
+summary(reg1)
+```
+
+```
+## 
+## Call:
+## lm(formula = salario ~ educacion, data = datos.salarios)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -23.0900  -4.9121   0.0189   4.6916  23.9019 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 150.9928     2.7646  54.616  &lt; 2e-16 ***
+## educacion     1.9304     0.2767   6.976 3.61e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.297 on 98 degrees of freedom
+## Multiple R-squared:  0.3318,	Adjusted R-squared:  0.325 
+## F-statistic: 48.66 on 1 and 98 DF,  p-value: 3.606e-10
+```
+]
+
+---
+
+# El principio de mínimos cuadrados
+
+.pull-left[
+
+Usamos *geom_smooth* dentro de *ggplot* para trazar la línea de regresión
+
+
+```r
+datos.salarios %&gt;% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)
+```
+]
+
+
+
+
+.pull-right[
+![](figures/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+]
+
+
+
+---
+
+# Visualización de residuales
+
+.pull-left[
+Con la función *geom_segment* del paquete *broom* podemos incluir los residuales estimados al objeto que tiene los datos
+
+
+```r
+datos.salarios &lt;- augment(reg1)
+
+datos.salarios %&gt;% 
+  ggplot(aes(x=educacion, y=salario )) +
+  geom_point()+
+  labs(x="Educación", "Salario por hora")+
+  geom_smooth(method = 'lm', se = F)+
+  geom_segment(aes(xend = educacion, yend = .fitted), color = "red", size = 0.3)
+```
+]
+
+.pull-right[
+![](figures/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

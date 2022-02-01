@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2. [Manejo de datos en R, parte 2](./slides/manejo_datos_r_2.html)
 
-3. Revisión del modelo lineal con muestras finitas
+3. [Revisión del modelo lineal con muestras finitas](./slides/recordatorio_mco.html)
 
 4. Teoría asintótica para MCO
 
