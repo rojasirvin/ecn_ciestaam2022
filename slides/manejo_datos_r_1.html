@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Manejo de datos en R (parte 1)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Manejo de datos en R (parte 1)
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+
+# Agenda
+
+1. Aprenderemos las estructuras más usadas para trabajar con datos en R
+
+1. Aprenderemos a estructurar nuestro trabajo sobre scripts
+
+1. Aprenderemos la lógica de las funciones y los paquetes
+
+---
+
+# Nuestro primer script
+
+Antes hablamos sobre los script como una colección de órdenes
+
+Vamos a crear nuestro primer script
+
+En R, desde la barra de tareas creamos un script en blanco
+
+---
+
+# Comentarios al script
+
+Es de vital importancia que sus scripts estén comentados
+
+Para insertar un comentario simplemente escriban \# y el texto que le sigue no será leido como una instrucción
+
+
+```r
+# Esto es un comentario
+```
+
+Yo siempre escribo arriba el nombre del proyecto, la fecha, y alguna descripción
+
+Escribir código es como escribir en papel, cada quien tiene sus costumbres y la forma en que mejor se acomoda
+
+---
+
+# Objetos
+
+Un objeto es *algo* que existe en R
+
+Es buena idea familiarizarse con los nombres de los distintos objetos
+
+---
+
+# Constantes
+
+Podemos crear constantes usando la combinación de símbolos "&lt;-"
+
+Para escribir rápidamente "&lt;-" podemos usar el atajo Alt+(-) (es decir Alt y el símbolo de menos)
+
+Noten que las constantes creadas aparecen en el lado derecho
+
+Pueden usar combinaciones de constantes y números
+
+Los símbolos para hacer operaciones son los mismos que en cualquier otro paquete
+
+---
+
+# Constantes
+
+Para *ejecutar* las órdenes pueden seleccionar la parte que quieren ejecutar y presionar Ctrl+Enter
+
+Esto es lo mismo que seleccionar y dar click al botón Run en la barra de Menú
+
+
+```r
+a &lt;- 1
+b &lt;- 2
+
+#Sumas
+c &lt;- a+b
+d &lt;- a-b
+
+#Imprimir un elemento
+c
+```
+
+```
+## [1] 3
+```
+
+```r
+d
+```
+
+```
+## [1] -1
+```
+
+
+---
+
+# Operadores aritméticos
+
+Los símbolos de los operadores artiméticos son estándar
+
+| Símbolo | Operación |
+|:---:|:---:|
+| + | Suma |
+| - | Resta |
+| * | Producto |
+| / | División |
+| ^ | Potencia |  
+
+
+---
+
+# Ejercicio 1
+
+1. Un rectánculo tiene una base igual a 10 unidades y una altura igual a 4 unidades. Genere una constante llamada *area.rect* que indique el área del rectánculo
+
+1. ¿Qué pasa si el rectángulo ahora tiene una altura de 5? Genere la nueva área *area.rect.2*
+
+1. Un círculo tiene radio de 2.6. Genere una constante *a.circ* que indique el área del círculo y otra *p.circ* que indique el perímetro
+
+---
+
+# Vectores
+
+Un vector en R es una colección de elementos del mismo tipo
+
+
+```r
+x &lt;- c(3,4,5)
+x
+```
+
+```
+## [1] 3 4 5
+```
+
+Podemos hacer operaciones con los vectores cuando estos son numéricos
+
+
+```r
+(xx &lt;- x*2)
+```
+
+```
+## [1]  6  8 10
+```
+
+Es posible tener vectores de caracteres alfanuméricos, por ejemplo
+
+
+```r
+y &lt;- c("Pedro", "Andrea", "Ana")
+y
+```
+
+```
+## [1] "Pedro"  "Andrea" "Ana"
+```
+
+---
+
+# Matrices
+
+Una matriz es un objeto de dos dimensiones
+
+Para crear una matriz usamos la función *matrix*
+
+Más adelante veremos con detalle algunas funciones simples
+
+Una función requiere *argumentos*
+
+En este caso, los argumentos son los datos, el número de columnas y el número de filas
+
+
+
+```r
+(M &lt;- matrix(data=c(4,-2,1,6,0,5),
+             nrow=2,
+             ncol=3))
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    4    1    0
+## [2,]   -2    6    5
+```
+
+---
+
+# Matrices
+
+Noten que podemos crear una matriz gemela sin tener que especificar el nombre de los argumentos, simplemente conservando el orden
+
+
+```r
+(N &lt;- matrix(c(4,-2,1,6,0,5), 2, 3))
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    4    1    0
+## [2,]   -2    6    5
+```
+
+Es decir, la función matrix reconoce que el primer argumento contiene a los datos, el segundo al número de filas y el tercero al número de columnas
+
+Por supuesto podemos multiplicar matrices
+
+
+```r
+(N2 &lt;- matrix(c(4,-2,1,6,0,5), 2, 3)*2)
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    8    2    0
+## [2,]   -4   12   10
+```
+---
+
+# Guardar su script
+
+Ya han acumulado varias cosas nuevas
+
+En la práctica, un script puede ser
+
+- La limpieza de una base de datos
+
+- La generación de gráficas para su tesis
+
+- Una serie de regresiones y predicciones
+
+Queremos guardar todas esas instrucciones para poder repetirlas, compartirlas, publicarlas y editarlas
+
+Simplemente den click en el icono del disco y encuéntrenle un lugar
+
+Lo que yo acostumbro es tener una carpeta por proyecto
+
+Tengo una subcarpeta para los datos, otra para los scripts, otra para los borradores de mi trabajo, otra para los artículos que reviso...
+
+---
+
+# Directorio de trabajo
+
+El directorio de trabajo es el lugar de su disco duro donde se ubican los archivos de R
+
+Cuando leemos scripts, llamamos bases de datos, guardamos objetos, lo hacemos en el directorio de trabajo
+
+Para identificar dónde el directorio actual ejecutamos *getwd*
+
+
+```r
+getwd()
+```
+
+```
+## [1] "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022"
+```
+
+Una cosa que siempre hacemos al iniciar el trabajo es seleccionar un directorio de trabajo
+
+Para establecer un directorio de trabajo usamos *setwd*
+
+
+```r
+setwd("C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+Noten que usamos "/" en lugar "\\"
+
+---
+
+# Funciones
+
+Piensen en su clase de matemáticas: ¿cómo definen una función?
+
+En R, una función es una serie de operaciones
+
+Debemos pensar en las funciones como una serie de instrucciones
+
+Algunas funciones existen por default en la *base* de R
+
+¿Recuerdan el vector *x* que creamos antes?
+
+
+```r
+x
+```
+
+```
+## [1] 3 4 5
+```
+
+¿Qué se imaginan que hace la función *mean()*?
+
+
+```r
+mean(x)
+```
+
+```
+## [1] 4
+```
+
+---
+
+# Funciones
+
+¿Por qué decimos que las funciones son una serie de instrucciones?
+
+Obtendríamos lo mismo si sumáramos los tres componentes en *x* y lo dividiéramos entre tres
+
+Alguien ya se tomo el tiempo de programar que cuando se ejecute la función mean hay que sumar las entradas y luego dividir la suma por el número de entradas
+
+Trabajaremos con funciones cada vez más complejas
+
+Ustedes pueden crear sus propias funciones para realizar tareas específicas y luego compartirlas en la red
+
+
+---
+
+# Ayuda
+
+Casi nadie se sabe cómo funcionan exactamente todas las funciones en R
+
+Lo más normal es pedir ayuda
+
+Para ver la ayuda de una función ejecutamos "?" seguido del nombre de la función
+
+Si ejecutamos *?mean* obtendremos la ayuda de la función *mean*
+
+Busquen ayuda en internet usando el nombre del paquete
+
+[Stack Overflow](https://stackoverflow.com/questions/tagged/r) es un buen sitio que organiza preguntas de usuarios y donde otros usuarios ayudan a responder
+
+Hay que saber buscar y para saber buscar debemos entender qué queremos hacer
+
+---
+
+# Paquetes
+
+Un paquete es un conjunto de funciones, documentación y bases de datos que realizan tareas específicas
+
+Los paquetes son una serie de archivos que se encuentran en un repositorio llamado [CRAN](https://cran.r-project.org/), The Comprehensive R Archive Network
+
+Cuando alguien crea un paquete nuevo, lo envía a CRAN para que sea validado
+
+Podemos instalar paquetes desde CRAN usando la función *install.packages*
+
+Un paquete que usaremos mucho para hacer gráficas es *ggplot2*
+
+
+```r
+install.packages("ggplot2")
+```
+
+Instalar un paquete significa que ya lo tienen en su computadora, pero aún no está listo para usarse
+
+---
+
+# Paquetes
+
+Veamos cómo funciona la lógica de los paquetes con un ejemplo concreto
+
+Vamos a generar un vector que nos servirá como eje x y luego generamos un vector *y* igual al cubo de *x*
+
+
+```r
+x &lt;- c(-4,-3,-2,-1,0,1,2,3,4)
+potencia &lt;- 2
+y &lt;- x^potencia
+```
+
+La función *qplot* del paquete *ggplot2* sirve para hacer un gráfico muy sencillo de *x* contra *y*
+
+Intenten
+
+
+```r
+qplot(x, y)
+```
+---
+
+# Paquetes
+
+Antes de usar un paquete deben cargarlo
+
+
+```r
+library("ggplot2")
+```
+
+Ahora inténtenlo de nuevo
+
+Noten que R es muy quisquilloso con las comillas
+
+Una práctica común es cargar los paquetes que sabemos vamos a usar al inicio del script
+
+Aquí apreciamos la función del panel de utilidades que habíamos dejado pendiente
+
+En la pestaña *plots* veremos los gráficos generados
+
+En las pestaña *packages* se enlistan los paquetes instalados en su equipo
+
+Los paquetes activos aparecen con una palomita
+
+---
+
+# Tidyverse
+
+Muchas de las cosas que haremos en este curso se pueden realizar con una colección de paquetes incluidas en [tidyverse](https://www.tidyverse.org/)
+
+Tidyverse es una colección de paquetes para ciencia de datos que se acopla muy bien con los paquetes más usados para el análisis estadístico y la econometría
+
+Acá pueden ver la [lista de paquetes](https://www.tidyverse.org/packages/) que vienen en tidyverse
+
+Ya saben lo que tienen que hacer
+
+
+```r
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+Noten que cuando carguen *tidyverse* aparece la lista de paquetes que se están cargando (incluyendo *ggplot2*)
+
+
+---
+
+# De vuelta a los scripts
+
+Los scripts son esencialmente una colección de instrucciones guardadas como un archivo de texto con extensión .R
+
+Los podemos abrir con cualquier lector de textos, pero R los interpreta como código a ser ejectuado
+
+Les recomiendo ordernar siempre su trabajo en un script
+
+Esta es la forma en que pueden llevarlo a otras computadoras, compartirlo con sus equipos de investigación, publicarlo, someterlo a dictamente...
+
+
+Cada quien tiene sus reglas
+
+
+---
+
+# Ejercicio 2
+
+1. Genere un nuevo vector, *w*, que vaya del 1 al 10
+
+1. Genere un nuevo vector *lw* que sea igual al logaritmo natural de *w* (la función *log()* devuelve el logaritmo natural del argumento)
+
+1. Grafique *lw* en función de *w*
+
+1. Ahora genere *sw* que sea igual a la raíz cuadrada de *w* y grafíque los puntos (la función *sqrt()* devuelve la raíz cuadrada del argumento)
+
+---
+
+# Próxima sesión
+
+- Aprenderemos a leer archivos de datos
+
+- Aprenderemos a usar funciones de tidyverse
+
+- Aprenderemos a manipular data frames para obtener estadística descriptiva
+
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

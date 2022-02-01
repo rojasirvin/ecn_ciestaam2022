@@ -9,7 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 1. [Introducción a R](./slides/intro_r.html)
 
-2. [Manejo de datos en R](./slides/manejo_datos_r.html)
+2. [Manejo de datos en R, parte 1](./slides/manejo_datos_r_1.html)
+
+2. [Manejo de datos en R, parte 2](./slides/manejo_datos_r_2.html)
 
 3. Revisión del modelo lineal con muestras finitas
 

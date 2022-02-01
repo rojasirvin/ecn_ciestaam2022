@@ -472,7 +472,7 @@ Los siguientes recursos funcionan muy bien para responder a situaciones a las qu
   - [r-bloggers](https://www.r-bloggers.com/)
   - [The R Graph Gallery](https://www.r-graph-gallery.com/)
   - [R for Data Science](https://r4ds.had.co.nz/)
-
+  - [Datanovia](https://www.datanovia.com/en/)
 
 ---
 
