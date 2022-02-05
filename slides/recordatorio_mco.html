@@ -219,15 +219,15 @@ summary(reg1)
 ## -23.0900  -4.9121   0.0189   4.6916  23.9019 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept) 150.9928     2.7646  54.616 &lt; 0.0000000000000002 ***
-## educacion     1.9304     0.2767   6.976       0.000000000361 ***
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 150.9928     2.7646  54.616  &lt; 2e-16 ***
+## educacion     1.9304     0.2767   6.976 3.61e-10 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 8.297 on 98 degrees of freedom
 ## Multiple R-squared:  0.3318,	Adjusted R-squared:  0.325 
-## F-statistic: 48.66 on 1 and 98 DF,  p-value: 0.0000000003606
+## F-statistic: 48.66 on 1 and 98 DF,  p-value: 3.606e-10
 ```
 ]
 
@@ -395,13 +395,13 @@ $$
 $$
 Donde el *peso* `\(w_i=\frac{(x_i-\bar{x})}{\sum_i(x_i-\bar{x})^2}\)` es una función solo de las `\(x_i\)`
 
-Sustituyendo lo que es `\(y_i\)`
+Sustituyendo lo que es `\(y_i\)`, `\(y_i=\alpha+\beta x_i + u_i\)`:
 
 
 $$
 `\begin{align}
-\hat{\beta}_{MCO}&amp;=\sum_i w_i (\hat{\alpha}+\hat{\beta}x_i+u_i) = \hat{\alpha}\sum_i w_i + \hat{\beta}\sum_i w_i x_i + \sum_i w_i u_i \\
-&amp;= \hat{\beta}+\sum_i w_i u_i
+\hat{\beta}_{MCO}&amp;=\sum_i w_i (\alpha+\beta x_i + u_i) = \alpha \sum_i w_i + \beta \sum_i w_i x_i + \sum_i w_i u_i \\
+&amp;= \beta+\sum_i w_i u_i
 \end{align}`
 $$
 
@@ -411,7 +411,7 @@ $$
 
 La simplificación anterior ocurre por lo siguiente
 
-Notemos primero que los pesos `\(\sum_i w_i\)` suman 1:
+Notemos primero que los pesos `\(w_i\)` suman 0:
 
 $$
 \sum_i w_i=\sum_i \frac{(x_i-\bar{x})}{\sum_i (x_i-\bar{x})^2} = \frac{\sum_i (x_i-\bar{x})}{\sum_i (x_i-\bar{x})^2} = 0
@@ -458,7 +458,7 @@ El estimador de MCO es insesgado
 
 $$
 `\begin{align}
-E(\hat{\beta})&amp;=E(\beta+ \sum_i w_i u_i) \\
+E(\hat{\beta}_{MCO})&amp;=E(\beta+ \sum_i w_i u_i) \\
 &amp;=E(\beta)+ E(\sum_i w_i u_i) \\
 &amp;=\beta+\sum_i E(w_iu_i)\\
 &amp;=\beta + \sum_i w_i E(u_i) \\
@@ -467,7 +467,7 @@ E(\hat{\beta})&amp;=E(\beta+ \sum_i w_i u_i) \\
 $$
 El supuesto clave aquí es el supuesto 3
 
-La propiedad de insesgadez dice que si tuviéramos muchas muestras, **todas de tamaño `\(N\)`**, y con cada una obtuviéramos `\(\hat{\beta}_2\)` para cada muestra, `\(\hat{\beta}\)` estará centrado alrededor de `\(\beta\)`
+La propiedad de insesgadez dice que si tuviéramos muchas muestras, **todas de tamaño `\(N\)`**, y con cada una obtuviéramos `\(\hat{\beta}\)` para cada muestra, `\(\hat{\beta}\)` estará centrado alrededor de `\(\beta\)`
 
 Sin embargo, para una muestra en particular, el valor de `\(\hat{\beta}\)` será distinto que `\(\beta\)`
 

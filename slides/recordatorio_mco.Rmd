@@ -404,13 +404,13 @@ $$
 $$
 Donde el *peso* $w_i=\frac{(x_i-\bar{x})}{\sum_i(x_i-\bar{x})^2}$ es una función solo de las $x_i$
 
-Sustituyendo lo que es $y_i$
+Sustituyendo lo que es $y_i$, $y_i=\alpha+\beta x_i + u_i$:
 
 
 $$
 \begin{align}
-\hat{\beta}_{MCO}&=\sum_i w_i (\hat{\alpha}+\hat{\beta}x_i+u_i) = \hat{\alpha}\sum_i w_i + \hat{\beta}\sum_i w_i x_i + \sum_i w_i u_i \\
-&= \hat{\beta}+\sum_i w_i u_i
+\hat{\beta}_{MCO}&=\sum_i w_i (\alpha+\beta x_i + u_i) = \alpha \sum_i w_i + \beta \sum_i w_i x_i + \sum_i w_i u_i \\
+&= \beta+\sum_i w_i u_i
 \end{align}
 $$
 
@@ -420,7 +420,7 @@ $$
 
 La simplificación anterior ocurre por lo siguiente
 
-Notemos primero que los pesos $\sum_i w_i$ suman 1:
+Notemos primero que los pesos $w_i$ suman 0:
 
 $$
 \sum_i w_i=\sum_i \frac{(x_i-\bar{x})}{\sum_i (x_i-\bar{x})^2} = \frac{\sum_i (x_i-\bar{x})}{\sum_i (x_i-\bar{x})^2} = 0
@@ -467,7 +467,7 @@ El estimador de MCO es insesgado
 
 $$
 \begin{align}
-E(\hat{\beta})&=E(\beta+ \sum_i w_i u_i) \\
+E(\hat{\beta}_{MCO})&=E(\beta+ \sum_i w_i u_i) \\
 &=E(\beta)+ E(\sum_i w_i u_i) \\
 &=\beta+\sum_i E(w_iu_i)\\
 &=\beta + \sum_i w_i E(u_i) \\
@@ -476,7 +476,7 @@ E(\hat{\beta})&=E(\beta+ \sum_i w_i u_i) \\
 $$
 El supuesto clave aquí es el supuesto 3
 
-La propiedad de insesgadez dice que si tuviéramos muchas muestras, **todas de tamaño $N$**, y con cada una obtuviéramos $\hat{\beta}_2$ para cada muestra, $\hat{\beta}$ estará centrado alrededor de $\beta$
+La propiedad de insesgadez dice que si tuviéramos muchas muestras, **todas de tamaño $N$**, y con cada una obtuviéramos $\hat{\beta}$ para cada muestra, $\hat{\beta}$ estará centrado alrededor de $\beta$
 
 Sin embargo, para una muestra en particular, el valor de $\hat{\beta}$ será distinto que $\beta$
 
