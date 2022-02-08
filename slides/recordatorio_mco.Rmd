@@ -492,6 +492,31 @@ $$V(\hat{\beta})=\frac{\sigma_u^2}{\sum_i (x_i-\bar{x})^2}$$
 
 ---
 
+# Varianza del estimador de MCO
+
+Buscamos $V(\hat{\beta})=\beta+\sum_iw_iu_i$
+
+La varianza de $\beta$ es 0 porque es un parámetro
+
+Entonces
+
+$$
+\begin{align}
+V(\hat{\beta})&=\sum_iw_iu_i \\
+&=V\left(\sum_iw_iu_i\right) \\
+&=V\left(\sum_i\frac{(x_i-\bar{x})}{(\sum_ix_i-\bar{x})^2}u_i\right) \\
+&=\left(\frac{1}{\sum_i(x_i-\bar{x})^2}\right)^2 V \left(\sum_i (x_i-\bar{x}) u_i  \right) \\
+&=\left(\frac{1}{\sum_i(x_i-\bar{x})^2}\right)^2\left(\sum_i (x_i-\bar{x})^2 V(u_i)  \right) \\
+&=\sigma_u^2 \left(\frac{1}{\sum_i(x_i-\bar{x})^2}\right)^2\left(\sum_i (x_i-\bar{x})^2 \right) \\
+&=\frac{\sigma_u^2}{\sum_i (x_i-\bar{x})^2}
+\end{align}
+$$
+La penúltima línea usa el supuesto 4 de homocedasticidad
+
+
+
+---
+
 # Distribución del estimador de MCO
 
 Los resultados anteriores, más el supuesto 6 implican que

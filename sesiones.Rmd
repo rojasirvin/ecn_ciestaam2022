@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 3. [Revisión del modelo lineal con muestras finitas](./slides/recordatorio_mco.html)
 
-4. Teoría asintótica para MCO
+4. [Teoría asintótica para MCO](./slides/teoria_asintotica.html)
 
 5. Estimadores m y estimadores de máxima verosimilitud
 

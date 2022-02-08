@@ -13,6 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [recordatorio_mco.R](./scripts/recordatorio_mco.R)
 
+[teoria_asintotica.R](.scripts/teoria_asintotica.R)
+
 
 # Datos
 
