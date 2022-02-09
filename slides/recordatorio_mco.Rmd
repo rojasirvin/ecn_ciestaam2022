@@ -494,12 +494,13 @@ $$V(\hat{\beta})=\frac{\sigma_u^2}{\sum_i (x_i-\bar{x})^2}$$
 
 # Varianza del estimador de MCO
 
+.pull-left[
 Buscamos $V(\hat{\beta})=\beta+\sum_iw_iu_i$
 
 La varianza de $\beta$ es 0 porque es un parámetro
+]
 
-Entonces
-
+.pull-right[
 $$
 \begin{align}
 V(\hat{\beta})&=\sum_iw_iu_i \\
@@ -511,6 +512,10 @@ V(\hat{\beta})&=\sum_iw_iu_i \\
 &=\frac{\sigma_u^2}{\sum_i (x_i-\bar{x})^2}
 \end{align}
 $$
+
+]
+
+
 La penúltima línea usa el supuesto 4 de homocedasticidad
 
 
@@ -677,7 +682,7 @@ betas %>%
 ]
 
 .pull-right[
-```{r echo=F, message=FALSE, warnings=FALSE, results=T, cache=T}
+```{r echo=F, message=FALSE, warnings=FALSE, results=T}
 
 betas <- data.frame(betas)
 
