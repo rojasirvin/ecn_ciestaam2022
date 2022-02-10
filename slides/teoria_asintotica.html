@@ -209,20 +209,27 @@ Por ejemplo:
   
 Converge a `\(a=2\)` pues `\(|a_N-a|=3/N&lt;\varepsilon \quad \forall \quad N&gt;N^*=3/\varepsilon\)`
 
+
+---
+
+# Convergencia en probabilidad
+
 Cuando tenemos una secuencia de variables aleatorias, no podemos estar seguros de que la diferencia estará siempre dentro del límite `\(\varepsilon\)`
 
-Buscamos entonces que la **probabilidad** de estar en el límite de `\(\varepsilon\)` sea muy cercana a uno
+Buscamos entonces que la **probabilidad** de estar en el límite de `\(\varepsilon\)` sea muy arbitrariamente cercana a uno
 
-**Convergencia en probabilidad**: `\(\{b_N\}\)` converge en probabilidad a `\(b\)` si para todo `\(\varepsilon\)` y `\(\delta&gt;0\)` existe `\(N^*=N*(\varepsilon, \delta)\)` tal que:
+Una variable aleatoria `\(\{b_N\}\)` **converge en probabilidad** a `\(b\)` si para todo `\(\varepsilon\)` y `\(\delta&gt;0\)` existe `\(N^*=N*(\varepsilon, \delta)\)` tal que:
 
 `$$Pr(|b_n-b|&lt;\varepsilon) &gt; 1-\delta$$`
 La notación más usada es escribir `\(p\lim b_n=b\)` o `\(b_n\xrightarrow{p}b\)`, donde `\(b\)` puede ser una constante o una variable aleatoria
 
 ---
 
-# Consistencia
+# Consistencia de estimadores
 
-Sea `\(\{b_N\}\)` una secuencia de parámetros estimados `\(\hat{\theta}\)`, un estimador `\(\hat{\theta}\)` es consistente para `\(\theta_0\)` si:
+Sea `\(\{b_N\}\)` una secuencia de parámetros estimados `\(\hat{\theta}\)`
+
+Un estimador `\(\hat{\theta}\)` es consistente para `\(\theta_0\)` si:
 
 `$$p\lim \hat{\theta}=\theta_0$$`
 
@@ -250,15 +257,13 @@ Por ejemplo, si `\(p\lim(b_{1N},b_{2N})=(b_1,b_2)\)`, entonces `\(p\lim(b_{1N} b
 
 # Leyes de grandes números (LGN)
 
-Las LGN son teoremas de convergencia en probabilidad cuando `\(\{b_N\}\)` es un promedio muestral, `\(b_N\equiv \bar{X}_N\)`
+Las LGN son **teoremas de convergencia en probabilidad** cuando `\(\{b_N\}\)` es un promedio muestral, `\(b_N\equiv \bar{X}_N\)`
 
-Son teoremas para establecer el límite de una secuencia `\(\{b_N\}\)` en vez de usar *fuerza bruta* y aplicar la definición 
+Son teoremas para establecer el límite de una secuencia `\(\{b_N\}\)` en vez de usar *fuerza bruta* y aplicar la definición
 
 `\(X_i\)` aquí representa una variable aleatoria, no necesariamente "las `\(X\)`" en una matriz de datos (podría ser `\(X_i=x_iu_i\)`)
 
-*Una ley de grandes números débil*
-
-Especifica las condiciones sobre los `\(X_i\)` en `\(\bar{X}_N\)` para que
+**Una ley de grandes números débil**: especifica las condiciones sobre los `\(X_i\)` en `\(\bar{X}_N\)` para que
   
   `$$(\bar{X}_N-E(\bar{X}_N))\xrightarrow{p}0$$`
 
@@ -376,24 +381,25 @@ $$ Z_N\xrightarrow{d}\mathcal{N}(0,1) $$
 
 # Teoremas del límite central (TLC)
 
-*TLC de Lindeberg-Levy*
-
-Sea `\(\{X_i\}\)` iid con `\(E(X_i)=\mu\)` y `\(V(X_i)=\sigma^2\)`, entonces
-
-$$ Z_N=\frac{\sqrt{N}(\bar{X}_N-\mu)}{\sigma}\xrightarrow{d} \mathcal N(0,1) $$
-Noten que si `\(\bar{X}_N\)` satisface un TLC, entonces también `\(h(N)\bar{X}_N\)` lo satisface
+Cabe notar que si `\(\bar{X}_N\)` satisface un TLC, entonces también `\(h(N)\bar{X}_N\)` lo satisface
  
-Por ejemplo, `\(h(N)=\sqrt{N}\)`, dado que
+Por ejemplo, con `\(h(N)=\sqrt{N}\)`, podemos definir
  
 $$ Z_N=\frac{h(N)\bar{X}_N-E(h(N)\bar{X}_N)}{\sqrt{V(h(N)\bar{X}_N)}}$$
 
-En la mayoría de los casos, se usan los TLC a la versión normalizada de `\(\bar{X}_N\)`, es decir, `\(\sqrt{N}\bar{X}_N=N^{-1/2}\sum_{i=1}^N X_i\)` porque `\(V(h(N)\bar{X}_N)\)` es finita
+En la mayoría de los casos, se usan los TLC a la versión normalizada de `\(\bar{X}_N\)`, es decir, `\(\sqrt{N}\bar{X}_N=N^{-1/2}\sum_{i=1}^N X_i\)` porque `\(V(h(N)\bar{X}_N)=V(\sqrt{N}\bar{X}_N)\)` es finita
 
 ---
 
 # Teoremas del límite central (TLC)
 
-Bajo iid, podemos escribir
+*TLC de Lindeberg-Levy*
+
+Sea `\(\{X_i\}\)` iid con `\(E(X_i)=\mu\)` y `\(V(X_i)=\sigma^2\)`, entonces
+
+$$ Z_N=\frac{\sqrt{N}(\bar{X}_N-\mu)}{\sigma}\xrightarrow{d} \mathcal N(0,1) $$
+
+Que también aparece frecuentemente como
 
 `$$\frac{\bar{X}_N-\mu}{\sigma / \sqrt{N}}\xrightarrow{d}\mathcal{N}(0,1)$$`
 
@@ -412,7 +418,7 @@ Reescalando, podemos definir:
   
   `$$Z_N=V_N^{-1/2}(b_N-\mu_N)\sim(\mathbf{0},I)$$`
   
-Un TLC da condiciones sobre `\(X_i\)` en `\(\bar{X}_N\)` para que
+Un TLC multivariado da condiciones sobre `\(X_i\)` en `\(\bar{X}_N\)` para que
   
   `$$Z_N\xrightarrow{d}\mathcal{N}(\mathbf{0},I)$$`
   
@@ -426,7 +432,7 @@ class: inverse, center, middle
 
 # Consistencia
 
-Consideremos el proceso generador de datos `\(y=X\beta+u\)`
+Consideremos el proceso generador de datos `\(Y=X\beta+u\)`
 
 $$
 `\begin{aligned}
@@ -453,23 +459,25 @@ Si una LGN puede aplicarse, entonces usando el Teorema de Slutsky:
 `$$p\lim \hat{\beta}_{MCO}=\beta+(p\lim N^{-1}X'X)^{-1}(p\lim N^{-1}X'u)$$`
 
 
-Entonces `\(\beta_{MCO}\)` es consistente para `\(\beta\)`, es decir, `\(p\lim\hat{\beta}_{MCO}=\beta\)` si `\(p\lim N^{-1}X'u=0\)`
+Entonces `\(\hat{\beta}_{MCO}\)` es consistente para `\(\beta\)`, es decir, `\(p\lim\hat{\beta}_{MCO}=\beta\)` si `\(p\lim N^{-1}X'u=0\)`
 
 Si se puede aplicar una LGN al promedio `\(N^{-1}X'u=N^{-1}\sum_ix_iu_i\)` , una condición necesaria es que `\(E(x_iu_i)=0\)`
 
 Esta es la condición sobre los errores que enumerábamos en nuestra lista de supuestos en los cursos básicos de econometría
 
+Es la condición clave para la consistencia
+
 ---
 
 # Distribución límite
 
-Dada la consistencia del estimador de MCO,la distribución límite de `\(\beta_{MCO}\)` tiene toda su masa en `\(\beta\)`
+Dada la consistencia del estimador de MCO,la distribución límite de `\(\hat{\beta}_{MCO}\)` tiene toda su masa en `\(\beta\)`
 
 Podemos reescalar multiplicando por `\(\sqrt{N}\)`, lo que nos permite obtener una variable aleatoria con varianza distinta de cero y asintóticamente finita:
 
 `$$\sqrt{N}(\hat{\beta}_{MCO}-\beta)=(N^{-1}X'X)^{-1}N^{-1/2}X'u$$`
 
-Sabemos que `\(p\lim(N^{-1}X'X)\)` existe y es una matriz finida distinta de `\(\mathbf{0}\)`
+Sabemos que `\(p\lim(N^{-1}X'X)\)` existe y es una matriz finita distinta de `\(\mathbf{0}\)`
 
 Si se puede aplicar un TLC, `\(N^{-1/2}X'u\)` tendrá una distribución con matriz de covarianzas no singular y finita
 
@@ -499,7 +507,7 @@ Podemos expresar el resultado en términos de  `\(\hat{\beta}_{MCO}\)` dividiend
 
 `$$\hat{\beta}_{MCO} \stackrel{a}{\sim} \mathcal{N}(\beta,N^{-1}M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1})$$`
 
-A la matriz `\(V(\hat{\beta})=N^{-1}M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1}\)` es la *matriz de varianza asintótica*
+La matriz `\(V(\hat{\beta})=N^{-1}M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1}\)` es la *matriz de varianza asintótica*
 
 Eliminado los límites y las expectativas, una forma más compacta de escribir la distribución del estimador de MCO es
 
