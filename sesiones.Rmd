@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 4. [Teoría asintótica para MCO](./slides/teoria_asintotica.html)
 
-5. Estimadores m y estimadores de máxima verosimilitud
+5. [Estimadores extremos](./slides/estimadores_extremos_mv.html)
 
 6. Modelos de variable dependiente binaria
 
