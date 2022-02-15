@@ -244,3 +244,58 @@ estimadores_mco %>%
 
 #Modificar el programa para mostrar que alpha y beta tienen una masa que se concentra en su media cuando crece el tamaño de la muestra
 
+#Simulamos la población
+set.seed(1234)
+
+educacion <-  rnorm(100000,10,3)
+e <-  rnorm(100000,0,8)
+b0 <- 150
+b1 <- 2
+
+salario <- b0 + b1 * educacion + e 
+poblacion <- data.frame(salario, educacion)
+
+#Hacemos loop sobre las repeticiones y n
+reps <- 1000
+tamano_muestra <- c(50, 100, 1000, 10000)
+
+#Inicializamos una matrices para guardar resultados
+coleccion_estimadores_mco <- matrix(ncol=3,nrow=1)
+estimadores_mco <- matrix(ncol = 3, nrow = reps)
+
+#Dos loops
+for (j in 1:length(tamano_muestra)){
+  for (i in 1:reps){
+    muestra <- poblacion[sample(1:100000, size=tamano_muestra[j]), ]
+    
+    estimadores_mco[i,1:2] <- lm(salario ~ educacion, data = muestra)$coefficients
+    estimadores_mco[,3] <- tamano_muestra[j]
+  }
+  
+  #Vamos apilando los resultados en coleccion_estimadores_mco
+  coleccion_estimadores_mco <- rbind(coleccion_estimadores_mco, estimadores_mco)
+  estimadores_mco <- matrix(ncol = 3, nrow = reps)
+}
+
+#Quito la primera fila, que son NAs
+coleccion_estimadores_mco <- coleccion_estimadores_mco[-1,]
+
+coleccion_estimadores_mco <- data.frame(coleccion_estimadores_mco) %>% 
+  rename(alpha=X1,
+         beta=X2,
+         tamano=X3)
+
+#Aquí veremos la funcionalidad de los factores
+coleccion_estimadores_mco <- coleccion_estimadores_mco %>% 
+  mutate(tamano=factor(tamano,
+                       levels = c(50, 100, 1000, 10000),
+                       labels = c("N=50", "N=100", "N=1,000", "N=10,000")))
+
+#Usamos la variable de factor para hacer el gráfico para cada nivel
+
+coleccion_estimadores_mco %>% 
+  ggplot(aes(x=alpha, color=tamano))+
+  geom_density()+
+  xlim(140,160) 
+  
+
