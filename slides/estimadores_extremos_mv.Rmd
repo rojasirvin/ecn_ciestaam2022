@@ -221,7 +221,7 @@ La condición clave es la condición 3 y nos dice que le máximo local de $Q_N(\
 
 Los primeros dos supuestos se cumplirán en la mayoría de las aplicaciones que usaremos en el curso (podemos tomarlos como dados)
 
-El paso más importante será obtener la probabilidad límite de $Q_N(\theta)$
+El paso más importante será obtener la distribución límite de $Q_N(\theta)$
 
 ---
 
@@ -233,7 +233,7 @@ Partimos de $\hat{\theta}$, que resuelve $\frac{\partial Q_N(\theta)}{\partial \
 
 $\hat{\theta}$ no tiene forma cerrada (contrario, por ejemplo, al estimador de MCO)
 
-Queremos mostrar que $\hat{\theta}$ es consistente sin tener una expresión para este vector de parámetros estimados
+Queremos encontrar la distribución $\hat{\theta}$ sin tener una expresión para este vector de parámetros estimados
 
 ---
 
