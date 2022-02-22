@@ -26,8 +26,8 @@
       "path": "sesiones.html",
       "title": "Sesiones",
       "author": [],
-      "contents": "\r\nIntroducción a R\r\nManejo de datos en R, parte 1\r\nManejo de datos en R, parte 2\r\nRevisión del modelo lineal con muestras finitas\r\nTeoría asintótica para MCO\r\nEstimadores extremos\r\nModelos de variable dependiente categórica\r\nModelos con variable dependiente de conteo\r\nModelos de riesgo y sobrevivencia\r\nModelos de selección\r\nVariables instrumentales\r\nMínimos cuadrados en dos etapas\r\nTemas de errores estándar\r\nBootstrap\r\nModelos de panel lineal\r\nEstimadores de panel lineal\r\nExtensiones de métodos de panel\r\nRegresión cuantil\r\nMétodos no paramétricos y semi paramétricos\r\nEconometría especial\r\nIntroducción a la inferencia causal\r\nMétodos experimentales\r\nDiferencia en diferencias\r\nPropensity score matching\r\nDiseños con discontinuidades\r\nControl sintético\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-02-21T14:17:03-06:00"
+      "contents": "\r\nIntroducción a R\r\nManejo de datos en R, parte 1\r\nManejo de datos en R, parte 2\r\nRevisión del modelo lineal con muestras finitas\r\nTeoría asintótica para MCO\r\nEstimadores extremos\r\nModelos de variable dependiente categórica\r\nInferencia estadística\r\nModelos con variable dependiente de conteo\r\nModelos de riesgo y sobrevivencia\r\nModelos de selección\r\nVariables instrumentales\r\nMínimos cuadrados en dos etapas\r\nTemas de errores estándar\r\nModelos de panel lineal\r\nEstimadores de panel lineal\r\nRegresión cuantil\r\nMétodos no paramétricos y semi paramétricos\r\nEconometría espacial\r\nIntroducción a la inferencia causal\r\nMétodos experimentales\r\nDiferencia en diferencias\r\nPropensity score matching\r\nDiseños con discontinuidades\r\nControl sintético\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-02-22T11:27:06-06:00"
     }
   ],
   "collections": []
