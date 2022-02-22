@@ -424,13 +424,23 @@ data_binary %>%
 
 ---
 
+# Ejercicio
+
+Use los datos en el archivo *grogger.csv*. Estos son datos sobre arrestos y características socioeconómicas de una muestra de individuos arrestados.
+
+Estime un modelo de probabilidad lineal que relacione **arr86** (haber si arrestado al menos una vez en 1986) con **pcnv**, **avgsen**, **tottime**, **ptime86**, **inc86**, **black**, **hispan** y **born60**. Los datos se encuentran descritos [aquí](http://fmwww.bc.edu/ec-p/data/wooldridge2k/GROGGER.DES).
+
+¿Cuál es el efecto en la probabilidad de arresto si pcnv pasa de 0.5 a 0.75?
+
+Estime luego un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.50 a 0.75, evaluando el cambio en los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (born60 igual a 1). En otras palabras, calcule $P(arresto|X=x,pcnv=0.75)=P(arresto|X=x,pcnv=0.50)$, donde $X=x$ significa los valores particulares de los regresores antes indicados.
+
+---
+
 # Próxima sesión
 
-- Veremos modelos multinomiales
+- Hablaremos sobre inferencia estadística.
 
-  - CT Capítulo 15
-
-- Es la generalización del problema que estudiamos hoy: la variable $y$ puede tomar no solo dos valores, sino $J$ posibles valores correspondientes a una categoría mutuamente excluyente
+- Vale la pena que repasen conceptos como: error estándar, estadístico $t$, hipótesis nula, e intervalo de confianza
 
 ---
 
