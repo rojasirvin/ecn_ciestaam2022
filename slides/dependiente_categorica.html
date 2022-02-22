@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Variable dependiente categórica</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Variable dependiente categórica
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+# Agenda
+  
+- Estudiaremos las propiedades generales teóricas de estimadores para modelos cuando la variable dependiente es binaria
+
+- Mostraremos las propiedades asintóticas de los estimadores de MV para este tipo de modelos
+
+- Mostraremos la generalización a modelos de `\(J\)` categorías
+
+---
+
+# Introducción
+
+Frecuentemente nos encontramos con problemas donde la variable dependiente es categórica
+
+  - Probabilidad de comprar o no comprar un producto
+  
+  - Probabilidad de escoger el producto `\(j\)` de entre `\(J\)` posibles alternativas
+  
+  - Probabilidad de tener una tarjeta `\(k\)` de entre las varias tarjetas `\(K\)` que tiene una jerarquía
+  
+MCO ignora la naturaleza discreta de la variable dependiente
+
+Estudiaremos modelos que parametrizan la probabilidad individual de que ocurra un evento y que se estiman por MV
+
+Afortunadamente ya sabemos mucho de MV
+
+---
+
+class: inverse, middle, center
+
+# Variable dependiente binaria
+
+---
+
+# Variable dependiente binaria
+
+`\(y_i\)` toma el valor de 1 si el evento se realiza y 0 si no
+
+Los datos siguen una distribución Bernoulli con probabilidad que varía entre individuos: `\(p\equiv p_i\)`
+
+Especificamos una forma funcional para la probabilidad y se estima por MV
+
+---
+
+# Modelo general
+
+La variable dependiente:
+$$
+y_i=
+`\begin{cases}
+1 \quad\text{con probabilidad }p \\
+0 \quad\text{con probabilidad }1-p
+\end{cases}`
+$$
+Parametrizamos `\(p_i\)` con un vector de características `\(x_i\)` y un vector de parámetros `\(\beta\)`:
+
+`$$p_i=F(y_i=1|x_i)=F(x_i'\beta)$$`
+A `\(x_i'\beta\)` se le conoce como *índice*, por lo que este modelo es también un modelo de un índice único (*single index model*)
+
+`\(F\)` es una función de distribución acumulada (cdf)
+
+Un modelo de probabilidad lineal simplemente especifica `\(p_i=x_i'\beta\)`
+
+---
+
+# Probit y logit
+
+Un modelo probit especifica `\(F(\cdot)\)` como una normal estándar con cdf dada por:
+
+`$$\Phi(x'\beta)=\int_{-\infty}^{\infty}\phi(z)dz$$`
+
+Un modelo logit especifica a `\(F(\cdot)\)` como una función logística:
+
+`$$\Lambda(x'\beta)=\frac{exp\{x'\beta\}}{1+exp\{x'\beta\}}$$`
+
+---
+
+# Efectos marginales
+
+En un modelo lineal, `\(\beta_j\)` tiene la interpretación directa del efecto de un cambio marginal en `\(x_j\)` sobre `\(y\)`
+
+En cambio, en los modelos de probabilidad no lineal estamos interesaods en:
+
+`$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=F'(x_i'\beta)\beta_j$$`
+
+Como `\(F(\cdot)\)` es no lineal, los efectos marginales difieren del punto de evaluación, es decir, de `\(x_i'\beta\)`
+
+.pull-left[
+En el caso probit:
+
+`$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\phi(x'\beta)\beta_j$$`
+]
+
+.pull-right[
+En el caso logit:
+
+`$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\Lambda(x'\beta)(1-\Lambda(x'\beta))\beta_j$$`
+]
+
+---
+
+# Efectos marginales
+
+Dos efectos marginales que podemos calcular:
+
+  - Promedio de efectos marginales: `$$\frac{1}{N}\sum_i F'(x_i'\hat{\beta})\hat{\beta}_j$$`
+
+  - Efecto marginal evaluaado en la media de `\(x\)`: `$$F'(\bar{x}'\hat{\beta})\hat{\beta}_j$$`
+
+En el trabajo empírico es más común usar el promedio de efectos marginales
+
+Una crítica al efecto marginal en la media es que `\(\bar{x}\)` puede no representar nada de los individuos en la muestra
+
+---
+
+# Efectos marginales
+
+Noten que el cociente de efectos marginales es igual al cociente de los coeficientes estimados:
+
+`$$\frac{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}}{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ik}}}=\frac{\hat{\beta}_j}{\hat{\beta}_k}$$`
+
+
+---
+
+class: inverse, middle, center
+
+# Estimación
+
+---
+
+# Estimación
+
+Tenemos a la mano datos `\((y_i,x_i)\)` de `\(N\)` individuos
+
+La función de masa de probabilidad para `\(y_i\)` es:
+
+`$$f(y_i|x_i)=p_i^{y_i}(1-p_i)^{1-y_i},\quad\quad y_i={0,1}$$`
+Recordemos que `\(p_i=F(x_i'\beta)\)`
+
+---
+
+# Estimación
+
+La log densidad será:
+
+`$$\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)$$`
+
+Por independencia sobre `\(i\)`, la función de log verosimilitud es:
+
+`$$\mathcal{L}(\beta)=\sum_i\{y_i\ln p_i + (1-y_i)\ln(1-p_i)\}$$`
+
+
+Sustituyendo `\(F\)` en vez de `\(p_i\)`:
+
+
+`$$\mathcal{L}(\beta)=\sum_i\{y_i\ln F(x_i'\beta) + (1-y_i)\ln(1-F(x_i'\beta))\}$$`
+---
+
+# Estimación
+
+La condición de primer orden implica que `\(\hat{\beta}_{MV}\)` resuleve:
+
+`$$\sum_i \left(\frac{y_i-F(x_i'\beta)}{F(x_i'\beta)(1-F(x_i'\beta))}F'(x_i'\beta)x_i\right)=0$$`
+
+---
+
+# Distribución asintótica
+
+Si la densidad está **bien especificada**, la teoría que vimos sobre MV indica que el estimador tendrá una distribución asintótica como sigue:
+`$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta, \left(-E\left(\frac{\partial^2\mathcal{L}}{\partial\beta\partial\beta'}\right)\right)^{-1}\right)$$`
+
+Tomando la derivada a las condiciones de primer orden y calculando el negativo del valor esperado obtenemos:
+
+`$$\hat{V}(\hat{\beta}_{MV})=\left(\sum_i\frac{1}{F(x_i'\hat{\beta})(1-F(x_i'\hat{\beta}))}F'(x_i'\hat{\beta})^2x_ix_i'\right)^{-1}$$`
+
+---
+
+# Particularidades del modelo logit
+
+Una medida comúnmente usada es la razón de momios u *odds ratio*, también llamado riesgo relativo: `\(\frac{p}{1-p}\)`
+
+El riesgo relativo es la probabilidad de que suceda `\(y=1\)` relativa a la probabilidad de que `\(y=0\)`
+
+En el caso del logit, el riesgo relativo es:
+
+`$$\frac{p}{1-p}=exp\{x'\beta\}$$`
+
+Y el log del riesgo relativo es simplemente:
+
+`$$\ln\left(\frac{p}{1-p}\right)=x'\beta$$`
+
+Es decir, el log del riesgo relativo o el log de la razón de momios es lineal en `\(x\)`
+
+---
+
+# Particularidades del modelo logit
+
+Noten que expresar las probabilidades como riesgo relativo tiene una interpretación usada comúnmente en bioestadística
+
+Si `\(\frac{p}{1-p}=exp\{x'\beta\}\)` y `\(x_j\)` cambia en una unidad, entonces el lado derecho se vuelve `\(exp\{x'\beta+\beta_j\}=exp\{x'\beta\} exp\{\beta_j\}\)`
+
+Es decir, el riesgo relativo se ha incrementado `\(exp\{\beta_j\}\)` veces
+
+Supongamos que `\(\hat{\beta}_j=0.05\)`, entonces `\(exp\{0.05\}\approx 1.05\)`
+
+Es decir, el riesgo relativo se incrementa en aproximadamente 5%
+
+---
+
+# ¿Probit o logit?
+
+Empíricamente suelen desempeñarse de forma muy similar
+
+Como nos interesan los efectos marginales, la diferencia entre los modelos usados suele ser mínima
+
+El modelo logit es frecuentemente usado en bioestadística por su interpretación en términos de riesgo relativo
+
+El probit se puede motivar por un modelo de variable latente normal, que se liga directamente al modelo Tobit (que veremos más adelante)
+
+---
+
+class: inverse, center, middle
+
+# Ejemplo con datos de precios
+
+---
+
+# Ejemplo: probit y logit
+
+Datos de Herriges &amp; Kling (1999) usados y provistos por Cameron &amp; Trivedi (2005)
+
+Exploramos los datos:
+  - Las observaciones son clientes
+  
+  - *charter* toma el valor de 1 si el cliente pescó desde un barco
+  
+  - *lnrelp* es el (log) precio relativo de pescar desde el barco con respecto a otros lugares de pesca
+  
+
+```r
+data_fishing&lt;-read_csv("./data/fishing_data.csv",
+                       locale = locale(encoding = "latin1"))
+```
+
+---
+
+# Ejemplo: probit y logit
+
+Estimación de un modelo probit
+
+
+```r
+#Datos
+data_binary &lt;- read_csv("./data/fishing_data_clean.csv",
+                       locale = locale(encoding = "latin1"))
+
+
+mprobit &lt;- glm(charter ~ lnrelp,
+               family = binomial(link = "probit"), 
+               data = data_binary)
+```
+
+
+
+```r
+# Pedimos los coeficientes
+summary(mprobit)$coef
+```
+
+```
+##              Estimate Std. Error   z value     Pr(&gt;|z|)
+## (Intercept)  1.194358 0.08814144  13.55048 7.871767e-42
+## lnrelp      -1.055513 0.07542127 -13.99490 1.674672e-44
+```
+---
+
+# Ejemplo: probit y logit
+
+Estimación de un modelo logit y de probabilidad lineal
+
+
+
+```r
+mlogit &lt;- glm(charter ~ lnrelp,
+              family = binomial(link = "logit"),
+              data = data_binary)
+
+mlineal &lt;- lm(charter ~ lnrelp,
+              data=data_binary)
+```
+---
+
+# Ejemplo: probit y logit
+
+Un paquete para presentar resultados de modelos estimados es *modelsummary*
+
+.pull-left[
+
+```r
+#Resumen de los tres modelos
+msummary(models=list(mlogit, mprobit, mlineal))
+```
+]
+
+.pull-right[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Model 1 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Model 2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Model 3 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.053 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.194 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.784 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.169) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.088) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.013) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lnrelp &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -1.823 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -1.056 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -0.243 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.145) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.075) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.010) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.463 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.462 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 417.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 412.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 396.3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 426.5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 421.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 409.7 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -206.827 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -204.411 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -195.167 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 542.123 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+---
+
+
+# Ejemplo: probit y logit
+
+.pull-left[
+
+```r
+#Podemos ponerlo más bonito
+msummary(models=list('Logit' = mlogit,
+                     'Probit' = mprobit,
+                     'Lineal' = mlineal),
+         coef_map = c('(Intercept)' = 'Constante',
+                      'lnrelp' = 'ln(precio rel.)'))
+```
+]
+
+.pull-right[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Logit &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Probit &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Lineal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Constante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.053 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.194 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.784 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.169) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.088) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.013) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ln(precio rel.) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -1.823 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -1.056 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -0.243 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.145) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.075) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.010) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 630 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.463 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.462 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 417.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 412.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 396.3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 426.5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 421.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 409.7 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -206.827 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -204.411 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; -195.167 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 542.123 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+---
+
+#Ejmeplo: probit y logit
+
+.pull-left[
+Predicción
+
+
+```r
+#Predicciones con cada modelo
+data_binary &lt;- data_binary %&gt;% 
+  mutate(plogit=predict(mlogit, type="response")) %&gt;% 
+  mutate(pprobit=predict(mprobit, type="response")) %&gt;% 
+  mutate(plineal=predict(mlineal, type="response")) 
+
+#Colecciono las variables que usaré
+data_binary &lt;- data_binary %&gt;% 
+  select(lnrelp, plogit, pprobit, plineal)
+```
+]
+
+
+
+.pull-right[
+
+```r
+#Arreglo en formato long (lo usaremos más en panel)
+data_binary &lt;- pivot_longer(data_binary,
+                            cols= c("plogit","pprobit","plineal"),
+                            names_to="Modelo",
+                            values_to = "prob")
+
+#Construyo la gráfica
+data_binary %&gt;% 
+  ggplot()+
+  geom_line(aes(x=lnrelp,y=prob, color=Modelo))
+```
+
+![](figures/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Próxima sesión
+
+- Veremos modelos multinomiales
+
+  - CT Capítulo 15
+
+- Es la generalización del problema que estudiamos hoy: la variable `\(y\)` puede tomar no solo dos valores, sino `\(J\)` posibles valores correspondientes a una categoría mutuamente excluyente
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -15,7 +15,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [teoria_asintotica.R](./scripts/teoria_asintotica.R)
 
+[dependiente_binaria.R](./scripts/dependiente_binaria.R)
+
 
 # Datos
 
 [mundata.csv](./data/mundata.csv)
+
+[fishing_data_clean.csv](./data/fishing_data_clean.csv)

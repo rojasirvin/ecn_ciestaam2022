@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Inferencia estadística</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Inferencia estadística
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+# Agenda
+  
+- Recordar la intuición del papel del error muestral para hacer inferencia
+
+- 
+
+---
+
+class: inverse, middle, center
+
+# Medidas de variabilidad
+
+---
+
+# Variabilidad de la media muestral
+
+**Definiciones:**
+
+**Insesgadez de la media muestral**: `\(E(\bar{y})=E(y_i)\)`
+
+La insesgadez implica que, si obtuviéramos muestras repetidas de tamaño fijo, no habría desviaciones sistemáticas con respecto a `\(E(y_i)\)`
+
+No confundir con LGN, que implican consistencia cuando `\(N\to\infty\)`
+
+**Varianza poblacional**: `\(V(y_i)=E((y_i-E(y_i))^2)=\sigma_y^2\)`
+
+**Desviación estándar**: `\(\sigma_y\)`
+
+**Varianza muestral**: `\(S(y_i)^2=\frac{1}{n}\sum_i(y_i-\bar{y})^2\)`
+
+---
+
+# Variabilidad de la media muestral
+
+.pull-left[
+
+Asumiendo que las `\(y_i\)` son iid y reemplazando la definición:
+
+`$$\begin{align}
+V(\bar{y})&amp;=V\left(\frac{1}{n}\sum_i y_i\right) \\
+&amp;=\frac{1}{n^2}V\left(\sum_i y_i\right) \\
+&amp;=\frac{1}{n^2}n \sigma^2_y  \\
+&amp;=\frac{1}{n}\sigma^2_y 
+\end{align}$$`
+
+donde la tercer igualdad resulta de la independencia entre las `\(i\)` y de que dado que las `\(y_i\)` vienen de la misma población, entonces tienen la misma varianza
+]
+
+.pull-right[
+Notemos que la varianza de la media muestral depende de la varianza de `\(y_i\)`, `\(\sigma^2_y\)`, pero también de `\(n\)`
+
+Es aquí donde una LGN tiene un papel, pues cuando `\(n\to\infty\)`, la varianza de la media muestral tiende a cero
+]
+---
+
+# El error estándar
+
+**Error estándar**: `\(SE(\bar{y})=\frac{\sigma_y}{\sqrt{n}}\)`
+
+Todos los estimadores que usamos tienen un error estándar, algunos con una forma más complicada que otra, pero todos ellos tienen la misma interpretación: *resumen la variabilidad que surge por el muestreo aleatorio*
+
+**Error estándar estimado de la media muestral**: `\(\hat{SE}(\bar{y})=\frac{S(y_i)}{\sqrt{n}}\)`
+
+Es la contraparte muestral del error estándar
+
+---
+
+# El estadístico `\(t\)`
+
+Supongamos que queremos probar la hipótesis de que `\(E(y_i)=\mu\)`
+
+**Estadístico `\(t\)`**: `\(t(\mu)=\frac{\bar{y}-\mu}{\hat{SE}(\bar{y})}\)`
+
+A la hipótesis que queremos probar se le conoce como la hipótesis nula, `\(H_0\)`
+
+Bajo `\(H_0\)`: `\(\mu=0\)`, el estadístico es `\(t(\mu)=\frac{\bar{y}}{\hat{SE}(\bar{y})}\)`
+
+Un TLC nos garantiza que `\(t(\mu)\)` se distribuye normal en una muestra lo suficientemente grande, sin importar la distribución de `\(y_i\)`
+
+Por tanto, podemos tomar decisiones sobre la `\(H_0\)` (rechazarla o no), basándonos en si `\(t(\mu)\)` es consistente con lo que esperaríamos ver con una distribución normal
+
+---
+
+# Distribución normal
+
+La conveniencia de la distribución normal es que conocemos muchas propiedades teóricas de esta
+
+Por ejemplo, grafiquemos una normal arbitraria con media 0 y desviación estándar 1
+
+.pull-left[
+
+
+```r
+funcShaded &lt;- function(x) {
+  y &lt;- dnorm(x, mean = 0, sd = 1)
+  y[x &lt; (0 - 1.96 * 1) | x &gt; (0 + 1.96 * 1)] &lt;- NA
+  return(y)
+}
+
+ggplot(data.frame(x = c(-3, 3)),
+                       aes(x = x)) +
+  stat_function(fun = dnorm, args= list(0, 1)) +
+  stat_function(fun=funcShaded,
+                geom="area",
+                fill="black",
+                alpha=0.2)
+```
+]
+
+.pull-right[
+
+![](figures/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+]
+
+---
+
+# Distribución normal
+
+.pull-left[
+
+Por ejemplo, sabemos que el 95% de las realizaciones se encuentran en el intervalo `\([\mu-1.96\sigma, \mu+1.96\sigma]\)`
+
+De aquí surge que, cuando trabajamos al 95% de confianza (típico en economía), se usa una *regla de dedo* de 2 para juzgar el valor de un estadístico `\(t\)`
+
+Un estadístico `\(t\)` mayor que `\(|2|\)` indica que la `\(H_0\)` de que `\(\mu=0\)` es altamente improbable
+]
+
+
+
+.pull-right[
+![](figures/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+]
+
+
+
+---
+
+# Intervalos de confianza
+
+En vez de probar si en una muestra la `\(H_0\)` se rechaza o no, para muchos posibles valores de `\(\mu\)`, podemos construir el conjunto de todos los valores de `\(\mu\)` que son consistentes con los datos
+
+A esto le llamamos **intervalo de confianza** de `\(E(y_i)\)`
+
+Un intervalo de confianza es el conjunto de valores consistente con los datos:
+
+`$$IC_{0.95}=\{\bar{y}-1.96\times\hat{SE}(\bar{y}),\bar{y}+1.96\times\hat{SE}(\bar{y})\}$$`
+
+Si tuviéramos acceso a muestras repetidas y en cada una calculáramos `\(\bar{y}\)`, esperamos que en el 95% de los casos `\(E(y_i)\)` esté en el intervalo de confianza
+
+Noten que el IC **no** se interpreta como la probabilidad de que el parámetro se encuentre en cierto rango
+
+La interpretación es más sutil, lo que sucedería si tuviéramos distintas muestras de la misma población
+
+Regularmente trabajamos con **una** muestra
+
+
+---
+
+class: inverse, middle, center
+
+# Prueba de hipótesis en MCO
+
+---
+
+# Distribución asintótica
+
+La teoría asintótica nos garantiza que, si `\(E(u_i|x_i)=0\)` la distribución asintótica del estimador de MCO es
+
+`$$\hat{\beta}_{MCO}\stackrel{a}{\sim}\mathcal{N}\left(\beta,(X'X)^{-1}X'uu'X(X'X)^{-1}\right)$$`
+
+Estos son resultados asintóticos, válidos cuando `\(N\to \infty\)`
+
+Son convenientes porque no asumimos forma distribucional sobre los errores
+
+  - En los cursos introductorios de econometría asumíamos, entre otras cosas, errores normales y homocedásticos
+  
+  - Aquí tenemos menos supuestos
+
+La distribución asintótica nos dice que el estimador de MCO tiene una distribución normal y que su varianza depende dela varianza de los errores
+
+---
+
+# Estimación de la varianza
+
+Tenemos que estimar también la varianza del estimador de MCO
+
+En un influyente artículo, White (1980) muestra que podemos estimar consistentemente `\(\hat{V}(\hat{\beta}_{MCO})\)` usando:
+
+ `$$\hat{V}(\hat{\beta}_{MCO})=(X'X)^{-1}\left(\sum_i \hat{u}_i^2x_ix_i'\right)(X'X)^{-1}$$`
+
+Esto es a lo que conocemos como la matriz de varianzas robusta a heterocedasticidad
+
+Es robusta porque no hacemos supuestos sobre la distribución de los errores
+
+En muy raras ocasiones, si asumimos errores independientes e identicamente distribuidos:
+
+ `$$\hat{V}^H(\hat{\beta}_{MCO})=\hat{s}^2(X'X)^{-1}$$`
+donde `\(\hat{s}\)` es la varianza muestral
+
+---
+
+# Errores estándar del estimador de MCO
+
+Partiendo del estimador de la matriz de varianzas del estimador de MCO propuesto por White (1980)
+
+`$$\hat{V}(\hat{\beta}_{MCO})=(X'X)^{-1}\left(\sum_i\hat{u}_i^2x_ix_i'\right)(X'X)^{-1}$$`
+
+El error estándar de `\(\hat{\beta}_k\)` será la raíz cuadrada de la `\(k\)`-ésima entrada sobre la diagonal principal de `\(\hat{V}(\hat{\beta}_{MCO})\)` y lo denominamos `\(\hat{EER}(\hat{\beta}_k)\)` por venir de una matriz de varianzas robusta
+
+Con los mismos principios que para la media muestral, una estadístico `\(t\)` se define como:
+
+`$$t(\beta_k)=\frac{\hat{\beta}_k-\beta_k}{\hat{EER}(\hat{\beta}_k)}$$`
+
+---
+
+# Prueba de hipótess
+
+Consideremos el siguiente modelo lineal
+
+`$$y_i=\beta_0+\beta_1 x_{i1} + \ldots + \beta_k x_{ik}  + u_i$$`
+Nos interesa entonces probar la hipótesis nula de que `\(\beta_j=0\)`
+
+Un estadístico `\(t\)` para probar esta hipótesis tiene la forma:
+
+`$$t(\beta_j)=\frac{\hat{\beta}_j}{\hat{EER}(\hat{\beta}_j)}$$`
+
+Bajo la `\(H_0\)`, el estadístico `\(t\)` se distribuye asintóticamente normal
+
+Podemos comparar el valor `\(t(\beta_j)\)` con la distribución normal teórica para decir qué tan probable es observar dicho valor del estadístico
+
+---
+
+class: inverse, middle, center
+
+
+# Hipótesis no lineales
+
+---
+
+# Hipótesis no lineales
+
+Consideremos `\(h\)` restricciones, posiblemente no lineales en los parámetros
+
+El vector de parámetros es de dimensión `\(q\times 1\)` con `\(h\leq q\)`
+
+Queremos probar:
+
+`$$\begin{aligned}H_0: h(\theta_0)=0 \\ H_a: h(\theta_0)\neq 0 \end{aligned}$$`
+
+---
+
+# Test de Wald no lineal
+
+El estadístico de Wald es:
+
+`$$W_{NL}=\hat{h}'(\hat{R}\hat{V}(\hat{\theta})\hat{R}')\hat{h}$$`
+
+con `\(\hat{h}=h(\hat{\theta})\)` y con `\(\hat{R}=\frac{\partial h(\hat{\theta})}{\partial \theta'}\Bigg|_{\hat{\theta}}\)`
+
+`\(W_{NL}\)` se distribuye asintóticamente como `\(\chi^2(h)\)` bajo la `\(H_0\)`
+
+Rechazamos `\(H_0\)` en favor de `\(Ha\)` a un nivel de significancia `\(\alpha\)` si `\(W_{NL}&gt;\chi^2_{\alpha}(h)\)`
+
+O, equivalentemente, rechazamos `\(H_0\)` a un nivel `\(\alpha\)` si el valor `\(p\)`, es decir `\(P(\chi^2(h)&gt;W)\)` es menor que `\(\alpha\)`
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+Consideremos la restricción `\(h(\hat{\theta})\)`
+
+Una expansión de primer orden alrededor de `\(\theta_0\)` resulta en:
+
+`$$h(\hat{\theta})=h(\theta_0)+\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)$$`
+
+Como ya hemos hecho antes, podemos reescalar y resolver:
+
+`$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)$$`
+donde, en adelante, `\(R(\theta)=\frac{\partial h(\theta)}{\partial \theta'}\)`
+
+¿Cuál es la distribución del lado derecho?
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+El lado derecho es `\(R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)\)`
+
+Partimos del hecho de que el estimador `\(\hat{\theta}\)` es consistente y que `\(\sqrt{N}(\hat{\theta}-\theta_0)\xrightarrow{d}\mathcal{N}(\mathbf{0},C_0)\)`
+
+Por su parte `\(R(\theta^+)\xrightarrow{p} R(\theta_0)\)` (la expansión de primer orden implica esto)
+
+Entonces por la regla del límite del producto normal:
+
+`$$R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)\xrightarrow{d}\mathcal{N}(\mathbf{0},R_0C_0R_0')$$`
+---
+
+# Derivación del estadístico de Wald no lineal
+
+Por tanto:
+
+`$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
+con `\(C_0=V(\hat{\theta})\)`
+
+Y bajo `\(H_0\)`:
+
+
+`$$\sqrt{N}h(\hat{\theta})\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+Recordemos que si `\(z\sim\mathcal{N}(0,\Omega)\)`, entonces `\(z'\Omega^{-1}z\sim\chi^2(dim(\Omega))\)`
+
+Entonces, bajo la `\(H_0\)`:
+
+`$$N h(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$`
+
+El estadístico `\(W_{NL}\)` se obtiene reemplazando `\(R_0\)` y `\(C_0\)` por estimadores consistentes:
+
+`$$W=N\hat{h}'(\hat{R}\hat{C}\hat{R}')^{-1}\hat{h}$$`
+con `\(\hat{h}=h(\hat{\theta})\)` y `\(\hat{R}=\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\hat{\theta}}\)`
+
+Y sustituyendo un estimador consistente de la varianza de `\(\hat{\theta}\)`, `\(\hat{V}(\hat{\theta})=N^{-1}\hat{C}\)`, obtenemos el resultado dado en la definición del estadístico de Wald, `\(W_{NL}=\hat{h}'(\hat{R}\hat{V}(\hat{\theta})\hat{R}')\hat{h}\)`
+
+---
+
+# Versiones del test de Wald
+
+**1. Estadístico F **
+
+Sabemos que `$$F=\frac{W}{h}\xrightarrow{d}\mathcal{F}(h,N-q)$$`
+
+En muestras grandes, deberíamos obtener el mismo valor `\(p\)` que al usar el estadístico `\(W_{NL}\)`
+
+En modelos no lineales es más común usar `\(W_{NL}\)`, mientras que `\(F\)` es preferida en muestras pequeñas
+
+
+---
+
+# Versiones del test de Wald
+
+**2. Estadístico `\(t\)` **
+
+Permite probar una restricción de exclusión
+
+Una normal estándar al cuadrado es una chi cuadrada con un grado de libertad, entonces
+
+`$$W_z=\frac{\hat{h}}{\sqrt{\hat{r}N^{-1}\hat{C}\hat{r}'}}$$`
+
+donde `\(\hat{r}=\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\hat{\theta}}\)`
+
+`\(W_z\)` es entonces asintóticamente normal bajo la `\(H_0\)`
+
+De forma equivalente, `\(W_z\)` es asintóticamente una `\(t\)` con `\(N-q\)` grados de libertad, pues una `\(t\)` converge a una normal estándar con `\(N\to\infty\)`
+
+---
+
+class: inverse, middle, center
+
+
+# Usos del test de Wald
+
+---
+
+# Test de significancia
+
+Un test de significancia se usa para probar si `\(\theta_j\)` es distinto de cero
+
+Entonces `\(h(\theta)=\theta_j\)`
+
+El vector `\(r(\theta)=\frac{\partial h}{\partial \theta'}\)` es un vector de ceros, excepto en la `\(j\)`ésima entrada que toma el valor de 1
+
+En este caso, el estadístico de Wald queda como:
+
+`$$W_z=\frac{\hat{\theta}_j}{se(\hat{\theta}_j)}$$`
+
+Un objeto familiar, comúnmente llamdo estadístico `\(t\)`, aunque estrictamente, se distribuye asintóticamente como una normal (de hecho, normal estándar, de ahí su nombre `\(z\)`)
+
+---
+
+# Restricciones de exclusión
+
+Queremos probar que los últimos `\(h\)` componentes de `\(\theta\)` son 0
+
+Partimos `\(\theta\)` como `\(\theta=(\theta_1'\;\theta_2')'\)`
+
+La restricción es: `\(h(\theta)=\theta_2=0\)`
+
+En este caso, `\(R(\theta{})=\frac{\partial h(\theta)}{\partial \theta'}=\left(\frac{\partial \theta_2}{\partial \theta_1'} \quad \frac{\partial \theta_2}{\partial \theta_2'}\right)=\left(\mathbf{0} \quad \mathbf{I}_h\right)\)`
+
+Y entonces el estadístico de Wald es:
+
+`$$W=\hat{\theta}_2'(N^{-1}\hat{C}_{22})^{-1}\hat{\theta}_2$$`
+
+donde `\(N^{-1}\hat{C}_{22}=\hat{V}(\hat{\theta}_2)\)`
+
+`\(W\)` se distribuye `\(\chi^2(h)\)` bajo la `\(H_0\)`
+
+Este test es la generalización de las pruebas `\(t\)` y `\(F\)` que ustedes han usado ya
+
+---
+
+# Tests de restricciones no lineales
+
+Consideren que queremos probar la `\(H_0\)` de que `\(\theta_1 =\theta_2\)`, entonces:
+
+`$$H_0:\;h(\theta)=\frac{\theta_1}{\theta_2}-1=0$$`
+
+En este caso, `\(R(\theta)=\left(\frac{\partial h(\theta)}{\partial \theta_1}\;\frac{\partial h(\theta)}{\partial \theta_2}\; 0\right)=\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; \mathbf{0}\right)\)`
+
+Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar:
+
+`$$W=N\left(\frac{\hat{\theta_1}}{\hat{\theta_2}}-1\right)^2\left(\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; \mathbf{0}\right)\begin{pmatrix}\hat{c}_{11} &amp; \hat{c}_{12} &amp; \cdots  \\
+\hat{c}_{21} &amp; \hat{c}_{22} &amp; \cdots  \\
+\vdots &amp; \vdots &amp; \ddots \\
+\end{pmatrix}
+\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; \mathbf{0}\right)'\right)^{-1}$$`
+
+`\(W\)` se distribuye asintóticamente `\(\chi^2(1)\)` (por lo que `\(\sqrt{W}\)` es `\(\mathcal{N}(0,1)\)`)
+
+---
+
+# El valor `\(p\)`
+
+- La otra cara de la moneda de los estadísticos de prueba es el valor `\(p\)`
+
+- El valor `\(p\)` es la probabilidad de observar un valor mayor que el estadístico cuando la `\(H_0\)` es verdadera
+
+- Un valor `\(p\)` muy pequeño indica que es muy poco probable observar el estadístico de prueba bajo la `\(H_0\)`, por lo que hay evidencia para rechazar la `\(H_0\)`
+
+- Otra forma de intepretar el valor `\(p\)` es la probabilidad de que se observen efectos iguales o más grandes a los observados debido al error muestral (*por suerte*)
+
+---
+
+# Valores `\(p\)`
+
+- Supongamos que un programa incrementa los ingresos en 100 pesos mensuales en promedio, con un valor `\(p\)` de 0.07
+
+- Entonces, si el programa **no** tuviera efecto, todavía sería posible ver incrementos en los ingresos de 100 pesos mensuales o más en el 7% de los estudios debido al error muestral
+
+- En este breve texto de [Krzywinski &amp; Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor `\(p\)`
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="./slides/figures/pvalue.jpg" alt="Fuente: Krzywinski &amp;amp; Altman (2013)" width="80%" /&gt;
+&lt;p class="caption"&gt;Fuente: Krzywinski &amp; Altman (2013)&lt;/p&gt;
+&lt;/div&gt;
+
+
+
+
+
+---
+
+# Valores `\(p\)`
+
+- ¿Qué tanto toleramos que nuestros resultados puedan ser *por suerte*?
+
+- Fijamos un nivel de significancia `\(\alpha\)`, definido como la probabilidad de rechazar la `\(H_0\)` dado que esta es verdadera
+
+- Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
+
+- En economía usamos frecuentemente los valores `\(\alpha\)` de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
+
+- En evaluación, si el valor `\(p\)` es menor que `\(\alpha\)` decimos que el efecto es *estadísticamente significativo*
+
+
+---
+
+
+# Nota sobre los valores `\(t\)` críticos
+
+.pull-left[
+- Los correspondientes valores del estadístico `\(t\)` en muestras grandes para `\(\alpha\)` de 0.10, 0.05 y 0.01 son 2.56, 1.96 y 1.64
+
+- ¿Cómo puedo encontrar el valor `\(p\)` exacto de un estadístico `\(t\)` dado?
+
+
+```r
+(1-pnorm(abs(1.644854)))
+```
+
+```
+## [1] 0.04999996
+```
+
+- O uno menos arbitrario
+
+
+```r
+(1-pnorm(abs(-1.3)))
+```
+
+```
+## [1] 0.09680048
+```
+]
+
+.pull-right[
+- Y al revés, puedo siempre encontrar el estadístico `\(t\)` asociado a cierto valor `\(p\)`
+
+
+```r
+qnorm(1-(.1/2))
+```
+
+```
+## [1] 1.644854
+```
+- El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
+]
+---
+
+# Prueba de hipótesis en evaluación
+
+- Un camino típico:
+
+  - Formulamos una pregunta causal `\(D_i \to y_i\)`
+
+  - Tengo razones para asumir que `\(D_i\)` es independiente de `\(y_i\)` (por ejemplo, hice un experimento)
+  
+  - De la clase anterior, sé que una regresión me ayudará a hacer comparaciones:
+  
+  `$$y_i=\alpha+\beta D_i + B'X_i + u_i$$`
+  - Formulamos la `\(H_0\)`: `\(\beta=0\)`, es decir, no hay efecto del tratamiento
+  
+  - Estimo la regresión, obtengo `\(\hat{\beta}\)`, y construyo `\(t=\frac{\hat{\beta}}{\hat{se}(\hat{\beta})}\)`
+  
+---
+
+# Próxima sesión
+
+- Retomaremos las aplicaciones de MV, ahora a problemas de conteo
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

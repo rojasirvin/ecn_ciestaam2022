@@ -11,52 +11,48 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2. [Manejo de datos en R, parte 1](./slides/manejo_datos_r_1.html)
 
-2. [Manejo de datos en R, parte 2](./slides/manejo_datos_r_2.html)
+3. [Manejo de datos en R, parte 2](./slides/manejo_datos_r_2.html)
 
-3. [Revisión del modelo lineal con muestras finitas](./slides/recordatorio_mco.html)
+4. [Revisión del modelo lineal con muestras finitas](./slides/recordatorio_mco.html)
 
-4. [Teoría asintótica para MCO](./slides/teoria_asintotica.html)
+5. [Teoría asintótica para MCO](./slides/teoria_asintotica.html)
 
-5. [Estimadores extremos](./slides/estimadores_extremos_mv.html)
+6. [Estimadores extremos](./slides/estimadores_extremos_mv.html)
 
-6. Modelos de variable dependiente binaria
+7. [Modelos de variable dependiente categórica](./slides/dependiente_categorica.html)
 
-7. Modelos de variable dependiente categórica
+8. Inferencia estadística
 
-8. Modelos con variable dependiente de conteo
+9. Modelos con variable dependiente de conteo
 
-9. Modelos de riesgo y sobrevivencia
+10. Modelos de riesgo y sobrevivencia
 
-10. Modelos de selección
+11. Modelos de selección
 
-11. Variables instrumentales
+12. Variables instrumentales
 
-12. Mínimos cuadrados en dos etapas
+13. Mínimos cuadrados en dos etapas
 
-13. Temas de errores estándar
-
-14. Bootstrap
+14. Temas de errores estándar
 
 15. Modelos de panel lineal
 
 16. Estimadores de panel lineal
 
-17. Extensiones de métodos de panel
+17. Regresión cuantil
 
-18. Regresión cuantil
+18. Métodos no paramétricos y semi paramétricos
 
-19. Métodos no paramétricos y semi paramétricos
+19. Econometría espacial
 
-20. Econometría especial
+20. Introducción a la inferencia causal
 
-21. Introducción a la inferencia causal
+21. Métodos experimentales
 
-22. Métodos experimentales
+22. Diferencia en diferencias
 
-23. Diferencia en diferencias
+23. Propensity score matching
 
-24. Propensity score matching
+24. Diseños con discontinuidades
 
-25. Diseños con discontinuidades
-
-26. Control sintético
+25. Control sintético

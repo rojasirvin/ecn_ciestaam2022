@@ -1,0 +1,444 @@
+---
+title: "Variable dependiente categórica"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+  - \usepackage{amsmath} 
+  - \usepackage[utf8]{inputenc}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+library(gtsummary)
+library(modelsummary)
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+.title[
+# Variable dependiente categórica
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+# Agenda
+  
+- Estudiaremos las propiedades generales teóricas de estimadores para modelos cuando la variable dependiente es binaria
+
+- Mostraremos las propiedades asintóticas de los estimadores de MV para este tipo de modelos
+
+- Mostraremos la generalización a modelos de $J$ categorías
+
+---
+
+# Introducción
+
+Frecuentemente nos encontramos con problemas donde la variable dependiente es categórica
+
+  - Probabilidad de comprar o no comprar un producto
+  
+  - Probabilidad de escoger el producto $j$ de entre $J$ posibles alternativas
+  
+  - Probabilidad de tener una tarjeta $k$ de entre las varias tarjetas $K$ que tiene una jerarquía
+  
+MCO ignora la naturaleza discreta de la variable dependiente
+
+Estudiaremos modelos que parametrizan la probabilidad individual de que ocurra un evento y que se estiman por MV
+
+Afortunadamente ya sabemos mucho de MV
+
+---
+
+class: inverse, middle, center
+
+# Variable dependiente binaria
+
+---
+
+# Variable dependiente binaria
+
+$y_i$ toma el valor de 1 si el evento se realiza y 0 si no
+
+Los datos siguen una distribución Bernoulli con probabilidad que varía entre individuos: $p\equiv p_i$
+
+Especificamos una forma funcional para la probabilidad y se estima por MV
+
+---
+
+# Modelo general
+
+La variable dependiente:
+$$
+y_i=
+\begin{cases}
+1 \quad\text{con probabilidad }p \\
+0 \quad\text{con probabilidad }1-p
+\end{cases}
+$$
+Parametrizamos $p_i$ con un vector de características $x_i$ y un vector de parámetros $\beta$:
+
+$$p_i=F(y_i=1|x_i)=F(x_i'\beta)$$
+A $x_i'\beta$ se le conoce como *índice*, por lo que este modelo es también un modelo de un índice único (*single index model*)
+
+$F$ es una función de distribución acumulada (cdf)
+
+Un modelo de probabilidad lineal simplemente especifica $p_i=x_i'\beta$
+
+---
+
+# Probit y logit
+
+Un modelo probit especifica $F(\cdot)$ como una normal estándar con cdf dada por:
+
+$$\Phi(x'\beta)=\int_{-\infty}^{\infty}\phi(z)dz$$
+
+Un modelo logit especifica a $F(\cdot)$ como una función logística:
+
+$$\Lambda(x'\beta)=\frac{exp\{x'\beta\}}{1+exp\{x'\beta\}}$$
+
+---
+
+# Efectos marginales
+
+En un modelo lineal, $\beta_j$ tiene la interpretación directa del efecto de un cambio marginal en $x_j$ sobre $y$
+
+En cambio, en los modelos de probabilidad no lineal estamos interesaods en:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=F'(x_i'\beta)\beta_j$$
+
+Como $F(\cdot)$ es no lineal, los efectos marginales difieren del punto de evaluación, es decir, de $x_i'\beta$
+
+.pull-left[
+En el caso probit:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\phi(x'\beta)\beta_j$$
+]
+
+.pull-right[
+En el caso logit:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\Lambda(x'\beta)(1-\Lambda(x'\beta))\beta_j$$
+]
+
+---
+
+# Efectos marginales
+
+Dos efectos marginales que podemos calcular:
+
+  - Promedio de efectos marginales: $$\frac{1}{N}\sum_i F'(x_i'\hat{\beta})\hat{\beta}_j$$
+
+  - Efecto marginal evaluaado en la media de $x$: $$F'(\bar{x}'\hat{\beta})\hat{\beta}_j$$
+
+En el trabajo empírico es más común usar el promedio de efectos marginales
+
+Una crítica al efecto marginal en la media es que $\bar{x}$ puede no representar nada de los individuos en la muestra
+
+---
+
+# Efectos marginales
+
+Noten que el cociente de efectos marginales es igual al cociente de los coeficientes estimados:
+
+$$\frac{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}}{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ik}}}=\frac{\hat{\beta}_j}{\hat{\beta}_k}$$
+
+
+---
+
+class: inverse, middle, center
+
+# Estimación
+
+---
+
+# Estimación
+
+Tenemos a la mano datos $(y_i,x_i)$ de $N$ individuos
+
+La función de masa de probabilidad para $y_i$ es:
+
+$$f(y_i|x_i)=p_i^{y_i}(1-p_i)^{1-y_i},\quad\quad y_i={0,1}$$
+Recordemos que $p_i=F(x_i'\beta)$
+
+---
+
+# Estimación
+
+La log densidad será:
+
+$$\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)$$
+
+Por independencia sobre $i$, la función de log verosimilitud es:
+
+$$\mathcal{L}(\beta)=\sum_i\{y_i\ln p_i + (1-y_i)\ln(1-p_i)\}$$
+
+
+Sustituyendo $F$ en vez de $p_i$:
+
+
+$$\mathcal{L}(\beta)=\sum_i\{y_i\ln F(x_i'\beta) + (1-y_i)\ln(1-F(x_i'\beta))\}$$
+---
+
+# Estimación
+
+La condición de primer orden implica que $\hat{\beta}_{MV}$ resuleve:
+
+$$\sum_i \left(\frac{y_i-F(x_i'\beta)}{F(x_i'\beta)(1-F(x_i'\beta))}F'(x_i'\beta)x_i\right)=0$$
+
+---
+
+# Distribución asintótica
+
+Si la densidad está **bien especificada**, la teoría que vimos sobre MV indica que el estimador tendrá una distribución asintótica como sigue:
+$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta, \left(-E\left(\frac{\partial^2\mathcal{L}}{\partial\beta\partial\beta'}\right)\right)^{-1}\right)$$
+
+Tomando la derivada a las condiciones de primer orden y calculando el negativo del valor esperado obtenemos:
+
+$$\hat{V}(\hat{\beta}_{MV})=\left(\sum_i\frac{1}{F(x_i'\hat{\beta})(1-F(x_i'\hat{\beta}))}F'(x_i'\hat{\beta})^2x_ix_i'\right)^{-1}$$
+
+---
+
+# Particularidades del modelo logit
+
+Una medida comúnmente usada es la razón de momios u *odds ratio*, también llamado riesgo relativo: $\frac{p}{1-p}$
+
+El riesgo relativo es la probabilidad de que suceda $y=1$ relativa a la probabilidad de que $y=0$
+
+En el caso del logit, el riesgo relativo es:
+
+$$\frac{p}{1-p}=exp\{x'\beta\}$$
+
+Y el log del riesgo relativo es simplemente:
+
+$$\ln\left(\frac{p}{1-p}\right)=x'\beta$$
+
+Es decir, el log del riesgo relativo o el log de la razón de momios es lineal en $x$
+
+---
+
+# Particularidades del modelo logit
+
+Noten que expresar las probabilidades como riesgo relativo tiene una interpretación usada comúnmente en bioestadística
+
+Si $\frac{p}{1-p}=exp\{x'\beta\}$ y $x_j$ cambia en una unidad, entonces el lado derecho se vuelve $exp\{x'\beta+\beta_j\}=exp\{x'\beta\} exp\{\beta_j\}$
+
+Es decir, el riesgo relativo se ha incrementado $exp\{\beta_j\}$ veces
+
+Supongamos que $\hat{\beta}_j=0.05$, entonces $exp\{0.05\}\approx 1.05$
+
+Es decir, el riesgo relativo se incrementa en aproximadamente 5%
+
+---
+
+# ¿Probit o logit?
+
+Empíricamente suelen desempeñarse de forma muy similar
+
+Como nos interesan los efectos marginales, la diferencia entre los modelos usados suele ser mínima
+
+El modelo logit es frecuentemente usado en bioestadística por su interpretación en términos de riesgo relativo
+
+El probit se puede motivar por un modelo de variable latente normal, que se liga directamente al modelo Tobit (que veremos más adelante)
+
+---
+
+class: inverse, center, middle
+
+# Ejemplo con datos de precios
+
+---
+
+# Ejemplo: probit y logit
+
+Datos de Herriges & Kling (1999) usados y provistos por Cameron & Trivedi (2005)
+
+Exploramos los datos:
+  - Las observaciones son clientes
+  
+  - *charter* toma el valor de 1 si el cliente pescó desde un barco
+  
+  - *lnrelp* es el (log) precio relativo de pescar desde el barco con respecto a otros lugares de pesca
+  
+```{r echo=TRUE, message=F, results='hide'}
+data_fishing<-read_csv("./data/fishing_data.csv",
+                       locale = locale(encoding = "latin1"))
+
+```
+
+---
+
+# Ejemplo: probit y logit
+
+Estimación de un modelo probit
+
+```{r echo=T, include=T, message=F}
+#Datos
+data_binary <- read_csv("./data/fishing_data_clean.csv",
+                       locale = locale(encoding = "latin1"))
+
+
+mprobit <- glm(charter ~ lnrelp,
+               family = binomial(link = "probit"), 
+               data = data_binary)
+
+```
+
+
+```{r tidy=T, echo=T, include=T, message=F}
+#Pedimos los coeficientes
+summary(mprobit)$coef
+
+
+```
+---
+
+# Ejemplo: probit y logit
+
+Estimación de un modelo logit y de probabilidad lineal
+
+
+```{r, echo=T, include=T, message=F}
+mlogit <- glm(charter ~ lnrelp,
+              family = binomial(link = "logit"),
+              data = data_binary)
+
+mlineal <- lm(charter ~ lnrelp,
+              data=data_binary)
+
+```
+---
+
+# Ejemplo: probit y logit
+
+Un paquete para presentar resultados de modelos estimados es *modelsummary*
+
+.pull-left[
+```{r, echo=T, include=T, eval=F, message=F}
+#Resumen de los tres modelos
+msummary(models=list(mlogit, mprobit, mlineal))
+```
+]
+
+.pull-right[
+```{r, echo=F, include=T, message=F}
+#Resumen de los tres modelos
+msummary(models=list(mlogit, mprobit, mlineal))
+```
+]
+
+
+---
+
+
+# Ejemplo: probit y logit
+
+.pull-left[
+```{r echo=T, eval=F, include=T, message=F}
+#Podemos ponerlo más bonito
+msummary(models=list('Logit' = mlogit,
+                     'Probit' = mprobit,
+                     'Lineal' = mlineal),
+         coef_map = c('(Intercept)' = 'Constante',
+                      'lnrelp' = 'ln(precio rel.)'))
+
+```
+]
+
+.pull-right[
+```{r include=T, message=F}
+#Podemos ponerlo más bonito
+msummary(models=list('Logit' = mlogit,
+                     'Probit' = mprobit,
+                     'Lineal' = mlineal),
+         coef_map = c('(Intercept)' = 'Constante',
+                      'lnrelp' = 'ln(precio rel.)'))
+
+```
+]
+---
+
+#Ejmeplo: probit y logit
+
+.pull-left[
+Predicción
+
+```{r, echo=T, include=T, message=F}
+#Predicciones con cada modelo
+data_binary <- data_binary %>% 
+  mutate(plogit=predict(mlogit, type="response")) %>% 
+  mutate(pprobit=predict(mprobit, type="response")) %>% 
+  mutate(plineal=predict(mlineal, type="response")) 
+
+#Colecciono las variables que usaré
+data_binary <- data_binary %>% 
+  select(lnrelp, plogit, pprobit, plineal)
+```
+]
+
+
+
+.pull-right[
+```{r, echo=T, include=T, message=F, fig.height=3}
+#Arreglo en formato long (lo usaremos más en panel)
+data_binary <- pivot_longer(data_binary,
+                            cols= c("plogit","pprobit","plineal"),
+                            names_to="Modelo",
+                            values_to = "prob")
+
+#Construyo la gráfica
+data_binary %>% 
+  ggplot()+
+  geom_line(aes(x=lnrelp,y=prob, color=Modelo))
+
+```
+]
+
+---
+
+# Próxima sesión
+
+- Veremos modelos multinomiales
+
+  - CT Capítulo 15
+
+- Es la generalización del problema que estudiamos hoy: la variable $y$ puede tomar no solo dos valores, sino $J$ posibles valores correspondientes a una categoría mutuamente excluyente
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
