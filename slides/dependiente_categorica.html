@@ -520,7 +520,7 @@ msummary(models=list('Logit' = mlogit,
 ]
 ---
 
-#Ejmeplo: probit y logit
+# Ejemplo: probit y logit
 
 .pull-left[
 Predicción
@@ -569,7 +569,7 @@ Estime un modelo de probabilidad lineal que relacione **arr86** (haber si arrest
 
 ¿Cuál es el efecto en la probabilidad de arresto si pcnv pasa de 0.5 a 0.75?
 
-Estime luego un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.50 a 0.75, evaluando el cambio en los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (born60 igual a 1). En otras palabras, calcule `\(P(arresto|X=x,pcnv=0.75)=P(arresto|X=x,pcnv=0.50)\)`, donde `\(X=x\)` significa los valores particulares de los regresores antes indicados.
+Estime luego un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.50 a 0.75, evaluando el cambio en los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (born60 igual a 1). En otras palabras, calcule `\(P(arresto|X=x,pcnv=0.75)-P(arresto|X=x,pcnv=0.50)\)`, donde `\(X=x\)` significa los valores particulares de los regresores antes indicados.
 
 ---
 
