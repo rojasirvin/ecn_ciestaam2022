@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [dependiente_binaria.R](./scripts/dependiente_binaria.R)
 
+[prueba_hipotesis.R](./scripts/prueba_hipotesis.R)
 
 # Datos
 
@@ -25,3 +26,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [fishing_data_clean.csv](./data/fishing_data_clean.csv)
 
 [grogger.csv](./data/grogger.csv)
+
+[edudat2.dta](./data/edudat2.dta)

@@ -567,9 +567,130 @@ Use los datos en el archivo *grogger.csv*. Estos son datos sobre arrestos y cara
 
 Estime un modelo de probabilidad lineal que relacione **arr86** (haber si arrestado al menos una vez en 1986) con **pcnv**, **avgsen**, **tottime**, **ptime86**, **inc86**, **black**, **hispan** y **born60**. Los datos se encuentran descritos [aquí](http://fmwww.bc.edu/ec-p/data/wooldridge2k/GROGGER.DES).
 
-¿Cuál es el efecto en la probabilidad de arresto si pcnv pasa de 0.5 a 0.75?
+¿Cuál es el efecto en la probabilidad de arresto si **pcnv** pasa de 0.5 a 0.75?
 
 Estime luego un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.50 a 0.75, evaluando el cambio en los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (born60 igual a 1). En otras palabras, calcule `\(P(arresto|X=x,pcnv=0.75)-P(arresto|X=x,pcnv=0.50)\)`, donde `\(X=x\)` significa los valores particulares de los regresores antes indicados.
+
+---
+
+# Ejercicio
+
+Estimamos el modelo lineal
+
+
+```r
+data.grogger&lt;-read_csv("./data//grogger.csv",
+                       locale = locale(encoding = "latin1"))
+
+#Modelo lineal
+prob_lineal &lt;- lm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60,
+                  data=data.grogger)
+
+summary(prob_lineal)$coef
+```
+
+```
+##                 Estimate   Std. Error    t value      Pr(&gt;|t|)
+## (Intercept)  0.360983141 0.0160926665 22.4315306 2.222421e-102
+## pcnv        -0.154380197 0.0209335584 -7.3747709  2.175031e-13
+## avgsen       0.003502398 0.0063416742  0.5522829  5.808000e-01
+## tottime     -0.002061300 0.0048883942 -0.4216721  6.732977e-01
+## ptime86     -0.021595259 0.0044679175 -4.8334058  1.416871e-06
+## inc86       -0.001224843 0.0001269505 -9.6481962  1.109628e-21
+## black        0.161718283 0.0235044117  6.8803374  7.384637e-12
+## hispan       0.089258629 0.0205591809  4.3415460  1.466620e-05
+## born60       0.002869817 0.0171986431  0.1668630  8.674903e-01
+```
+
+---
+
+# Ejercicio
+
+En un modelo lineal, si **pcnv** cambia en .25 unidades el cambio en la probabilidad es simplemente
+
+
+```r
+prob_lineal$coef[2]*.25
+```
+
+```
+##        pcnv 
+## -0.03859505
+```
+
+---
+
+# Ejercicio
+
+Estimamos ahora el probit
+
+
+```r
+prob_probit &lt;- glm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60,
+                   family = binomial(link = "probit"), 
+                   data = data.grogger)
+
+summary(prob_probit)$coef
+```
+
+```
+##                 Estimate   Std. Error    z value     Pr(&gt;|z|)
+## (Intercept) -0.313833303 0.0513645961 -6.1099148 9.968437e-10
+## pcnv        -0.552925133 0.0715054868 -7.7326253 1.053511e-14
+## avgsen       0.012739470 0.0209105156  0.6092375 5.423670e-01
+## tottime     -0.007648510 0.0165677095 -0.4616516 6.443312e-01
+## ptime86     -0.081199594 0.0171628579 -4.7311231 2.232811e-06
+## inc86       -0.004634612 0.0004852644 -9.5506951 1.288290e-21
+## black        0.466607743 0.0718600190  6.4932872 8.398336e-11
+## hispan       0.291100547 0.0653906780  4.4517132 8.518788e-06
+## born60       0.011206734 0.0556932300  0.2012225 8.405246e-01
+```
+
+Vamos a calcular `\(P(arresto|X=x,pcnv=0.75)-P(arresto|X=x,pcnv=0.50)\)`, es decir, la probabilidad de las personas con las características pedidas y que tengan `\(pcnv=0.75\)` menos la probabilidad de las personas con las mismas características y con `\(pcnv=0.50\)`
+
+---
+
+# Ejercicio
+
+Calculo las medias de las variables indicadas
+
+
+```r
+mean_avgsen=mean(data.grogger$avgsen)
+mean_tottime=mean(data.grogger$tottime)
+mean_inc86=mean(data.grogger$inc86)
+mean_ptime86=mean(data.grogger$ptime86)
+        
+#Creamos un índice con todas las variables excepto pcnv
+index_partial &lt;- summary(prob_probit)$coef[1]+
+summary(prob_probit)$coef[3]*mean_avgsen+
+summary(prob_probit)$coef[4]*mean_tottime+
+summary(prob_probit)$coef[6]*mean_inc86+
+summary(prob_probit)$coef[5]*mean_ptime86+
+summary(prob_probit)$coef[7]*1+
+summary(prob_probit)$coef[8]*0+
+summary(prob_probit)$coef[9]*1
+```
+
+---
+
+# Ejercicio
+
+Recordemos que si usamos probit estamos asumiendo que `\(F(\cdot)\)` es una normal estándar, por lo que `\(P(arresto|X=x,pcnv=0.75)\)` y `\(P(arresto|X=x,pcnv=0.50)\)` se pueden obtener con la probabilidad de una distribución normal
+
+
+```r
+#Evaluamos la diferencia de probabilidad
+pnorm(index_partial+summary(prob_probit)$coef[2]*.75)-pnorm(index_partial+summary(prob_probit)$coef[2]*.50)
+```
+
+```
+## [1] -0.04943809
+```
+
+Con el modelo probit, la reducción en la probabilidad de arresto es de casi 5%, de mayor magnitud a la reducción de 3.8% estimada con el modelo lineal
+
+Lo más importante es que recuerden que en un modelo de probabilidad no lineal los efectos estimados dependen del punto de evaluación
 
 ---
 

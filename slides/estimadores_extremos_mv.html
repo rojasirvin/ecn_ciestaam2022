@@ -373,6 +373,60 @@ Las dos condiciones de regularidad son:
 
 ---
 
+# Condiciones de regularidad
+
+**Condición de regularidad 1**
+
+Sabemos que la densidad integra a 1 por definición. Derivando ambos lados con respecto a `\(\theta\)` y, si el rango de `\(y\)` no depende de `\(\theta\)` entonces:
+
+$$
+\int f(y|\theta)dy=1 \\
+\frac{\partial \int f(y|\theta)dy}{\partial \theta}=0 \\ 
+\int \frac{\partial f(y|\theta)}{\partial \theta}dy=0 \\ 
+$$
+Recordemos que `\(\frac{\partial \ln f(y|\theta)}{\partial \theta}=\frac{\frac{\partial f(y|\theta)}{\partial \theta}}{f(y|\theta)}\)`, por tanto, podemos sustituir el lado izquierdo
+
+$$
+\int\frac{\partial \ln f(y|\theta)}{\partial \theta} f(y|\theta) dy=0 \\ 
+$$
+
+---
+
+# Condiciones de regularidad
+
+**Condición de regularidad 2**
+
+Partimos de la CR1 y derivamos con respecto a `\(\theta'\)` adentro de la integral
+
+$$
+\int\left( \frac{\partial}{\partial \theta'}\left(\frac{\partial \ln f(y|\theta)}{\partial \theta}\right) f(y|\theta) + \frac{\partial \ln f(y|\theta)}{\partial \theta} \frac{\partial f(y|\theta)}{\partial \theta'}\right) dy=0 \\
+$$
+De nuevo, usemos el hecho de que `\(\frac{\partial \ln f(y|\theta)}{\partial \theta}=\frac{\frac{\partial f(y|\theta)}{\partial \theta}}{f(y|\theta)}\)` para sustituir el segundo sumando adentro de la integral
+
+$$
+\int\left( \frac{\partial}{\partial \theta'}\left(\frac{\partial \ln f(y|\theta)}{\partial \theta}\right) f(y|\theta) + \frac{\partial \ln f(y|\theta)}{\partial \theta} \frac{\partial \ln f(y|\theta)}{\partial \theta'}f(y|\theta)\right) dy=0 \\
+$$
+Reorganizando
+
+$$
+\int \frac{\partial}{\partial \theta'}\left(\frac{\partial \ln f(y|\theta)}{\partial \theta}\right) f(y|\theta)dy = -\int \frac{\partial \ln f(y|\theta)}{\partial \theta} \frac{\partial \ln f(y|\theta)}{\partial \theta'}f(y|\theta) dy \\
+$$
+---
+
+# Condiciones de regularidad
+
+**Condición de regularidad 2**
+
+Tomando expectativas con respecto a la densidad `\(f(y|\theta)\)`
+
+$$
+E\left(\frac{\partial}{\partial \theta'}\left(\frac{\partial \ln f(y|\theta)}{\partial \theta}\right) \right) = - E\left(\frac{\partial \ln f(y|\theta)}{\partial \theta} \frac{\partial \ln f(y|\theta)}{\partial \theta'}\right)
+$$
+
+
+
+---
+
 # Igualdad de la matriz de información
 
 La **matriz de información de Fisher** es la esperanza del producto exterior del score

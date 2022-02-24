@@ -32,6 +32,11 @@ library(magick)
 library(reticulate)
 library(gtsummary)
 library(modelsummary)
+library(foreign)
+library(car)
+library(lmtest)
+library(sandwich)
+
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
@@ -54,7 +59,9 @@ knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_
   
 - Recordar la intuición del papel del error muestral para hacer inferencia
 
-- 
+- Estudiar la teoría para pruebas de hipótesis en general
+
+- Ver ejemplos de cómo hacemos pruebas de hpótesis
 
 ---
 
@@ -502,25 +509,136 @@ $W$ se distribuye asintóticamente $\chi^2(1)$ (por lo que $\sqrt{W}$ es $\mathc
 
 ---
 
+class: inverse, middle, center
+
+# Ejemplos
+
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Usaremos algunos paquetes nuevos: *sandwich*, *lmtest* y *foreign*
+
+Estimemos un modelo lineal de la relación entre salarios y educación
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+#Datos de ingresos
+data.ingresos <- read.dta("./data/edudat2.dta")
+
+rmco <- lm(log(wage) ~ educ + gender + pareduc,
+   data=data.ingresos)
+```
+]
+
+.pull-right[
+```{r, echo=T, include=T, message=F, fig.height=3}
+#Los errores que se reportan por default son los homocedásticos
+summary(rmco)
+
+```
+]
+
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Estimemos ahora los errores robustos
+
+Los estadísticos $t$ asociados tiene una hipótesis nula:
+
+$$H_0: \beta_k=0$$
+]
+
+.pull-right[
+```{r, echo=T, include=T, message=F, fig.height=3}
+#Errores de White (usamos coeftest para los test y sandwich para el cálculo de matrices)
+coeftest(rmco,
+         vcov = vcovHC(rmco,
+                       type = "HC0"))
+
+```
+]
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Prueba de hipótesis conjunta
+
+$$H_0:\quad \beta_{educ}=\beta_{pareduc}=0$$
+
+]
+
+.pull-right[
+```{r, echo=T, include=T, message=F, fig.height=3}
+#Prueba conjunta
+linearHypothesis(rmco, c("educ=0",
+                         "pareduc=0"))
+
+```
+]
+---
+
+# Regresión no lineal
+
+.pull-left[
+
+Los estadísticos $t$ tienen una interpretación similar
+
+El error estándar estimado es un error asintótico
+
+Pasamos varias clases hablando sobre cómo estimar las matrices de varianzas de los estimadores
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+#La misma interpretación en modelos no lineales
+data.grogger<-read_csv("./data//grogger.csv",
+                       locale = locale(encoding = "latin1"))
+
+prob_probit <- glm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60,
+                   family = binomial(link = "probit"), 
+                   data = data.grogger)
+```
+]
+
+.pull-right[
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+summary(prob_probit)
+```
+]
+---
+
+class: inverse, middle, center
+
+# Valores $p$
+
+---
+
+
 # El valor $p$
 
-- La otra cara de la moneda de los estadísticos de prueba es el valor $p$
+La otra cara de la moneda de los estadísticos de prueba es el valor $p$
 
-- El valor $p$ es la probabilidad de observar un valor mayor que el estadístico cuando la $H_0$ es verdadera
+El valor $p$ es la probabilidad de observar un valor mayor que el estadístico cuando la $H_0$ es verdadera
 
-- Un valor $p$ muy pequeño indica que es muy poco probable observar el estadístico de prueba bajo la $H_0$, por lo que hay evidencia para rechazar la $H_0$
+Un valor $p$ muy pequeño indica que es muy poco probable observar el estadístico de prueba bajo la $H_0$, por lo que hay evidencia para rechazar la $H_0$
 
-- Otra forma de intepretar el valor $p$ es la probabilidad de que se observen efectos iguales o más grandes a los observados debido al error muestral (*por suerte*)
+Otra forma de intepretar el valor $p$ es la probabilidad de que se observen efectos iguales o más grandes a los observados debido al error muestral (*por suerte*)
 
 ---
 
 # Valores $p$
 
-- Supongamos que un programa incrementa los ingresos en 100 pesos mensuales en promedio, con un valor $p$ de 0.07
+Supongamos que un año de educación incrementa los ingresos en 2% anual en promedio, con un valor $p$ de 0.07
 
-- Entonces, si el programa **no** tuviera efecto, todavía sería posible ver incrementos en los ingresos de 100 pesos mensuales o más en el 7% de los estudios debido al error muestral
+Entonces, si un año adicional **no** tuviera efecto alguno, todavía sería posible ver incrementos en los ingresos de 2% o más en el 7% de los estudios debido al error muestral
 
-- En este breve texto de [Krzywinski & Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor $p$
+En este breve texto de [Krzywinski & Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor $p$
 
 ```{r, out.width="80%",fig.cap='Fuente: Krzywinski & Altman (2013)',fig.align='center'}
 knitr::include_graphics("./slides/figures/pvalue.jpg")
@@ -534,15 +652,15 @@ knitr::include_graphics("./slides/figures/pvalue.jpg")
 
 # Valores $p$
 
-- ¿Qué tanto toleramos que nuestros resultados puedan ser *por suerte*?
+¿Qué tanto toleramos que nuestros resultados puedan ser *por suerte*?
 
-- Fijamos un nivel de significancia $\alpha$, definido como la probabilidad de rechazar la $H_0$ dado que esta es verdadera
+Fijamos un nivel de significancia $\alpha$, definido como la probabilidad de rechazar la $H_0$ dado que esta es verdadera
 
-- Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
+Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
 
-- En economía usamos frecuentemente los valores $\alpha$ de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
+En economía usamos frecuentemente los valores $\alpha$ de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
 
-- En evaluación, si el valor $p$ es menor que $\alpha$ decimos que el efecto es *estadísticamente significativo*
+En evaluación, si el valor $p$ es menor que $\alpha$ decimos que el efecto es *estadísticamente significativo*
 
 
 ---
@@ -551,15 +669,15 @@ knitr::include_graphics("./slides/figures/pvalue.jpg")
 # Nota sobre los valores $t$ críticos
 
 .pull-left[
-- Los correspondientes valores del estadístico $t$ en muestras grandes para $\alpha$ de 0.10, 0.05 y 0.01 son 2.56, 1.96 y 1.64
+Los correspondientes valores del estadístico $t$ en muestras grandes para $\alpha$ de 0.10, 0.05 y 0.01 son 2.56, 1.96 y 1.64
 
-- ¿Cómo puedo encontrar el valor $p$ exacto de un estadístico $t$ dado?
+¿Cómo puedo encontrar el valor $p$ exacto de un estadístico $t$ dado?
 
 ```{r echo=T, evaluate=T, include=T }
 (1-pnorm(abs(1.644854)))
 ```
 
-- O uno menos arbitrario
+O uno menos arbitrario
 
 ```{r echo=T, evaluate=T, include=T }
 (1-pnorm(abs(-1.3)))
@@ -567,30 +685,15 @@ knitr::include_graphics("./slides/figures/pvalue.jpg")
 ]
 
 .pull-right[
-- Y al revés, puedo siempre encontrar el estadístico $t$ asociado a cierto valor $p$
+Y al revés, puedo siempre encontrar el estadístico $t$ asociado a cierto valor $p$
 
 ```{r echo=T, evaluate=T, include=T }
 qnorm(1-(.1/2))
 ```
-- El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
+
+El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
 ]
----
 
-# Prueba de hipótesis en evaluación
-
-- Un camino típico:
-
-  - Formulamos una pregunta causal $D_i \to y_i$
-
-  - Tengo razones para asumir que $D_i$ es independiente de $y_i$ (por ejemplo, hice un experimento)
-  
-  - De la clase anterior, sé que una regresión me ayudará a hacer comparaciones:
-  
-  $$y_i=\alpha+\beta D_i + B'X_i + u_i$$
-  - Formulamos la $H_0$: $\beta=0$, es decir, no hay efecto del tratamiento
-  
-  - Estimo la regresión, obtengo $\hat{\beta}$, y construyo $t=\frac{\hat{\beta}}{\hat{se}(\hat{\beta})}$
-  
 ---
 
 # Próxima sesión

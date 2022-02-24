@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 7. [Modelos de variable dependiente categórica](./slides/dependiente_categorica.html)
 
-8. Inferencia estadística
+8. [Inferencia estadística](./slides/inferencia_estadistica.html)
 
 9. Modelos con variable dependiente de conteo
 

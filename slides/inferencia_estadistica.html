@@ -37,7 +37,9 @@ class: title-slide
   
 - Recordar la intuición del papel del error muestral para hacer inferencia
 
-- 
+- Estudiar la teoría para pruebas de hipótesis en general
+
+- Ver ejemplos de cómo hacemos pruebas de hpótesis
 
 ---
 
@@ -458,25 +460,226 @@ Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar
 
 ---
 
+class: inverse, middle, center
+
+# Ejemplos
+
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Usaremos algunos paquetes nuevos: *sandwich*, *lmtest* y *foreign*
+
+Estimemos un modelo lineal de la relación entre salarios y educación
+
+
+```r
+#Datos de ingresos
+data.ingresos &lt;- read.dta("./data/edudat2.dta")
+
+rmco &lt;- lm(log(wage) ~ educ + gender + pareduc,
+   data=data.ingresos)
+```
+]
+
+.pull-right[
+
+```r
+#Los errores que se reportan por default son los homocedásticos
+summary(rmco)
+```
+
+```
+## 
+## Call:
+## lm(formula = log(wage) ~ educ + gender + pareduc, data = data.ingresos)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.2440 -0.5145 -0.0757  0.4286  2.9426 
+## 
+## Coefficients:
+##             Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)  1.41543    0.05834  24.261 &lt; 0.0000000000000002 ***
+## educ         0.06340    0.01192   5.320         0.0000001071 ***
+## genderMALE   0.10256    0.01900   5.397         0.0000000701 ***
+## pareduc      0.03067    0.01367   2.244               0.0248 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7453 on 6496 degrees of freedom
+## Multiple R-squared:  0.06107,	Adjusted R-squared:  0.06064 
+## F-statistic: 140.8 on 3 and 6496 DF,  p-value: &lt; 0.00000000000000022
+```
+]
+
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Estimemos ahora los errores robustos
+
+Los estadísticos `\(t\)` asociados tiene una hipótesis nula:
+
+`$$H_0: \beta_k=0$$`
+]
+
+.pull-right[
+
+```r
+#Errores de White (usamos coeftest para los test y sandwich para el cálculo de matrices)
+coeftest(rmco,
+         vcov = vcovHC(rmco,
+                       type = "HC0"))
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value              Pr(&gt;|t|)    
+## (Intercept) 1.415434   0.057225 24.7344 &lt; 0.00000000000000022 ***
+## educ        0.063402   0.011726  5.4071         0.00000006632 ***
+## genderMALE  0.102561   0.018170  5.6445         0.00000001727 ***
+## pareduc     0.030671   0.013376  2.2929               0.02188 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+---
+
+# Regresión lineal
+
+.pull-left[
+
+Prueba de hipótesis conjunta
+
+`$$H_0:\quad \beta_{educ}=\beta_{pareduc}=0$$`
+
+]
+
+.pull-right[
+
+```r
+#Prueba conjunta
+linearHypothesis(rmco, c("educ=0",
+                         "pareduc=0"))
+```
+
+```
+## Linear hypothesis test
+## 
+## Hypothesis:
+## educ = 0
+## pareduc = 0
+## 
+## Model 1: restricted model
+## Model 2: log(wage) ~ educ + gender + pareduc
+## 
+##   Res.Df    RSS Df Sum of Sq      F                Pr(&gt;F)    
+## 1   6498 3826.1                                              
+## 2   6496 3608.5  2     217.6 195.86 &lt; 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+---
+
+# Regresión no lineal
+
+.pull-left[
+
+Los estadísticos `\(t\)` tienen una interpretación similar
+
+El error estándar estimado es un error asintótico
+
+Pasamos varias clases hablando sobre cómo estimar las matrices de varianzas de los estimadores
+
+
+```r
+#La misma interpretación en modelos no lineales
+data.grogger&lt;-read_csv("./data//grogger.csv",
+                       locale = locale(encoding = "latin1"))
+
+prob_probit &lt;- glm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60,
+                   family = binomial(link = "probit"), 
+                   data = data.grogger)
+```
+]
+
+.pull-right[
+
+
+```r
+summary(prob_probit)
+```
+
+```
+## 
+## Call:
+## glm(formula = arr86 ~ pcnv + avgsen + tottime + ptime86 + inc86 + 
+##     black + hispan + born60, family = binomial(link = "probit"), 
+##     data = data.grogger)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3926  -0.8569  -0.6192   1.1672   2.9527  
+## 
+## Coefficients:
+##               Estimate Std. Error z value             Pr(&gt;|z|)    
+## (Intercept) -0.3138333  0.0513646  -6.110   0.0000000009968437 ***
+## pcnv        -0.5529251  0.0715055  -7.733   0.0000000000000105 ***
+## avgsen       0.0127395  0.0209105   0.609                0.542    
+## tottime     -0.0076485  0.0165677  -0.462                0.644    
+## ptime86     -0.0811996  0.0171629  -4.731   0.0000022328106154 ***
+## inc86       -0.0046346  0.0004853  -9.551 &lt; 0.0000000000000002 ***
+## black        0.4666077  0.0718600   6.493   0.0000000000839834 ***
+## hispan       0.2911005  0.0653907   4.452   0.0000085187882525 ***
+## born60       0.0112067  0.0556932   0.201                0.841    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 3216.4  on 2724  degrees of freedom
+## Residual deviance: 2967.3  on 2716  degrees of freedom
+## AIC: 2985.3
+## 
+## Number of Fisher Scoring iterations: 5
+```
+]
+---
+
+class: inverse, middle, center
+
+# Valores `\(p\)`
+
+---
+
+
 # El valor `\(p\)`
 
-- La otra cara de la moneda de los estadísticos de prueba es el valor `\(p\)`
+La otra cara de la moneda de los estadísticos de prueba es el valor `\(p\)`
 
-- El valor `\(p\)` es la probabilidad de observar un valor mayor que el estadístico cuando la `\(H_0\)` es verdadera
+El valor `\(p\)` es la probabilidad de observar un valor mayor que el estadístico cuando la `\(H_0\)` es verdadera
 
-- Un valor `\(p\)` muy pequeño indica que es muy poco probable observar el estadístico de prueba bajo la `\(H_0\)`, por lo que hay evidencia para rechazar la `\(H_0\)`
+Un valor `\(p\)` muy pequeño indica que es muy poco probable observar el estadístico de prueba bajo la `\(H_0\)`, por lo que hay evidencia para rechazar la `\(H_0\)`
 
-- Otra forma de intepretar el valor `\(p\)` es la probabilidad de que se observen efectos iguales o más grandes a los observados debido al error muestral (*por suerte*)
+Otra forma de intepretar el valor `\(p\)` es la probabilidad de que se observen efectos iguales o más grandes a los observados debido al error muestral (*por suerte*)
 
 ---
 
 # Valores `\(p\)`
 
-- Supongamos que un programa incrementa los ingresos en 100 pesos mensuales en promedio, con un valor `\(p\)` de 0.07
+Supongamos que un año de educación incrementa los ingresos en 2% anual en promedio, con un valor `\(p\)` de 0.07
 
-- Entonces, si el programa **no** tuviera efecto, todavía sería posible ver incrementos en los ingresos de 100 pesos mensuales o más en el 7% de los estudios debido al error muestral
+Entonces, si un año adicional **no** tuviera efecto alguno, todavía sería posible ver incrementos en los ingresos de 2% o más en el 7% de los estudios debido al error muestral
 
-- En este breve texto de [Krzywinski &amp; Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor `\(p\)`
+En este breve texto de [Krzywinski &amp; Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor `\(p\)`
 
 &lt;div class="figure" style="text-align: center"&gt;
 &lt;img src="./slides/figures/pvalue.jpg" alt="Fuente: Krzywinski &amp;amp; Altman (2013)" width="80%" /&gt;
@@ -491,15 +694,15 @@ Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar
 
 # Valores `\(p\)`
 
-- ¿Qué tanto toleramos que nuestros resultados puedan ser *por suerte*?
+¿Qué tanto toleramos que nuestros resultados puedan ser *por suerte*?
 
-- Fijamos un nivel de significancia `\(\alpha\)`, definido como la probabilidad de rechazar la `\(H_0\)` dado que esta es verdadera
+Fijamos un nivel de significancia `\(\alpha\)`, definido como la probabilidad de rechazar la `\(H_0\)` dado que esta es verdadera
 
-- Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
+Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
 
-- En economía usamos frecuentemente los valores `\(\alpha\)` de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
+En economía usamos frecuentemente los valores `\(\alpha\)` de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
 
-- En evaluación, si el valor `\(p\)` es menor que `\(\alpha\)` decimos que el efecto es *estadísticamente significativo*
+En evaluación, si el valor `\(p\)` es menor que `\(\alpha\)` decimos que el efecto es *estadísticamente significativo*
 
 
 ---
@@ -508,9 +711,9 @@ Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar
 # Nota sobre los valores `\(t\)` críticos
 
 .pull-left[
-- Los correspondientes valores del estadístico `\(t\)` en muestras grandes para `\(\alpha\)` de 0.10, 0.05 y 0.01 son 2.56, 1.96 y 1.64
+Los correspondientes valores del estadístico `\(t\)` en muestras grandes para `\(\alpha\)` de 0.10, 0.05 y 0.01 son 2.56, 1.96 y 1.64
 
-- ¿Cómo puedo encontrar el valor `\(p\)` exacto de un estadístico `\(t\)` dado?
+¿Cómo puedo encontrar el valor `\(p\)` exacto de un estadístico `\(t\)` dado?
 
 
 ```r
@@ -521,7 +724,7 @@ Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar
 ## [1] 0.04999996
 ```
 
-- O uno menos arbitrario
+O uno menos arbitrario
 
 
 ```r
@@ -534,7 +737,7 @@ Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar
 ]
 
 .pull-right[
-- Y al revés, puedo siempre encontrar el estadístico `\(t\)` asociado a cierto valor `\(p\)`
+Y al revés, puedo siempre encontrar el estadístico `\(t\)` asociado a cierto valor `\(p\)`
 
 
 ```r
@@ -544,25 +747,10 @@ qnorm(1-(.1/2))
 ```
 ## [1] 1.644854
 ```
-- El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
+
+El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
 ]
----
 
-# Prueba de hipótesis en evaluación
-
-- Un camino típico:
-
-  - Formulamos una pregunta causal `\(D_i \to y_i\)`
-
-  - Tengo razones para asumir que `\(D_i\)` es independiente de `\(y_i\)` (por ejemplo, hice un experimento)
-  
-  - De la clase anterior, sé que una regresión me ayudará a hacer comparaciones:
-  
-  `$$y_i=\alpha+\beta D_i + B'X_i + u_i$$`
-  - Formulamos la `\(H_0\)`: `\(\beta=0\)`, es decir, no hay efecto del tratamiento
-  
-  - Estimo la regresión, obtengo `\(\hat{\beta}\)`, y construyo `\(t=\frac{\hat{\beta}}{\hat{se}(\hat{\beta})}\)`
-  
 ---
 
 # Próxima sesión
