@@ -47,7 +47,7 @@ deltaMethod(rmco, "pareduc", rhs = 0)
 #Una prueba no lineal: razón de coeficientes
 deltaMethod(rmco,
             "educ/pareduc",
-            rhs = 1)
+            rhs = 3)
 
 
 
@@ -96,5 +96,10 @@ coeftest(reg.sim,
          vcov = vcovHC(reg.sim,
                        type = "HC0"))
 
+
+#Comparemos con los errores homocedásticos
+coeftest(reg.sim,
+         vcov = vcovHC(reg.sim,
+                       type = "const"))
 
 
