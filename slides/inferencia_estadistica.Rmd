@@ -42,6 +42,14 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
 ```
 
+```{css, echo=FALSE}
+pre {
+  max-width: 100%;
+  overflow-x: scroll;
+}
+```
+
+
 .title[
 # Inferencia estadística
 ]
@@ -584,6 +592,34 @@ linearHypothesis(rmco, c("educ=0",
 ]
 ---
 
+# Pruebas de hipótesis no lineales
+
+Una prueba lineal es el caso especial de una prueba no lineal
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+deltaMethod(rmco, "pareduc", rhs = 0)
+```
+
+Que es lo mismo que obteníamos en la salida de la regresión
+
+---
+
+# Pruebas de hipótesis no lineales
+
+Supongamos que estamos interesados en el tamaño relativo de los coeficientes de la educación y la educación del padre
+
+$$H_0:\quad \beta_{educ}/\beta_{pareduc}=3$$
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+deltaMethod(rmco,
+            "educ/pareduc",
+            rhs = 3)
+```
+
+No rechazamos la $H_0$: los datos observados son consistentes con la hipótesis de que $\beta_{educ}/\beta_{pareduc}=3$
+
+---
+
 # Regresión no lineal
 
 .pull-left[
@@ -641,7 +677,7 @@ Entonces, si un año adicional **no** tuviera efecto alguno, todavía sería pos
 En este breve texto de [Krzywinski & Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor $p$
 
 ```{r, out.width="80%",fig.cap='Fuente: Krzywinski & Altman (2013)',fig.align='center'}
-knitr::include_graphics("./slides/figures/pvalue.jpg")
+knitr::include_graphics("../slides/figures/pvalue.jpg", error=F)
 ```
 
 
@@ -660,7 +696,7 @@ Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
 
 En economía usamos frecuentemente los valores $\alpha$ de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
 
-En evaluación, si el valor $p$ es menor que $\alpha$ decimos que el efecto es *estadísticamente significativo*
+En una regresión decimos que si el valor $p$ asociado a $\beta_j$ es menor que $\alpha$, entonces el coeficiente es *estadísticamente significativo* o *estadísticamente distinto que cero*
 
 
 ---
@@ -693,6 +729,89 @@ qnorm(1-(.1/2))
 
 El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
 ]
+
+---
+
+# Importancia de no ignorar heterocedasticidad
+
+.pull-left[
+Veamos esto con una simulación
+
+```{r echo=T, evaluate=F}
+set.seed(110)
+
+# generate heteroskedastic data 
+X <- rnorm(n=100,
+           mean=0,
+           sd = 5)
+e <- rnorm(n=100,
+           mean=0,
+           sd = 2)
+u <- X*e
+b<- 1
+
+Y <- 1 + b*X + u
+
+data.sim <- data.frame(X,Y)
+
+
+#Modelo con errores homocedásticos
+summary(reg.sim <- lm(Y ~ X))
+```
+]
+
+.pull-right[
+
+
+```{r echo=F, evaluate=T, include=T, message=F }
+set.seed(110)
+
+# generate heteroskedastic data 
+X <- rnorm(n=100,
+           mean=0,
+           sd = 5)
+e <- rnorm(n=100,
+           mean=0,
+           sd = 2)
+u <- X*e
+b<- 1
+
+Y <- 1 + b*X + u
+
+data.sim <- data.frame(X,Y)
+
+
+#Veamos cómo luce esta simulación
+
+data.sim %>% ggplot(aes(x=X, y=Y)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+
+```
+]
+
+---
+
+# Importancia de no ignorar heterocedasticidad
+
+.pull-left[
+Con errores homocedásticos
+```{r echo=T, evaluate=F}
+coeftest(reg.sim,
+         vcov = vcovHC(reg.sim,
+                       type = "const"))
+```
+]
+
+.pull-right[
+Con errores robustos a la heterocedasticidad
+```{r echo=T, evaluate=F}
+coeftest(reg.sim,
+         vcov = vcovHC(reg.sim,
+                       type = "HC0"))
+```
+]
+
 
 ---
 

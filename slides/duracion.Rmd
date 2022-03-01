@@ -33,10 +33,11 @@ library(reticulate)
 library(sandwich)
 library(stargazer)
 library(gtsummary)
+library(foreign)
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
-knitr::opts_knit$set(root.dir = "C:/Users/irvin.rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
 ```
 
 .title[
@@ -249,7 +250,19 @@ Para el periodo 2 hay 70 unidades en riesgo pues 6 *murieron* y 4 fueron censura
 ]
 ---
 
+# Ejemplo: duración de huelhas
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+strkdur
+```
+
+---
+
+
 # Estimación no paramétrica
+
+
+---
 
 .pull-left[
 **Estimador Kaplan-Meier de la función de sobrevivencia discreta**:
@@ -263,11 +276,7 @@ $$\hat{V}(\hat{S}(t))=S(t)^2 \sum_{j|t_j\leq t}\frac{d_j}{r_j(r_j-d_j)}$$
 El estimador KM es una función discreta decreciente y con saltos
 ]
 
-.pull-right[
-```{r, out.width="100%",fig.cap='Fuente: Cameron & Trivedi (2005)',fig.align='center'}
-knitr::include_graphics("figures/KM_function.png")
-```
-]
+
 
 
 

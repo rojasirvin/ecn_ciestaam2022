@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 8. [Inferencia estadística](./slides/inferencia_estadistica.html)
 
-9. Modelos con variable dependiente de conteo
+9. [Modelos con variable dependiente de conteo](./slides/conteo.html)
 
 10. Modelos de riesgo y sobrevivencia
 

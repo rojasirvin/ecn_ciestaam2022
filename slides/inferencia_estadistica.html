@@ -20,6 +20,14 @@ class: title-slide
 
 
 
+&lt;style type="text/css"&gt;
+pre {
+  max-width: 100%;
+  overflow-x: scroll;
+}
+&lt;/style&gt;
+
+
 .title[
 # Inferencia estadística
 ]
@@ -146,7 +154,7 @@ ggplot(data.frame(x = c(-3, 3)),
 
 .pull-right[
 
-![](figures/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+![](figures/unnamed-chunk-3-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -166,7 +174,7 @@ Un estadístico `\(t\)` mayor que `\(|2|\)` indica que la `\(H_0\)` de que `\(\m
 
 
 .pull-right[
-![](figures/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](figures/unnamed-chunk-4-1.png)&lt;!-- --&gt;
 ]
 
 
@@ -589,6 +597,52 @@ linearHypothesis(rmco, c("educ=0",
 ]
 ---
 
+# Pruebas de hipótesis no lineales
+
+Una prueba lineal es el caso especial de una prueba no lineal
+
+
+```r
+deltaMethod(rmco, "pareduc", rhs = 0)
+```
+
+```
+##          Estimate        SE     2.5 %    97.5 % Hypothesis z value
+## pareduc 0.0306707 0.0136652 0.0038873 0.0574541  0.0000000  2.2444
+##         Pr(&gt;|z|)  
+## pareduc   0.0248 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Que es lo mismo que obteníamos en la salida de la regresión
+
+---
+
+# Pruebas de hipótesis no lineales
+
+Supongamos que estamos interesados en el tamaño relativo de los coeficientes de la educación y la educación del padre
+
+`$$H_0:\quad \beta_{educ}/\beta_{pareduc}=3$$`
+
+
+```r
+deltaMethod(rmco,
+            "educ/pareduc",
+            rhs = 3)
+```
+
+```
+##              Estimate       SE    2.5 %   97.5 % Hypothesis z value
+## educ/pareduc  2.06718  1.28933 -0.45986  4.59422    3.00000 -0.7235
+##              Pr(&gt;|z|)
+## educ/pareduc   0.4694
+```
+
+No rechazamos la `\(H_0\)`: los datos observados son consistentes con la hipótesis de que `\(\beta_{educ}/\beta_{pareduc}=3\)`
+
+---
+
 # Regresión no lineal
 
 .pull-left[
@@ -682,7 +736,7 @@ Entonces, si un año adicional **no** tuviera efecto alguno, todavía sería pos
 En este breve texto de [Krzywinski &amp; Altman (2013)](https://www.nature.com/articles/nmeth.2698) pueden leer algunos otros detalles sobre el valor `\(p\)`
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="./slides/figures/pvalue.jpg" alt="Fuente: Krzywinski &amp;amp; Altman (2013)" width="80%" /&gt;
+&lt;img src="../slides/figures/pvalue.jpg" alt="Fuente: Krzywinski &amp;amp; Altman (2013)" width="80%" /&gt;
 &lt;p class="caption"&gt;Fuente: Krzywinski &amp; Altman (2013)&lt;/p&gt;
 &lt;/div&gt;
 
@@ -702,7 +756,7 @@ Es decir, la probabilidad de cometer el **error tipo 1** o **falso positivo**
 
 En economía usamos frecuentemente los valores `\(\alpha\)` de 0.10, 0.05 y 0.01 para juzgar la significancia de los estimadores
 
-En evaluación, si el valor `\(p\)` es menor que `\(\alpha\)` decimos que el efecto es *estadísticamente significativo*
+En una regresión decimos que si el valor `\(p\)` asociado a `\(\beta_j\)` es menor que `\(\alpha\)`, entonces el coeficiente es *estadísticamente significativo* o *estadísticamente distinto que cero*
 
 
 ---
@@ -750,6 +804,111 @@ qnorm(1-(.1/2))
 
 El 2 en las expresiones anteriores viene de que estamos en pruebas de dos colas con una distribución simétrica
 ]
+
+---
+
+# Importancia de no ignorar heterocedasticidad
+
+.pull-left[
+Veamos esto con una simulación
+
+
+```r
+set.seed(110)
+
+# generate heteroskedastic data 
+X &lt;- rnorm(n=100,
+           mean=0,
+           sd = 5)
+e &lt;- rnorm(n=100,
+           mean=0,
+           sd = 2)
+u &lt;- X*e
+b&lt;- 1
+
+Y &lt;- 1 + b*X + u
+
+data.sim &lt;- data.frame(X,Y)
+
+
+#Modelo con errores homocedásticos
+summary(reg.sim &lt;- lm(Y ~ X))
+```
+
+```
+## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -25.9373  -3.0149  -0.0955   3.3615  26.5239 
+## 
+## Coefficients:
+##             Estimate Std. Error t value    Pr(&gt;|t|)    
+## (Intercept)   1.4900     0.8312   1.793      0.0761 .  
+## X             0.9433     0.1788   5.275 0.000000793 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.298 on 98 degrees of freedom
+## Multiple R-squared:  0.2212,	Adjusted R-squared:  0.2132 
+## F-statistic: 27.83 on 1 and 98 DF,  p-value: 0.0000007932
+```
+]
+
+.pull-right[
+
+
+![](figures/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Importancia de no ignorar heterocedasticidad
+
+.pull-left[
+Con errores homocedásticos
+
+```r
+coeftest(reg.sim,
+         vcov = vcovHC(reg.sim,
+                       type = "const"))
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value     Pr(&gt;|t|)    
+## (Intercept)  1.49003    0.83123  1.7926      0.07613 .  
+## X            0.94330    0.17881  5.2754 0.0000007932 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+.pull-right[
+Con errores robustos a la heterocedasticidad
+
+```r
+coeftest(reg.sim,
+         vcov = vcovHC(reg.sim,
+                       type = "HC0"))
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)  1.49003    0.79509  1.8740 0.0639051 .  
+## X            0.94330    0.25536  3.6941 0.0003634 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
 
 ---
 

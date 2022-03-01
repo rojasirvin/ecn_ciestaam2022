@@ -11,6 +11,7 @@ data.phd <- read_csv("data/phd_articulos.csv")
 #Vean como podemos usar los paquetes sin cargar
 #install.packages('pastecs')
 #install.packages('MASS')
+#install.packages('sjPlot)
 
 pastecs::stat.desc(data.phd$art)
 
