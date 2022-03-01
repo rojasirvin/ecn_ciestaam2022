@@ -184,144 +184,12 @@ Si el $j$-ésimo regresor cambia en una unidad, la razón de *tasas de incidenci
 
 Se le llama *tasa de incidencia* porque tasa implica una medida por unida de de tiempo
 
----
-
-# Deficiencias
-
-Es un modelo con un solo parámetro, es decir, todos los momentos son funciones de $\mu$
-
-Frecuentemente nos encontramos con situaciones donde hay exceso de ceros, lo cual puede no ser consistente con una densidad Poisson
-
-Frecuentemente tenemos datos con sobredispersión, es decir, en la práctica la varianza excede por mucho a la media
-
-
----
-
-# Sobre la sobredispersión
-
-Recordemos que si la media está bien especificada, el estimador Poisson de MV es consistente
-
-Sin embargo, la sobredispersión causa que los errores estándar sean muy pequeños (estadísticos $t$ muy grandes), por lo que se recomienda usar la matriz robusta de sándwich
-
-Podemos hacer un test de sobredispersión
-
-Supongamos que la varianza tiene la forma $V(y_i|x_i)=\mu_i+\alpha g(\mu_i)$, donde $\alpha$ es desconocido y $g$ puede ser por ejemplo un polinomio cuadrático
-
-La $H_0$ es que $\alpha=0$
-
-Podemos realizar la siguiente regresión auxiliar:
-
-$$\frac{(y_i-\hat{\mu}_i)^2-y_i}{\hat{\mu}_i}=\alpha\frac{g(\hat{\mu}_i)}{\hat{\mu}_i}+u_i$$
-y hacer una prueba de significancia con un estadístico $t$
 
 ---
 
 class: inverse, middle, center
 
-# Modelo negativo binomial
-
----
-
-# Modelo negativo binomial
-
-Este modelo nos permite arreglar algunas de las deficiencias del modelo Poisson
-
-Este es un caso de lo que se conoce como *modelo continuo mixto*
-
-Supongamos que $y$ se distribuye Poisson con parámetro $\lambda$
-$$f(y|\lambda)=\frac{exp(-\lambda)\lambda^y}{y!}$$
-
-Supongamos que $\lambda$ es aleatorio, específicamente $\lambda=\mu\nu$, donde $\mu$ es una función de $x$, como $exp(x'\beta)$
-
-Supongamos que $\nu$ es iid con densidad $g(\nu|\alpha)$, donde $g(\cdot)$ se conoce como *función mezcladora*
-
-Podemos ver el modelo negativo binomial como un modelo con heterogeneidad dada por $\nu$
----
-
-# Modelo negativo binomial
-
-Queremos recuperar la distribución de $y$, condicional en $\mu$ y $\alpha$:
-
-$$h(y|\mu,\alpha)=\int f(y|\mu,\nu)g(\nu|\alpha) d\nu$$
-
-Dependiendo de las formas específicas que le damos a $f(\cdot)$ y $g(\cdot)$, tendremos distintas formas para $h(\cdot)$
-
-
----
-
-# Densidad gamma
-
-Supongamos que:
-
-  1. $f(y|\lambda)$ es la densidad Poisson
-  
-  1. $g(v)=\frac{v^{\delta-1}exp(-v\delta)\delta^{\delta}}{\Gamma(\delta)}$, con $v>0$ y $\delta>0$ es la densidad gamma con $E(v)=1$ y $V(v)=1/\delta$
-  
-Entonces $h(y|\mu,\delta)$ es la función de densidad mezclada negativa binomial
-
-$$h(y|\mu,\delta)=\frac{\Gamma(\alpha^{-1}+y)}{\Gamma(\alpha^{-1})\Gamma(y+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha-1}\left(\frac{\mu}{\mu+\alpha^{-1}}\right)^y$$
-con $\alpha=1/\delta$ y siendo $\Gamma(\cdot)$ la integral gamma
-
-Casos especiales:
-
-  - Si $\alpha\to 0$ la densidad se colapsa a la Poisson
-  
-  - Si $\alpha \to 1$ la densidad se colapsa a la geométrica
-
-
-
----
-
-# Momentos
-
-Con una distribución negativa binomial:
-
-  - $E(y|\mu,\alpha)=\mu$
-  
-  - $V(y|\mu,\alpha)=\mu\underbrace{(1+\alpha\mu)}_{dispersión}$
-
-
----
-
-# Modelo negativo binomial 2 (NB2)
-
-Para la implementación de este modelo, se parametriza $\mu_i=exp(x_i'\beta)$
-
-$\alpha$ es un parámetro a ser estimado
-
-Con estas condiciones, la varianza es cuadrática en la media: $\mu+\alpha\mu^2$
-
-Es el modelo más comúnmente usado
-
-En la mayoría de las aplicaciones, una función cuadrática de la media es suficiente para modelar la sobredispersión
-
-El modelo se estima por MV
-
-
----
-
-# Modelo negativo binomial 1 (NB1)
-
-Un modelo menos usado especifica una función de varianza lineal: $V(y|\mu,\alpha)=(1+\gamma)\mu$
-
-Se obtiene al sustituir $\alpha$ por $\gamma/\mu$ en la función de densidad gamma (ver CT, p. 675)
-
-También se parametriza la media como $\mu_i=exp(x_i'\beta)$
-
-
----
-
-# ¿NB1 o NB2?
-
-El NB2 es el más usado por ser lo suficientemente flexible
-
-En ambos la media condicional tiene la misma parametrización por lo que la interpretación de los coeficientes es la misma
-
----
-
-class: inverse, middle, center
-
-# Ejemplo
+# Ejemplo: regresión Poisson
 
 ---
 
@@ -478,9 +346,149 @@ sjPlot::tab_model(mpoisson,
                   p.threshold = c(0.1, 0.05, 0.01))
 ```
 
+
+---
+
+# Deficiencias
+
+Es un modelo con un solo parámetro, es decir, todos los momentos son funciones de $\mu$
+
+Frecuentemente nos encontramos con situaciones donde hay exceso de ceros, lo cual puede no ser consistente con una densidad Poisson
+
+Frecuentemente tenemos datos con sobredispersión, es decir, en la práctica la varianza excede por mucho a la media
+
+---
+
+# Sobre la sobredispersión
+
+Recordemos que si la media está bien especificada, el estimador Poisson de MV es consistente
+
+Sin embargo, la sobredispersión causa que los errores estándar sean muy pequeños (estadísticos $t$ muy grandes), por lo que se recomienda usar la matriz robusta de sándwich
+
+Podemos hacer un test de sobredispersión
+
+Supongamos que la varianza tiene la forma $V(y_i|x_i)=\mu_i+\alpha g(\mu_i)$, donde $\alpha$ es desconocido y $g$ puede ser por ejemplo un polinomio cuadrático
+
+La $H_0$ es que $\alpha=0$
+
+Podemos realizar la siguiente regresión auxiliar:
+
+$$\frac{(y_i-\hat{\mu}_i)^2-y_i}{\hat{\mu}_i}=\alpha\frac{g(\hat{\mu}_i)}{\hat{\mu}_i}+u_i$$
+y hacer una prueba de significancia con un estadístico $t$
+
+---
+
+class: inverse, middle, center
+
+# Modelo negativo binomial
+
+---
+
+# Modelo negativo binomial
+
+Este modelo nos permite arreglar algunas de las deficiencias del modelo Poisson
+
+Este es un caso de lo que se conoce como *modelo continuo mixto*
+
+Supongamos que $y$ se distribuye Poisson con parámetro $\lambda$
+$$f(y|\lambda)=\frac{exp(-\lambda)\lambda^y}{y!}$$
+
+Supongamos que $\lambda$ es aleatorio, específicamente $\lambda=\mu\nu$, donde $\mu$ es una función de $x$, como $exp(x'\beta)$
+
+Supongamos que $\nu$ es iid con densidad $g(\nu|\alpha)$, donde $g(\cdot)$ se conoce como *función mezcladora*
+
+Podemos ver el modelo negativo binomial como un modelo con heterogeneidad dada por $\nu$
+---
+
+# Modelo negativo binomial
+
+Queremos recuperar la distribución de $y$, condicional en $\mu$ y $\alpha$:
+
+$$h(y|\mu,\alpha)=\int f(y|\mu,\nu)g(\nu|\alpha) d\nu$$
+
+Dependiendo de las formas específicas que le damos a $f(\cdot)$ y $g(\cdot)$, tendremos distintas formas para $h(\cdot)$
+
+
+---
+
+# Densidad gamma
+
+Supongamos que:
+
+  1. $f(y|\lambda)$ es la densidad Poisson
+  
+  1. $g(v)=\frac{v^{\delta-1}exp(-v\delta)\delta^{\delta}}{\Gamma(\delta)}$, con $v>0$ y $\delta>0$ es la densidad gamma con $E(v)=1$ y $V(v)=1/\delta$
+  
+Entonces $h(y|\mu,\delta)$ es la función de densidad mezclada negativa binomial
+
+$$h(y|\mu,\delta)=\frac{\Gamma(\alpha^{-1}+y)}{\Gamma(\alpha^{-1})\Gamma(y+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha-1}\left(\frac{\mu}{\mu+\alpha^{-1}}\right)^y$$
+con $\alpha=1/\delta$ y siendo $\Gamma(\cdot)$ la integral gamma
+
+Casos especiales:
+
+  - Si $\alpha\to 0$ la densidad se colapsa a la Poisson
+  
+  - Si $\alpha \to 1$ la densidad se colapsa a la geométrica
+
+
+
+---
+
+# Momentos
+
+Con una distribución negativa binomial:
+
+  - $E(y|\mu,\alpha)=\mu$
+  
+  - $V(y|\mu,\alpha)=\mu\underbrace{(1+\alpha\mu)}_{dispersión}$
+
+
+---
+
+# Modelo negativo binomial 2 (NB2)
+
+Para la implementación de este modelo, se parametriza $\mu_i=exp(x_i'\beta)$
+
+$\alpha$ es un parámetro a ser estimado
+
+Con estas condiciones, la varianza es cuadrática en la media: $\mu+\alpha\mu^2$
+
+Es el modelo más comúnmente usado
+
+En la mayoría de las aplicaciones, una función cuadrática de la media es suficiente para modelar la sobredispersión
+
+El modelo se estima por MV
+
+
+---
+
+# Modelo negativo binomial 1 (NB1)
+
+Un modelo menos usado especifica una función de varianza lineal: $V(y|\mu,\alpha)=(1+\gamma)\mu$
+
+Se obtiene al sustituir $\alpha$ por $\gamma/\mu$ en la función de densidad gamma (ver CT, p. 675)
+
+También se parametriza la media como $\mu_i=exp(x_i'\beta)$
+
+
+---
+
+# ¿NB1 o NB2?
+
+El NB2 es el más usado por ser lo suficientemente flexible
+
+En ambos la media condicional tiene la misma parametrización por lo que la interpretación de los coeficientes es la misma
+
+---
+
+class: inverse, middle, center
+
+# Ejemplo: NB2
+
 ---
 
 # Ejemplo
+
 
 Estimemos ahora un modelo NB2, usando la función *glm.nb* de la librería *MASS*
 
