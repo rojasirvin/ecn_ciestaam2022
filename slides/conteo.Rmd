@@ -1,0 +1,545 @@
+---
+title: "Modelos de conteo"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+  - \usepackage{amsmath} 
+  - \usepackage[utf8]{inputenc}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+library(sandwich)
+library(stargazer)
+library(gtsummary)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+.title[
+# Modelos de conteo
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+
+# Agenda
+  
+1. Introduciremos el modelo de conteo más básico: Poisson
+
+1. Hablaremos sobre sus fortalezas y debilidades
+
+1. Introduciremos un tipo de modelos de conteo que resuelve las debilidades del modelo Poisson: negativo binomial
+
+---
+
+class: inverse, middle, center
+
+# Modelos de conteo
+
+---
+
+# Modelos de conteo
+
+Datos de conteo naturales en muchas aplicaciones:
+
+  - Número de hijos
+  
+  - Accidentes en un año
+  
+  - Visitas a museos o al médico
+
+Variable dependiente: $y_i=0,1,2,\ldots$
+
+
+---
+
+# Modelo Poisson
+
+Densidad: $P(Y=y)=\frac{exp(-\mu)\mu^y}{y!}$
+
+$\mu$ es un único parámetro de intesidad
+
+Propiedad de equidispersión: $E(Y)=V(Y)=\mu$
+
+Parametrizamos la media: $\mu_i=exp(x_i'\beta)$
+
+Noten que el modelo es por construcción heterocedástico
+
+---
+
+# Función de verosimilitud
+
+La log verosimilitud es:
+
+$$\mathcal{L}(\beta)=\sum_i(y_ix_i'\beta-exp(x_i'\beta)-\ln(yi!))$$
+
+Las condiciones de primer orden son:
+
+$$\sum_i(y_i-exp(x_i'\beta))x_i=0$$
+
+que no tienen solución cerrada, por lo que $\hat{\beta}_{MV}$ se obtiene por métodos númericos
+
+
+---
+
+# Distribución asintótica
+
+Cuando se asume que la densidad está bien especificada, el estimador de MV tiene la distribución asintótica:
+$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$
+
+Si queremos relajar el supuesto de densidad bien especificada y suponer solo que la media está bien especificada, usamos una matriz de varianzas robusta:
+
+$$\hat{\beta}_{CMV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\left(\sum_iw_ix_ix_i'\right)\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$
+con $w_i=V(y_i|x_i)$
+
+---
+
+# Interpretación de coeficientes
+
+Noten que con la parametrización de la media podemos obtener el efecto de un cambio marginal en el $j$ésimo regresor sobre el valor esperado del conteo
+$$\frac{\partial E(y|x)}{\partial x_j}=\beta_jexp(x'\beta)$$
+
+Como lo mostrarán en la tarea, si $x_j$ está medida en logaritmos, $\beta_j$ es una elasticidad
+
+Una medida de respuesta promedio usualmente reportada es $\frac{1}{N}\frac{\partial E(y_i|x_i)}{\partial x_{ij}}=\frac{1}{N}\hat{\beta}_j\sum_i exp(x_i'\hat{\beta})$
+
+Noten también que el cociente de efectos es igual al cociente de coeficientes
+
+---
+
+# Interpretación de coeficientes
+
+**Tarea**
+
+¿Cuál es el efecto de un cambio en el $j$ésimo regresor sobre $E(y│x)$?
+
+Usando esta expresión, muestre que si el $j$ésimo regresor es $x_j$, entonces $100 \beta_j$ es la semielasticidad de $E(y│x)$ con respecto a $x_j$. Este punto es muy útil para la interpretación de los coeficientes de un modelo Poisson.
+
+
+---
+
+# Razón de tasas de incidencia (IRR)
+
+Recordemos que modelamos el conteo esperado
+
+$$\mu_j=\exp\{x_j'\beta\}$$
+Llamemos a la situación inicial $\mu_{x_j}$
+
+Supongamos que el $j$-ésimo regresor cambia en una unidad. Entonces, el conteo esperado será
+
+$$\mu_{x_j+1}=\exp\{x_j'\beta+\beta_j\}=\exp\{x_j'\beta\}\exp\{\beta_j\}=\mu_{x_j}\exp\{\beta_j\}$$
+O reordenando 
+
+$$\exp\{\beta_j\}=\frac{\mu_{x_j+1}}{\mu_{x_j}}$$
+---
+
+# Razón de tasas de incidencia (IRR)
+
+Surgen así dos formas de interpretar los resultados de la estimación de una regresión Poisson
+
+Los coeficientes por sí solos pueden leerse como el cambio en el log de los conteos esperados cuando el $j$-ésimo regresor cambia en una unidad
+
+
+$$\beta_j=\ln\left(\frac{\mu_{x_j+1}}{\mu_{x_j}}\right)=\ln(\mu_{x_j+1})-\ln(\mu_{x_j})$$
+Cuando exponenciamos los coeficientes obtenemos la **razón de tasas de incidencia**
+
+
+$$\exp\{\beta_j\}=\frac{\mu_{x_j+1}}{\mu_{x_j}}$$
+
+Si el $j$-ésimo regresor cambia en una unidad, la razón de *tasas de incidencia* cambiará en un factor de $\exp\{\beta_j\}$
+
+  - Si $\exp\{\beta_j\}>1$ el conteo aumenta
+  - Si $\exp\{\beta_j\}<1$ el conteo disminuye
+
+Se le llama *tasa de incidencia* porque tasa implica una medida por unida de de tiempo
+
+---
+
+# Deficiencias
+
+Es un modelo con un solo parámetro, es decir, todos los momentos son funciones de $\mu$
+
+Frecuentemente nos encontramos con situaciones donde hay exceso de ceros, lo cual puede no ser consistente con una densidad Poisson
+
+Frecuentemente tenemos datos con sobredispersión, es decir, en la práctica la varianza excede por mucho a la media
+
+
+---
+
+# Sobre la sobredispersión
+
+Recordemos que si la media está bien especificada, el estimador Poisson de MV es consistente
+
+Sin embargo, la sobredispersión causa que los errores estándar sean muy pequeños (estadísticos $t$ muy grandes), por lo que se recomienda usar la matriz robusta de sándwich
+
+Podemos hacer un test de sobredispersión
+
+Supongamos que la varianza tiene la forma $V(y_i|x_i)=\mu_i+\alpha g(\mu_i)$, donde $\alpha$ es desconocido y $g$ puede ser por ejemplo un polinomio cuadrático
+
+La $H_0$ es que $\alpha=0$
+
+Podemos realizar la siguiente regresión auxiliar:
+
+$$\frac{(y_i-\hat{\mu}_i)^2-y_i}{\hat{\mu}_i}=\alpha\frac{g(\hat{\mu}_i)}{\hat{\mu}_i}+u_i$$
+y hacer una prueba de significancia con un estadístico $t$
+
+---
+
+class: inverse, middle, center
+
+# Modelo negativo binomial
+
+---
+
+# Modelo negativo binomial
+
+Este modelo nos permite arreglar algunas de las deficiencias del modelo Poisson
+
+Este es un caso de lo que se conoce como *modelo continuo mixto*
+
+Supongamos que $y$ se distribuye Poisson con parámetro $\lambda$
+$$f(y|\lambda)=\frac{exp(-\lambda)\lambda^y}{y!}$$
+
+Supongamos que $\lambda$ es aleatorio, específicamente $\lambda=\mu\nu$, donde $\mu$ es una función de $x$, como $exp(x'\beta)$
+
+Supongamos que $\nu$ es iid con densidad $g(\nu|\alpha)$, donde $g(\cdot)$ se conoce como *función mezcladora*
+
+Podemos ver el modelo negativo binomial como un modelo con heterogeneidad dada por $\nu$
+---
+
+# Modelo negativo binomial
+
+Queremos recuperar la distribución de $y$, condicional en $\mu$ y $\alpha$:
+
+$$h(y|\mu,\alpha)=\int f(y|\mu,\nu)g(\nu|\alpha) d\nu$$
+
+Dependiendo de las formas específicas que le damos a $f(\cdot)$ y $g(\cdot)$, tendremos distintas formas para $h(\cdot)$
+
+
+---
+
+# Densidad gamma
+
+Supongamos que:
+
+  1. $f(y|\lambda)$ es la densidad Poisson
+  
+  1. $g(v)=\frac{v^{\delta-1}exp(-v\delta)\delta^{\delta}}{\Gamma(\delta)}$, con $v>0$ y $\delta>0$ es la densidad gamma con $E(v)=1$ y $V(v)=1/\delta$
+  
+Entonces $h(y|\mu,\delta)$ es la función de densidad mezclada negativa binomial
+
+$$h(y|\mu,\delta)=\frac{\Gamma(\alpha^{-1}+y)}{\Gamma(\alpha^{-1})\Gamma(y+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha-1}\left(\frac{\mu}{\mu+\alpha^{-1}}\right)^y$$
+con $\alpha=1/\delta$ y siendo $\Gamma(\cdot)$ la integral gamma
+
+Casos especiales:
+
+  - Si $\alpha\to 0$ la densidad se colapsa a la Poisson
+  
+  - Si $\alpha \to 1$ la densidad se colapsa a la geométrica
+
+
+
+---
+
+# Momentos
+
+Con una distribución negativa binomial:
+
+  - $E(y|\mu,\alpha)=\mu$
+  
+  - $V(y|\mu,\alpha)=\mu\underbrace{(1+\alpha\mu)}_{dispersión}$
+
+
+---
+
+# Modelo negativo binomial 2 (NB2)
+
+Para la implementación de este modelo, se parametriza $\mu_i=exp(x_i'\beta)$
+
+$\alpha$ es un parámetro a ser estimado
+
+Con estas condiciones, la varianza es cuadrática en la media: $\mu+\alpha\mu^2$
+
+Es el modelo más comúnmente usado
+
+En la mayoría de las aplicaciones, una función cuadrática de la media es suficiente para modelar la sobredispersión
+
+El modelo se estima por MV
+
+
+---
+
+# Modelo negativo binomial 1 (NB1)
+
+Un modelo menos usado especifica una función de varianza lineal: $V(y|\mu,\alpha)=(1+\gamma)\mu$
+
+Se obtiene al sustituir $\alpha$ por $\gamma/\mu$ en la función de densidad gamma (ver CT, p. 675)
+
+También se parametriza la media como $\mu_i=exp(x_i'\beta)$
+
+
+---
+
+# ¿NB1 o NB2?
+
+El NB2 es el más usado por ser lo suficientemente flexible
+
+En ambos la media condicional tiene la misma parametrización por lo que la interpretación de los coeficientes es la misma
+
+---
+
+class: inverse, middle, center
+
+# Ejemplo
+
+---
+
+# Ejemplo
+
+Datos de conteo del número de artículos publicados en una muestra de científicos (Long, 1990)
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+data.phd <- read_csv("./data/phd_articulos.csv")
+
+#Podemos llamar funciones sin cargar los paquetes usando ::
+pastecs::stat.desc(data.phd$art)
+
+#Veamos la naturaleza de los datos
+summary(data.phd$art)
+```
+
+---
+# Ejemplo
+
+.pull-left[
+
+Estimación del modelo por MV
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+
+mpoisson <- glm(art ~ factor(female) + factor(married) + kid5 + phd + mentor,
+                family="poisson",
+                data=data.phd)
+```
+]
+
+.pull-right[
+
+No muy estético
+```{r echo=T, fig.height=4, warning= F, message=F}
+summary(mpoisson)
+```
+]
+
+
+
+---
+# Ejemplo
+
+.pull-left[
+```{r echo=T, fig.height=4, warning= F, message=F, eval=F}
+sjPlot::tab_model(mpoisson,
+        transform = NULL,
+        collapse.se = T,
+        show.ci = F,
+        show.r2  =F,
+        wrap.labels = 35,
+        p.style = "stars",
+        p.threshold = c(0.1, 0.05, 0.01))
+```
+
+Si el número de niños cambia en una unidad, la diferencia en el log del número de artículos publicados cambia en -0.18
+
+Los hombres tienen una diferencia en el log del número de artículos es 0.22 unidades mayor en el caso de los hombres, comparado con las mujeres
+]
+
+
+
+.pull-right[
+```{r echo=F, fig.height=4, warning= F, message=F}
+sjPlot::tab_model(mpoisson,
+                                    transform = NULL,
+                                    collapse.se = T,
+                                    show.ci = F,
+                                    show.r2  =F,
+                                    wrap.labels = 35,
+                                    p.style = "stars",
+                                    p.threshold = c(0.1, 0.05, 0.01))
+```
+]
+---
+
+
+# Ejemplo
+
+La utilidad de las variables de factor se refleja en este ejemplo
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+
+table(data.phd$female)
+
+data.phd <- data.phd %>% 
+  mutate(female=factor(female,
+                       levels=c('Male','Female')))
+
+```
+
+Volamos a estimar, pero ahora con los factores redefinidos
+```{r echo=T, fig.height=4, warning= F, message=F}
+mpoisson <- glm(art ~ factor(female) + factor(married) + kid5 + phd + mentor,
+                family="poisson",
+                data=data.phd)
+```
+
+---
+
+# Ejemplo
+
+.pull-left[
+
+```{r echo=T, fig.height=4, warning= F, message=F, eval=F}
+sjPlot::tab_model(mpoisson,
+                  transform = NULL,
+                  collapse.se = T,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+```
+La diferencia en los logs de conteos esperados es 0.22 menor en el caso de las mujeres, comparadas con los hombres
+
+]
+
+.pull-right[
+```{r echo=F, fig.height=4, warning= F, message=F}
+sjPlot::tab_model(mpoisson,
+                  transform = NULL,
+                  collapse.se = T,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+```
+]
+
+---
+
+# Ejemplo
+
+
+.pull-left[
+Antes ya vimos que si exponenciamos los coeficientes, tenemos una interpretación en términos de la **razón de tasas de incidencia (IRR)**
+
+Las mujeres tiene una tasa de incidencia de 0.80 con relación a los hombres (publican menos artículos)
+
+]
+
+
+```{r echo=F, fig.height=4, warning= F, message=F}
+sjPlot::tab_model(mpoisson,
+                  collapse.se = T,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+```
+
+---
+
+# Ejemplo
+
+Estimemos ahora un modelo NB2, usando la función *glm.nb* de la librería *MASS*
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+mnb2 <- MASS::glm.nb(art ~
+                       factor(female) + factor(married) + kid5 + phd + mentor,
+                     data = data.phd)
+```
+
+
+---
+
+# Ejemplo
+
+
+.pull-left[
+Noten que los coeficientes son parecidos con respecto a los del modelo Poisson
+
+]
+
+
+```{r echo=F, fig.height=4, warning= F, message=F}
+sjPlot::tab_model(mpoisson, mnb2,
+                  dv.labels = c("Poisson", "NB2"),
+                  transform = NULL,
+                  collapse.se = T,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+```
+
+
+---
+
+# Ejemplo
+
+Podemos recuperar $\alpha$, notando que en el paquete *glm.nb* la parametrización usa $\theta=1/\alpha$
+
+```{r echo=T, fig.height=4, warning= F, message=F}
+(alpha <- 1/summary(mnb2)$theta)  
+```
+
+
+
+---
+
+# Próxima sesión
+
+Estudiaremos problemas que involucran duración en el tiempo
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
