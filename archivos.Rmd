@@ -28,3 +28,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [grogger.csv](./data/grogger.csv)
 
 [edudat2.dta](./data/edudat2.dta)
+
+[phd_articulos.csv](./data/phd_articulos.csv)

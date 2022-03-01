@@ -39,6 +39,13 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
 ```
 
+```{css, echo=FALSE}
+pre {
+  max-width: 100%;
+  overflow-x: scroll;
+}
+```
+
 .title[
 # Modelos de conteo
 ]

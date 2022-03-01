@@ -4,14 +4,16 @@ options(scipen=999)
 
 library(tidyverse)
 
+#Paquetes a usar
+#install.packages('pastecs') # otro auxiliar para estadística descriptiva
+#install.packages('MASS') # Incluye la estimación del modelo NB2
+#install.packages('sjPlot) # Resumen de modelos estimados
+
 data.phd <- read_csv("data/phd_articulos.csv")
 
 
 #Descriptiva
 #Vean como podemos usar los paquetes sin cargar
-#install.packages('pastecs')
-#install.packages('MASS')
-#install.packages('sjPlot)
 
 pastecs::stat.desc(data.phd$art)
 
