@@ -19,6 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [prueba_hipotesis.R](./scripts/prueba_hipotesis.R)
 
+[conteo.R](./scripts/conteo.R)
+
 # Datos
 
 [mundata.csv](./data/mundata.csv)
