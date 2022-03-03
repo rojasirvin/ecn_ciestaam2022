@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 9. [Modelos con variable dependiente de conteo](./slides/conteo.html)
 
-10. Modelos de riesgo y sobrevivencia
+10. [Modelos de riesgo y sobrevivencia](./slides/duracion.html)
 
 11. Modelos de selección
 

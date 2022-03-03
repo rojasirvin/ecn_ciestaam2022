@@ -250,21 +250,27 @@ Para el periodo 2 hay 70 unidades en riesgo pues 6 *murieron* y 4 fueron censura
 ]
 ---
 
-# Ejemplo: duración de huelhas
+# Ejemplo: tiempo de reincidencia
 
-```{r echo=T, fig.height=4, warning= F, message=F}
-strkdur
+Usamos los datos *data_rossi.csv* de un estudio sobre reicidencia delictiva
+
+Se estudia cuánto tiempo pasa para que alguien que salió de prisión vuelva a ser arrestado
+
+Usamos el paquete *survival* y la función *survfit* para poner nuestros datos en formato de sobrevivencia
+
+```{r, echo=T, include=T, message=F, fig.height=3}
+data.rossi <- read_csv("data/data_rossi.csv",
+                       locale = locale(encoding = "latin1")) 
+
+km <- survfit(Surv(week, arrest) ~ 1,
+              type = "kaplan-meier",
+              data=data.rossi)
 ```
 
 ---
 
+# Estimador de Kaplan-Meier
 
-# Estimación no paramétrica
-
-
----
-
-.pull-left[
 **Estimador Kaplan-Meier de la función de sobrevivencia discreta**:
 
 $$\hat{S}(t)=\prod_{j|t_j\leq t}(1-\hat{\lambda}_j)=\prod_{j|t_j\leq t}\left(\frac{r_j-d_j}{r_j}\right)$$
@@ -274,15 +280,47 @@ La varianza de este estimador es
 $$\hat{V}(\hat{S}(t))=S(t)^2 \sum_{j|t_j\leq t}\frac{d_j}{r_j(r_j-d_j)}$$
 
 El estimador KM es una función discreta decreciente y con saltos
-]
-
-
-
 
 
 ---
 
-# Estimación no paramétrica
+# Ejemplo del estimador KM
+.pull-left[
+
+```{r, echo=T, eval=F, message=F, fig.height=6}
+
+ggsurvplot(fit = km,
+           data =data.rossi,
+           conf.int = TRUE,
+           title = "Curva de Supervivencia",
+           xlab = "Semanas",
+           ylab = "Probabilidad de no ser arrestado",
+           legend.title = "Estimación",
+           legend.labs = "Kaplan-Meier",
+           ylim = c(0.65,1))
+
+```
+]
+.pull-right[
+
+```{r, echo=F, include=T, message=F, fig.height=3}
+
+ggsurvplot(fit = km,
+           data =data.rossi,
+           conf.int = TRUE,
+           title = "Curva de Supervivencia",
+           xlab = "Semanas",
+           ylab = "Probabilidad de no ser arrestado",
+           legend.title = "Estimación",
+           legend.labs = "Kaplan-Meier",
+           ylim = c(0.65,1))
+
+```
+]
+
+---
+
+# Estimación de Nelson-Aalen
 
 **Estimador Nelson-Aalen de la función de riesgo acumulado discreta**:
 
@@ -291,6 +329,51 @@ $$\hat{\Lambda}(t)=\sum_{j|t_j\leq t} \hat{\lambda}_j=\sum_{j|t_j\leq t} \frac{d
 Y la varianza del estimador se calcula como
 
 $$\hat{V}(\hat{\Lambda}(t))=\sum_{j|t_j\leq t}\frac{d_j}{r_j^2}$$
+
+---
+
+# Ejemplo del estimador NA
+
+.pull-left[
+```{r, echo=T, eval=F, message=F, fig.height=6}
+
+ggsurvplot(km,
+           fun = "cumhaz",
+           xlab = "Semanas",
+           censor = T,
+           ylab = "Riesgo Acumulado",
+           title = "Riesgo Acumulado",
+           legend.title = "Semanas sin ser arrestado")
+
+
+
+```
+]
+.pull-right[
+
+```{r, echo=F, include=T, message=F, fig.height=3}
+
+
+ggsurvplot(km,
+           fun = "cumhaz",
+           xlab = "Semanas",
+           censor = T,
+           ylab = "Riesgo Acumulado",
+           title = "Riesgo Acumulado",
+           legend.title = "Semanas sin ser arrestado")
+
+
+
+```
+]
+
+---
+
+# Ejercicio
+
+En los datos *data_rossi.csv*, la columna **fin** indica si las personas recibieron o no ayuda financiera. ¿Qué esperaría que fuera diferente en términos de la *sobrevivencia* entre los dos grupos de personas?
+
+Construya el gráfico del estimador KM pero ahora para quienes sí recibieron ayuda financiera y quienes no. Pista: el objeto de sobrevivenvia ahora debe construirse incluyendo el argumento *Surv(week, arrest) ~ fin*
 
 ---
 
@@ -308,7 +391,7 @@ class: inverse, middle, center
 
 - La duración observada $t$ puede estar incompleta por un problema de censura
 
-- Como ya lo habíamos hecho antes, la verosimilitud tendrá dos partes, una para las observaciones sin censuar y otra para las censuradas
+- La verosimilitud tendrá dos partes, una para las observaciones sin censuar y otra para las censuradas
 
 
 - Para las observaciones censuradas tenemos

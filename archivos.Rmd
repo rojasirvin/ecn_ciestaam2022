@@ -21,6 +21,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [conteo.R](./scripts/conteo.R)
 
+[duracion.R](./scripts/duracion.R)
+
 # Datos
 
 [mundata.csv](./data/mundata.csv)
@@ -32,3 +34,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [edudat2.dta](./data/edudat2.dta)
 
 [phd_articulos.csv](./data/phd_articulos.csv)
+
+[data_rossi.csv](./data/data_rossi.csv)
