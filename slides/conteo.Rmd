@@ -153,6 +153,19 @@ Noten también que el cociente de efectos es igual al cociente de coeficientes
 
 Usando esta expresión, muestre que si el $j$ésimo regresor es $x_j$, entonces $100 \beta_j$ es la semielasticidad de $E(y│x)$ con respecto a $x_j$. Este punto es muy útil para la interpretación de los coeficientes de un modelo Poisson.
 
+---
+
+# Interpretación de coeficientes
+
+En el modelo Poisson sabemos que un cambio en un regresor $j$ tiene el efecto:
+    
+$$\frac{\partial E(y|x)}{\partial x_j}=\beta_j exp(x'\beta)$$
+Resolviendo para $\beta_j$ en la expresión que acabamos de encontrar:
+
+$$\beta_j=\frac{\partial E(y|x)}{\partial x_j}\frac{1}{\exp(x'\beta)}=\frac{\partial E(y|x)}{\partial x_j}\frac{1}{E(y|x)}=\frac{\partial\ln E(y|x)}{\partial x_j}$$
+    
+$\frac{\partial\ln E(y|x)}{\partial x_j}$ es una semileasticidad, es decir, un cambio marginal de $x_j$ se asocia con un cambio porcentual en la media condicional igual a $100\beta_j\Delta x_j$
+    
 
 ---
 
