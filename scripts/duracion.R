@@ -5,6 +5,7 @@ options(scipen=999)
 
 #install.packages('survival')
 #install.packages('survminer')
+#install.packages('SurvRegCensCov')
 
 library(tidyverse)
 library(foreign)
@@ -47,11 +48,9 @@ ggsurvplot(km,
 
 
 #Modelo Weibull
-sreg <- survreg(Surv(week, arrest) ~ fin + age + race + wexp + mar + paro + prio,
+sweibull<- survreg(Surv(week, arrest) ~ fin + age + race + wexp + mar + paro + prio,
                 data=data.rossi,
                 dist = "weibull")
 
-SurvRegCensCov::ConvertWeibull(sreg, conf.level = 0.95)
-
-
+SurvRegCensCov::ConvertWeibull(sweibull, conf.level = 0.95)
 

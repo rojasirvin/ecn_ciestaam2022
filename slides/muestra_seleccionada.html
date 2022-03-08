@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelos con muestras seleccionadas</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Modelos con muestras seleccionadas
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+# Agenda
+  
+La selección en los datos tiene dos posibles orígenes
+
+  - Comportamiento 
+
+  - Tratamiento de los datos
+  
+Aprenderemos a reconocer el tipo de muestra que tenemos a la mano
+
+Propondremos dos modelos para tratar problemas de *truncamiento* y *censura*
+
+---
+
+class: inverse, middle, center
+
+# Censura y truncamiento
+
+---
+
+# Mecanismos de censura y truncamiento
+
+Consideremos una variable latente `\(y^*\)` que se observa de acuerdo a una regla de observación `\(g(\cdot)\)`
+
+Lo que observamos es `\(y=g(y^*)\)`
+
+---
+
+# Censura
+
+Siempre observamos `\(X\)` pero no `\(y\)`:
+
+  - Censura por abajo: `\(y=\begin{cases}y^* \quad \text{si }y^*&gt;L \\ L \quad \text{si }y^*\leq L \end{cases}\)`
+  
+  - Censura por arriba: `\(y=\begin{cases}y^* \quad \text{si }y^*&lt;U \\ U \quad \text{si }y^*\geq U \end{cases}\)`
+  
+El típico ejemplo de censura se encuentra en los datos *top coded*, como los de ingreso
+
+Otro ejemplo es la oferta laboral: en un problema de optimización, las horas óptimas pueden ser negativas, pero entonces observamos la variable censurada en el cero
+
+---
+
+# Truncamiento
+
+Tanto `\(X\)` como `\(y\)` son no observados para ciertos valores de `\(y\)`
+
+  - Truncamiento por abajo: `\(y=y^*\)` si `\(y^*&gt;L\)` y no osbervada si `\(y^*\leq L\)`
+  
+  - Truncamiento por abajo: `\(y=y^*\)` si `\(y^*&gt;U\)` y no osbervada si `\(y^*\geq U\)`
+
+---
+
+# Función de verosimilitud censurada
+
+La censura y el truncamiento cambian la función de verosimilitud de los datos observados
+
+Verosimilitud censurada (usando censura por abajo)
+
+- Cuando `\(&gt;L\)`, la densidad de `\(y\)` es la misma que la de `\(y^*\)`, es decir, `\(f(y|x)=f^*(y|x)\)`
+
+- Cuando `\(y=L\)`, la densidad es discreta con masa igual a la probabilidad de que `\(y^*\leq L\)`
+
+En resumen
+$$
+f(y|x)=
+`\begin{cases}
+f^*(y|x) \quad\text{si } y&gt;L \\
+F^*(L|x)\quad\text{si }y=L \\
+\end{cases}`
+$$
+
+La densidad es un híbrido entre una función de masa de probabilidad (una densidad propiamente) y una función de densidad acumulada
+
+---
+
+# Función de verosimilitud censurada
+
+Definamos
+
+$$
+d=
+`\begin{cases}
+1\quad\text{si }y&gt;L \\
+0\quad\text{si }y=L \\
+\end{cases}`
+$$
+
+Entonces la densidad condicional debido a la censura es
+
+`$$f(y|x)=f^*(y|x)^dF^*(L|x)^{1-d}$$`
+
+
+Y la función de log verosimilitud será
+`$$\mathcal{L}_N(\theta)=\sum_i\left(d_i\ln f^*(y_i|x_i,\theta) + (1-d_i)F^*(L_i|x_i,\theta)\right)$$`
+
+Noten que hemos dejado abierta la opción de que `\(L\)` difiera entre individuos, es decir, que `\(L=L_i\)`
+
+Si la densidad de `\(y^*\)`, `\(f^*(y^*|x,\theta)\)`, está bien especificada, `\(\theta_{MV}\)` es consitente y asintóticamente normal
+
+---
+
+# Función de verosimilitud truncada
+
+Consideremos el caso de truncamiento por abajo
+
+Noten que la función de densidad de `\(y\)` es
+
+$$
+`\begin{aligned}
+f(y)&amp;=f^*(y|y&gt;L) \\
+&amp;=\frac{f^*(y)}{P(y|y&gt;L)}\\
+&amp;=\frac{f^*(y)}{1-F^*(L)}
+\end{aligned}`
+$$
+
+Entonces, la log verosimilitud truncada es:
+
+`$$\mathcal{L}_N(\theta)=\sum_i\left(\ln f^*(y_i|x_i,\theta)-\ln(1-F^*(L_i|x_i,\theta))\right)$$`
+
+---
+
+class: inverse, middle, center
+
+# Modelo Tobit
+
+---
+
+# Modelo Tobit
+
+Es una modelo simple y con supuestos muy fuertes sobre la estructura de la censura
+
+Tobin (1958) lo planteó originalmente como una forma de modelar la compra de bienes durables (muchos hogares gastan 0 en bienes durables)
+
+Consideramos un proceso con errores normales
+$$
+`\begin{aligned}
+&amp;y^*=x'\beta+\varepsilon \\
+&amp;\varepsilon\sim\mathcal{N}(0,\sigma^2)
+\end{aligned}`
+$$
+
+Supongamos que observamos `\(y\)` de acuerdo a la siguiente regla:
+
+$$
+y=
+`\begin{cases}
+y^*\quad\text{si }y^*&gt;0 \\
+-\quad\text{si } y^*\leq 0\\
+\end{cases}`
+$$
+---
+
+# Modelo Tobit
+
+Con los errores normales, podemos definir la cdf como
+$$
+`\begin{aligned}
+F^*(0)&amp;=P(y^*\leq0) \\
+&amp;=P(x'\beta+\varepsilon\leq 0) \\
+&amp;=\Phi(-x'\beta/\sigma) \\
+&amp;=1-\Phi(x'\beta/\sigma)
+\end{aligned}`
+$$
+
+Esto nos permite definir la densidad censurada como
+$$
+f(y)=\left(\frac{1}{\sqrt{2\pi\sigma^2}}exp\left(-\frac{1}{2\sigma^2}(y-x'\beta)^2\right)\right)^d\left(1-\Phi\left(\frac{x'\beta}{\sigma}\right)\right)^{1-d}
+$$
+
+Y entonces la función de log verosimilitud será
+$$
+`\begin{aligned}
+\mathcal{L}_N(\beta,\sigma^2)&amp;=\sum_i\left( d_i\left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2}\ln(2\pi)-\frac{1}{2\sigma^2}(y_i-x'\beta)^2\right)+ \right. \\
+&amp;\left. +(1-d_i)\ln\left(1-\Phi\left(\frac{x_i'\beta}{\sigma}\right)\right) \right)
+\end{aligned}`
+$$
+
+---
+
+# Condiciones de primer orden
+
+`$$\frac{\partial \mathcal{L}_N}{\partial \beta}=\sum_i\frac{1}{\sigma^2}\left(d_i(y_i-x_i'\beta)-(1-d_i)\frac{\sigma \phi_i}{1-\Phi_i}\right)x_i=0$$`
+`$$\frac{\partial \mathcal{L}_N}{\partial \sigma^2}=\sum_i\left(di\left(-\frac{1}{2\sigma^2}+\frac{(y_i-x_i'\beta)^2}{2\sigma^4}\right)+(1-d_i)\left(\frac{\phi_ix_i'\beta}{(1-\Phi_i)2\sigma ^3}\right)\right)=0$$`
+
+La solución se obtiene numéricamente
+
+`\(\hat{\theta}\)` es consistente si la densidad está bien especificada
+
+El estimador de MV es asintóticamente normal: `\(\theta\stackrel{a}{\sim}\mathcal{N}(\theta,V(\hat{\theta}))\)`
+
+Maddala (1983) y Amemiya (1985) proveen expresiones para la matriz de varianzas
+
+---
+
+# Nota sobre terminología
+
+El modelo Tobit fue plantado inicialmente para un problema de censura en cero
+
+Cuando nos refiramos al Tobit estaremos pensando en la estructura particular que tienen `\(y^*\)` y `\(y\)`
+
+Si en vez de censura, ocurriera truncamiento, la log verosimilitud sería
+`$$\mathcal{L}_N(\beta,\sigma^2)=\sum_i \left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2}\ln(2\pi)-\frac{1}{2\sigma^2}(y_i-x'\beta)^2-\ln\left(\Phi(x_i'\beta/\sigma)\right)\right)$$`
+---
+
+# ¿Cuáles son las consecuencias de la censura y el truncamiento?
+
+Para ver las consecuencias de ignorar el truncamiento o la censura, consideremos el modelo lineal de variable latente 
+
+`$$E(y ^*|x)=x'\beta$$`
+
+
+Consideremos la media condicional censurada en cero
+
+Calculamos `\(E(y)\)`
+$$
+`\begin{aligned}
+E(y)&amp;= P(d = 0)E(y|d = 0) + P(d = 1)  E(y|d = 1) \\
+&amp;= 0 P(y∗ ≤ 0) + P(y∗&gt; 0) E(y∗|y∗&gt;0) \\
+&amp;= P(y∗&gt; 0)  E(y∗|y∗&gt; 0)
+\end{aligned}`
+$$
+
+Por tanto
+
+`$$E(y|x)=P(\varepsilon&gt;-x'\beta)(x'\beta+E(\varepsilon|\varepsilon&gt;-x'\beta))$$`
+
+---
+
+# ¿Cuáles son las consecuencias de la censura y el truncamiento?
+
+Veamos ahora la media condicional truncada en cero
+
+$$
+`\begin{aligned}
+E(y)&amp;=E(y^*|y^*&gt;0) \\
+&amp;=E(x'\beta+\varepsilon|x'\beta+\varepsilon&gt;0) \\
+&amp;=E(x'\beta|x'\beta+\varepsilon&gt;0)+E(\varepsilon|x'\beta+\varepsilon&gt;0) \\
+\end{aligned}`
+$$
+
+Por tanto
+
+`$$E(y|x,y&gt;0)=x'\beta+E(\varepsilon|\varepsilon&gt;-x'\beta)$$`
+
+Aunque la media condicional de `\(y^*\)` es lineal, la media condicional de `\(y^*\)`, en presencia de truncamiento o censura, no lo es
+
+El estimador de MCO es inconsistente en presencia de censura o truncamiento
+
+Notemos que una pieza clave para entender estos valores esperados es `\(E(\varepsilon|\varepsilon&gt;-x'\beta)&gt;0\)`
+
+---
+
+# Momentos truncados de la distribución normal
+
+Si `\(z\sim\mathcal{N}(0,1)\)`, la esperanza y varianza truncadas de la distribución truncada tienen las siguientes formas:
+
+1. `\(E(z|z&gt;c)=\frac{\phi(c)}{1-\Phi(c)}\)` y `\(E(z|z&gt;-c)=\frac{\phi(c)}{\Phi(c)}\)`
+
+1. `\(E(z^2|z&gt;c)=1+\frac{c\phi(c)}{1-\Phi(c)}\)`
+
+1. `\(V(z|z&gt;c)=1+\frac{c\phi(c)}{1-\Phi(c)}-\frac{\phi(c)^2}{(1-\Phi(c))^2}\)`
+
+Comúnmente a `\(\lambda(z)=\frac{\phi(z)}{\Phi{z}}\)` se le conoce como **inverso de la razón de Mills** (IRM)&lt;sup&gt;1&lt;/sup&gt;
+  
+
+.footnote[
+[1] En CT, el IRM está defnido como `\(\frac{\phi(z)}{\Phi{z}}\)`. En otros textos, el IRM está definido como `\(\frac{\phi(z)}{1-\Phi{z}}=\frac{\phi(z)}{\Phi{-z}}\)`, pues lo que Mills efectivamente tabuló fue `\(\frac{1-\Phi{z}}{\phi(z)}.\)`
+]
+
+
+---
+
+# Medias condicionales en el modelo Tobit
+
+Podemos entonces obtener una expresión para `\(E(\varepsilon|\varepsilon&gt;-x'\beta)\)`:
+
+$$
+`\begin{aligned}
+E(\varepsilon|\varepsilon&gt;-x'\beta)&amp;=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma&gt;-x'\beta/\sigma\right) \\
+&amp;=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
+&amp;=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
+&amp;=\sigma\lambda(x'\beta/\sigma)
+\end{aligned}`
+$$
+Finalmente, noten que:
+$$
+`\begin{aligned}
+P(\varepsilon&gt;-x'\beta)&amp;=P(-\varepsilon&lt;x'\beta) \\
+&amp;=P(-\varepsilon/\sigma&lt;x'\beta/\sigma)\\
+&amp;=\Phi(x'\beta/\sigma)
+\end{aligned}`
+$$
+---
+
+# Medias condicionales en el modelo Tobit
+
+.pull-left[
+Veamos cómo luce el IRM, comparado con la densidad normal y la cdf normal
+
+
+```r
+c &lt;- seq(from=-2, to=2, by=0.1)
+densidad &lt;- dnorm(c)
+cdf &lt;- pnorm(c)
+imr &lt;- densidad /(1-cdf)
+data &lt;- data.frame(cbind(c,densidad,cdf,imr))
+
+data &lt;- data %&gt;% 
+  pivot_longer(cols = c(cdf,densidad,imr),
+               names_to = "type",
+               values_to = "value") 
+
+comparaciones &lt;- ggplot(data=data,
+       aes(x=c, y=value, color=type)) +
+  geom_line()+
+  labs(x = "Corte c", y="CDF, densidad e IRM")
+```
+]
+
+.pull-right[
+
+Noten que `\(\lambda(z)\)` es casi lineal en `\(c\)` para valores de `\(c&gt;0\)`
+
+
+```r
+comparaciones
+```
+
+![](figures/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+
+]
+
+
+
+---
+
+# Media y varianza condicional
+
+Los resultados anteriores nos permiten obtener expresiones para la media y varianza condicional de la distribución truncada **cuando `\(\varepsilon\)` es normal**
+
+Truncada en cero
+$$
+`\begin{aligned}
+&amp;E(y|x,y&gt;0)=x'\beta+\sigma\lambda(x'\beta/\sigma) \\
+&amp;V(y|x,y&gt;0)=\sigma^2(1-x'\beta\lambda(x'\beta/\sigma)-\lambda(x'\beta/\sigma)^2)
+\end{aligned}`
+$$
+
+Censurada en cero
+$$
+`\begin{aligned}
+&amp;E(y|x)=\Phi(x'\beta/\sigma)x'\beta+\sigma\phi(x'\beta/\sigma)\\
+&amp;V(y|x)=\sigma^2\Phi(x'\beta/\sigma)\left((x'\beta)^2+x'\beta\lambda(x'\beta)+1- \\ -\Phi(x'\beta/\sigma)(x'\beta+\lambda(x'\beta/\sigma))\right)
+\end{aligned}`
+$$
+
+---
+
+# Media y varianza condicional
+
+.pull-left[
+Consideremos el siguiente experimento
+
+
+```r
+set.seed(109)
+e &lt;- rnorm(200, mean = 0, sd = 1000)
+lnw &lt;- rnorm(200, mean = 2.75, sd = 0.6)
+
+data &lt;- data.frame(cbind(e,lnw))
+
+data &lt;- data %&gt;% 
+  mutate(ystar = -2500 + 1000*lnw + e,
+         ytrunc = ystar,
+         ytrunc = ifelse(ystar&lt;0,NA,ystar),
+         ycens = ystar,
+         ycens = ifelse(ystar&lt;0,0,ystar),
+         dy = ycens,
+         dy = ifelse(ycens&gt;0,1,dy))
+
+sim_horas &lt;- ggplot(data=data,
+       aes(x=lnw, y=ystar, color=as.factor(dy)))+
+  geom_point()
+```
+]
+
+.pull-right[
+
+```r
+sim_horas
+```
+
+![](figures/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Media y varianza condicional
+
+.pull-left[
+
+Calculemos ahora las medias truncadas y censuradas, que son claramente no lineales
+
+
+```r
+data &lt;- data %&gt;% 
+  mutate(xb = -2500 + 1000*lnw,
+         sigma = 1000,
+         Phi = pnorm(xb/sigma),
+         phi = dnorm(xb/sigma),
+         lambda = phi / Phi,
+         media_trunc = xb+sigma*lambda,
+         media_cens = Phi*xb+sigma*phi)
+
+data &lt;- data %&gt;% 
+  select(ystar,media_trunc, media_cens,xb, lnw, dy) %&gt;% 
+  pivot_longer(cols=c(ystar,media_trunc, media_cens,xb),
+               names_to="estadistica",
+               values_to = "valor")
+```
+]
+
+.pull-right[
+
+```r
+ggplot()+
+  geom_point(data=filter(data,estadistica=="ystar"),
+             aes(x=lnw,y=valor))+
+  geom_line(data=filter(data,estadistica!="ystar"),
+            aes(x=lnw,y=valor, color=estadistica))
+```
+
+![](figures/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Efectos marginales
+
+Los resultados anteriores nos permiten derivar los efectos marginales para la variable latente `\(y^*\)` y para la variable observada `\(y\)`
+
+Efecto marginal en la variable latente: `\(\frac{\partial E(y^*)}{\partial x}=\beta\)`
+
+Efecto marginal en la media truncada en cero: `\(\frac{\partial E(y,y&gt;0|x)}{\partial x}=(1-x'\beta\lambda(x'\beta/\sigma)-\lambda(x'\beta/\sigma)^2)\beta\)`
+
+Efecto marginal en la media censurada en cero:
+`\(\frac{\partial E(y|x)}{\partial x}=\Phi(x'\beta/\sigma)\beta\)` &lt;sup&gt;2&lt;/sup&gt;
+  
+
+.footnote[
+[2] Para ver por qué esto es cierto, consideren un modelo con un solo regresor: `\(y=a+bx\)`. En este caso, la media censurada es `\(E(y|x)=\Phi(\frac{a+x}{\sigma})(a+bx)+\sigma\phi(\frac{a+bx}{\sigma})\)`. Calculamos la derivada:
+
+`$$\frac{\partial E(y|x)}{\partial x}=\Phi(\cdot)b+\left(\phi(\cdot)(a+bx)\frac{b}{\sigma}\right)+\sigma\phi'(\cdot)\frac{b}{\sigma}$$`
+Usamos ahora un resultado de estadística (Cameron &amp; Trivedi, 2005, pág. 542): `\(f'(z)=-zf(z)\)`. Entonces:
+
+`$$\frac{\partial E(y|x)}{\partial x}=\Phi(\cdot)b+\left(\phi(\cdot)(a+bx)\frac{b}{\sigma}\right)-\phi(\cdot)(a+bx)\frac{b}{\sigma}$$`
+
+con lo que se obtiene el resultado.
+
+]
+
+---
+
+# Efectos marginales
+
+¿Cuál efecto nos interesa? Depende de la pregunta
+
+A veces la censura o el truncamiento ocurren simplemente por una cuestión de recolección o codificación de datos, así que el objeto de interés sigue siendo `\(\frac{\partial E(y^*)}{\partial x}\)`
+
+Otras veces, la variable censurada o truncada tiene una interpretación de comportamiento económico
+  
+  - Horas trabajadas deseadas `\(y^*\)` vs horas trabajadas observadas `\(y\)`
+  
+---
+
+# Conclusión triste sobre el Tobit
+
+Relativamente simple y con resultados que pueden obtenerse de forma directa
+
+Recae en una especificación altamente restrictiva de errores normales y homocedásticos
+
+Se debe justificar su uso enfatizando estos supuestos
+
+Es útil porque nos permitió estudiar las consecuencias de la censura y el truncamiento en un contexto muy simplificado
+
+Es de esperarse que estas consecuencias se sostengan y vuelvan incluso más complejo el análisis cuando `\(y^*\)` y `\(y\)` tienen estructuras más generales
+
+---
+
+class: inverse, middle, center
+
+# Modelos de muestras seleccionadas
+
+---
+
+# Modelos de muestras seleccionadas
+
+.pull-left[
+Las muestras pueden estar seleccionadas
+
+  - Por el econometrista
+  - Por que los agentes escogen participar
+
+Ecuación de participación
+
+$$
+y_1=
+`\begin{cases}
+1\quad\text{si } y_1^*&gt;0\\
+0\quad\text{si } y_1^*\leq 0
+\end{cases}`
+$$
+Ecuación de resultados
+
+$$
+y_2=
+`\begin{cases}
+y_2^*\quad\text{si } y_1^*&gt;0\\
+NA \quad\text{si } y_1^*\leq 0
+\end{cases}`
+$$
+]
+
+.pull-right[
+
+Por tanto
+
+$$
+`\begin{aligned}
+y_1^*=x_1'\beta_1+\varepsilon_1 \\
+y_2^*=x_2'\beta_2+\varepsilon_2 \\
+\end{aligned}`
+$$
+En el caso en que `\(y_1^*=y_2^*\)`, el modelo se colapsa al Tobit
+]
+
+---
+
+# Modelo de Heckman
+
+No hay consenso de cómo llamarlo
+
+El estimador que veremos fue desarrollado por Heckman
+
+Algunos otros autores le llaman **Tobit de Tipo II** o **modelo con ecuación de selección**
+
+Supuesto: errores con distribución conjunta normal
+
+$$
+\begin{pmatrix} \varepsilon_1 \\ \varepsilon_2 \end{pmatrix}\sim \mathcal{N}\left(A, B \right)
+$$
+`\(A=\begin{pmatrix} 0 \\ 0  \end{pmatrix}\)`
+
+`\(B=\begin{pmatrix} 1 &amp; \sigma_{12} \\ \sigma_{21} &amp; \sigma_2^2 \\ \end{pmatrix}\)`
+
+`\(\sigma_1^2=1\)` es una normalización
+
+
+---
+
+# Resultados de la distribución normal conjunta
+
+Por nuestro supuesto de normalidad resulta que: `\(\varepsilon_2=\sigma_{12}\varepsilon_1 +\xi\)`
+
+`\(\xi\)` es independiente de `\(\varepsilon_1\)`
+
+
+**Media truncada**
+
+`$$E(y_2|x,y_1^*&gt;0)=x_2'\beta_2+E(\varepsilon_2|\varepsilon_1&gt;-x_1'\beta_1)$$`
+
+Usando el resultado de la normalidad de los errores
+
+$$
+`\begin{aligned}
+E(y_2|x,y_1^*&gt;0)&amp;=x_2'\beta_2+E(\sigma_{12}\varepsilon_1+\xi|\varepsilon_1&gt;-x_1'\beta_1) \\
+&amp;=x_2'\beta_2+\sigma_{12}E(\varepsilon_1|\varepsilon&gt;-x_1'\beta_1) \\
+&amp;=x_2'\beta_2+\sigma_{12}\lambda(x_1'\beta_1)
+\end{aligned}`
+$$
+Similarmente
+`$$V(y_2|x,y_1^*)=\sigma_2^2-\sigma_{12}^2\lambda(x_1'\beta_1)(x_1'\beta_1+\lambda(x_1'\beta_1))$$`
+---
+
+# Resultados de la distribución normal conjunta
+
+**Media censurada**
+
+Cuando `\(y_2=0\)` si `\(y_1^*&lt;0\)`
+
+$$
+`\begin{aligned}
+E(y_2|x)&amp;=E_{y_{1}^{*}}(E(y_2|x,y_1^*)) \\
+&amp;=P(y_1^*\leq 0 | x)\times 0+P(y_1^* &gt; 0 | x)E(y_2^*|X,y_1^*&gt;0) \\
+&amp;=0+\Phi(x_1'\beta_1)(x_2'\beta_2+\sigma_{12}\lambda(x_1'\beta_1)) \\
+&amp;=\Phi(x_1'\beta_1)x_2'\beta_2 + \sigma_{12}\phi(x_1'\beta_1)
+\end{aligned}`
+$$
+---
+
+# Estimador de Heckman en dos etapas
+
+Algunos autores lo conocen como *heckit*
+
+Consiste en ver el problema como uno de *variable omitida* donde la variable omitida es `\(\lambda(x_{1i}'\beta_1)\)`
+
+Podemos pensar el problema en dos etapas
+
+  1. Probit de `\(y_1\)` en `\(x_1\)` usando toda la muestra, dado que asumimos que `\(P(y_1^*&gt;0)=\Phi(X_1'\beta_1)\)`:
+  
+        - Usamos `\(\hat{\beta}_1\)` para calcular el estimado del inverso de la razón de Mills: `$$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$`
+
+  1. Usamos los valores positivos de `\(y_2\)` para estimar la regresión `$$y_{2i}=x_{2i}'\beta_2+\sigma_{12}\lambda(x_{1i}'\beta_1)+v_i$$`
+  
+---
+
+# Estimador de Heckman en dos etapas
+
+Usando el resultado de la varianza truncada podemos estimar `$$\sigma_2^2=\frac{1}{N}\sum_i(\hat{v}_i+\hat{\sigma}_{12}^2\hat{\lambda}_i(x_1'\beta_1+\hat{\lambda}_i))$$`
+donde `\(\hat{v}_i\)` son los residuales estimados
+
+La correlación de errores puede ser estimada como `$$\hat{\rho}=\hat{\sigma}_{12}/\hat{\sigma}_2$$`
+
+Por tanto, una prueba de que `\(\rho=0\)` o `\(\sigma_{12}=0\)` es una prueba de si los errores están correlacionados y si es necesaria la correción por muestra seleccionada
+
+Poner atención a la significancia del inverso de la razón de Mills en la segunda etapa
+
+---
+
+# Errores estándar
+
+Para estimar la varianza hay que considerar dos cosas:
+
+  1. Sabemos que `\(V(y_2|x,y_1^*&gt;0)\)` depende de `\(X\)`, es decir, la varianza es heterocedástica
+  1. En la segunda etapa, `\(\hat{\lambda}_i\)` no es observado sino estimado
+  
+Heckman (1979) provee las fórmulas de los errores correctos (R y otros paquetes ya lo implementan correctamente)
+
+---
+
+# Efectos marginales
+
+Definamos en un solo vector `\(x=[x_1\;x_2]\)`
+
+Podemos reescribir `\(x_1\beta_1=x'\gamma_1\)` y `\(x_2'\beta_2=x'\gamma_2\)`, donde `\(\gamma_1\)` y `\(\gamma_2\)` tendrán algunas entradas iguales a cero si `\(x_1\neq x_2\)`
+
+Así, la media truncada es `$$E(y_2|x)=x'\gamma+\sigma_{12}\lambda(x'\gamma_1)$$`
+
+Y los efectos marginales relevantes son:
+
+1. Proceso sin censura: `\(\frac{\partial E(y_2^*|x)}{\partial x}=\gamma_2\)`
+
+1. Truncado en cero: `\(\frac{\partial E(y_2|x, y_1=1)}{\partial x}=\gamma_2-\sigma_{12}\lambda(x'\gamma_1)(x'\gamma_1+\lambda(x'\gamma_1))\)`
+
+1. Censurado en cero: `\(\frac{\partial E(y_2|x)}{\partial x}=\gamma_1\phi(x'\gamma_1)x'\gamma_2+\Phi(x'\gamma_1)\gamma_2-\sigma_{12}x'\gamma_1\phi(x'\gamma_1)\gamma_1\)`
+
+---
+
+# Detalles de la estimación
+
+En teoría, los parámetros del modelo de dos ecuaciones están identificados si los mismos regresores se incluyen en ambas ecuaciones
+
+Pero cuando imponemos errores normales, al hacer `\(x_1=x_2\)` y, recordando que el IRM es casi lineal para un rango grande de su argumento, la segunda ecuación indica que
+
+`$$E(y_2|y_1^*&gt;0)\approx x_2'\beta_2+a+bx_2'\beta_1$$`
+Es decir, el modelo está cerca de no estar identificado
+
+Por tanto, en la práctica, se recomienda que haya una o varias variables que estén en una ecuación y no en la otra
+
+Algunos autores llaman a esto **restricción de exclusión**, término que no me gusta tanto porque se confunde con la misma restricción en el contexto de variables instrumentales
+
+---
+
+# Resumen
+
+- Tanto el tobit como el modelo de muestras seleccionadas recaen en fuertes supuestos distribucionales
+
+- En el modelo de muestras seleccionadas relajamos el supuesto de que el mismo proceso da origen a la censura o truncamiento, y a la variable dependiente
+
+- El tobit requiere de una interpretación de `\(y^*\)` similar a la de *horas deseadas*
+
+- El modelo de muestra seleccionada es más intuitivo para un proceso del tipo:
+  - Decisión de participación
+  - Margen intensivo
+
+---
+
+# Próxima sesión
+
+- Hablaremos sobre un tema de gran importancia: variables instrumentales
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

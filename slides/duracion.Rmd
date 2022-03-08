@@ -34,10 +34,19 @@ library(sandwich)
 library(stargazer)
 library(gtsummary)
 library(foreign)
+library(survival)
+library(survminer) # incluye ggsurvplot para graficar curvas de sobrevivencia
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+```{css, echo=FALSE}
+pre {
+  max-width: 100%;
+  overflow-x: scroll;
+}
 ```
 
 .title[
@@ -303,7 +312,7 @@ ggsurvplot(fit = km,
 ]
 .pull-right[
 
-```{r, echo=F, include=T, message=F, fig.height=3}
+```{r, echo=F, include=T, message=F, fig.height=7}
 
 ggsurvplot(fit = km,
            data =data.rossi,
@@ -335,7 +344,7 @@ $$\hat{V}(\hat{\Lambda}(t))=\sum_{j|t_j\leq t}\frac{d_j}{r_j^2}$$
 # Ejemplo del estimador NA
 
 .pull-left[
-```{r, echo=T, eval=F, message=F, fig.height=6}
+```{r, echo=T, eval=F, message=F, fig.height=7}
 
 ggsurvplot(km,
            fun = "cumhaz",
@@ -385,16 +394,16 @@ class: inverse, middle, center
 
 # Estimación paramétrica
 
-- Consideremos la función de densidad de la duración parametrizada con $\theta$, $f(t|x,\theta)$
+Consideremos la función de densidad de la duración parametrizada con $\theta$, $f(t|x,\theta)$
 
-- Supongamos que $x$ no varía en el tiempo
+Supongamos que $x$ no varía en el tiempo
 
-- La duración observada $t$ puede estar incompleta por un problema de censura
+La duración observada $t$ puede estar incompleta por un problema de censura
 
-- La verosimilitud tendrá dos partes, una para las observaciones sin censuar y otra para las censuradas
+La verosimilitud tendrá dos partes, una para las observaciones sin censuar y otra para las censuradas
 
 
-- Para las observaciones censuradas tenemos
+Para las observaciones censuradas tenemos
 
 $$
 \begin{aligned}
@@ -407,26 +416,26 @@ $$
 ---
 # Estimación paramétrica
 
-- Definiendo
+Definiendo
 
 $$\delta_i=\begin{cases}1 \quad \text{sin censura} \\ 0 \quad \text{con censura}\end{cases}$$
 
-- La verosimilitud es
+La verosimilitud es
 
 $$L_i=f(t_i|x_i,\theta)^{\delta_i}S(t_i|x_i,\theta)^{1-\delta_i}$$
 
-- Y la log verosimilitud es
+Y la log verosimilitud es
 
 $$\mathcal{L}(\theta)=\sum\left(\delta_i \ln f(t_i|x_i)+(1-\delta_i)\ln S(t_i|x_i,\theta)\right)$$
 ---
 
 # Estimación paramétrica
 
-- Notemos que como $S(t)=exp\left(\Lambda(t)\right)$, entonces $\ln S(t)=\Lambda(t)$
+Notemos que como $S(t)=exp\left(\Lambda(t)\right)$, entonces $\ln S(t)=\Lambda(t)$
 
-- Además, como $\lambda(t)=\frac{f(t)}{S(t)}$, entonces $ln(f(t))=\ln\lambda(t)+\ln S(t)$
+Además, como $\lambda(t)=\frac{f(t)}{S(t)}$, entonces $ln(f(t))=\ln\lambda(t)+\ln S(t)$
 
-- Sustituyendo estos resultados en la log verosimilitud
+Sustituyendo estos resultados en la log verosimilitud
 
 $$
 \begin{aligned}
@@ -434,9 +443,9 @@ $$
 &=\sum_i\left(\delta_i \ln\lambda(t_i|x_i,\theta) + \Lambda(t_i|x_i,\theta)\right)
 \end{aligned}
 $$
-- Estimación por MV
+Estimamos por MV
 
-- Sabemos que si la densidad está bien planteada, obtenemos estimadores consistentes y que
+Sabemos que si la densidad está bien planteada, obtenemos estimadores consistentes y que
 
 $$\hat{\theta}\stackrel{a}{\sim}\mathcal{N}\left(0,\left(-E\frac{\partial^2\mathcal{L}}{\partial \theta\partial\theta'}\right)^{-1}\right)$$
 
@@ -444,17 +453,17 @@ $$\hat{\theta}\stackrel{a}{\sim}\mathcal{N}\left(0,\left(-E\frac{\partial^2\math
 
 # Ejemplo Weibull
 
-- Para implementar la estimación tenemos que especificar una forma funcional
+Para implementar la estimación tenemos que especificar una forma funcional
 
-- Asumimos $\lambda(t)=\gamma \alpha t^{\alpha-1}$, con $\alpha>0$ y $\gamma>0$
+Asumimos $\lambda(t)=\gamma \alpha t^{\alpha-1}$, con $\alpha>0$ y $\gamma>0$
 
-- Por tanto $\Lambda(t)=\gamma t^{\alpha}$ (ver CT tabla 17.4)
+Por tanto $\Lambda(t)=\gamma t^{\alpha}$ (ver CT tabla 17.4)
 
-- Y entonces $S(t)=exp(-\Lambda(t))=exp(-\gamma t^{\alpha})$
+Y entonces $S(t)=exp(-\Lambda(t))=exp(-\gamma t^{\alpha})$
 
-- Parametrizamos $\gamma$, $\gamma=exp(x_i'\beta)$
+Parametrizamos $\gamma$, $\gamma=exp(x_i'\beta)$
 
-- Con estas formas funcionales, el log de la verosimilitud no censurada $f(t)=\Lambda(t) S(t)$ es:
+Con estas formas funcionales, el log de la verosimilitud no censurada $f(t)=\Lambda(t) S(t)$ es:
 
 $$
 \begin{aligned}
@@ -472,7 +481,7 @@ $$\mathcal{L}_i=\sum_i\left(\delta_i\left(x_i'\beta+\ln \alpha+(\alpha-1)\ln t -
 
 # Otras funciones de duración
 
-- Podemos emplear
+Podemos emplear
 
   - Exponencial
   
@@ -484,37 +493,40 @@ $$\mathcal{L}_i=\sum_i\left(\delta_i\left(x_i'\beta+\ln \alpha+(\alpha-1)\ln t -
   
   - Log-logística
   
-- Vert Tabla 17.5 en CT
-  
+Vert Tabla 17.5 en CT
+
+Weibull es muy usada porque, con dos parámetros, es suficiente flexible para modelar diversas formas de la función de riesgo
+
 ---
 
 # Interpretación
 
-- Una forma de interpretar los resultados de la estimación es analizando el efecto de los regresores $x$ en la media condicional
+Una forma de interpretar los resultados de la estimación es analizando el efecto de los regresores $x$ en la media condicional
 
-- Con la parametrización Weibull y $\gamma=exp(x'\beta)$ la duración completada esperada es
+Con la parametrización Weibull y $\gamma=exp(x'\beta)$ la duración completada esperada es
 
 $$
 \begin{aligned}
 E(T^*|x)&=exp\left(-\frac{x'\beta}{\alpha}\right)\Gamma(\alpha^{-1}+1) \\
-&=exp\left(-\frac{x'\beta}{\alpha}\right)\Gamma(\alpha^{-1})
+&=exp\left(-\frac{x'\beta}{\alpha}\right)\Gamma(\alpha^{-1})/\alpha
 \end{aligned}
 $$
 donde $T^*$ indica la duración no censurada
 
-- Podemos usar nuestro modelo para obtener la predicción de la duración del desempleo para un vector $x$
+Podemos usar nuestro modelo para obtener la predicción de la duración del desempleo para un vector $x$
+
+La tabla 17.4 en CT muestra características de las distribuciones exponencial y la Weibull
 
 ---
 
 # Interpretación
 
-- Otra manera de interpretar los resultados es estimando el efecto de un cambio en $x_j$ sobre la tasa de riesgo
+Otra manera de interpretar los resultados es estimando el efecto de un cambio en $x_j$ sobre la tasa de riesgo
 
-- En el caso Weibull, la tasa de riesgo es
+En el caso Weibull, la tasa de riesgo es
 
 $$\lambda(t)=\gamma\alpha t^{\alpha-1}=exp(x'\beta)\alpha t^{\alpha-1}$$
-
-- Y por tanto
+Y por tanto
 
 $$
 \begin{aligned}
@@ -524,9 +536,57 @@ $$
 $$
 
 
-- En el caso Weibull, los cambios en los regresores tienen un efecto multiplicativo en el riesgo
+En el caso Weibull, los cambios en los regresores tienen un efecto multiplicativo en el riesgo
 
-- Si $\beta_j>0$, entoces un aumento en $x_j$ incrementa el riesgo y se reduce la duración
+Si $\beta_j>0$, entoces un aumento en $x_j$ incrementa el riesgo y se reduce la duración
+
+---
+
+# Ejemplo
+
+.pull-left[
+
+Usamos los mismos datos para estimar un modelo Weibull del tiempo en ser nuevamente arrestado
+
+Nos interesa el efecto de recibir ayuda financiera **fin**, controlando por una serie de observables
+
+```{r, echo=T, eval=T, message=F, fig.height=6}
+sweibull<- survreg(Surv(week, arrest) ~ fin + age + race + wexp + mar + paro + prio,
+                data=data.rossi,
+                dist = "weibull")
+
+```
+]
+
+.pull-right[
+```{r, echo=F, eval=T, message=F, fig.height=6}
+summary(sweibull)
+
+```
+]
+
+
+
+---
+
+# Ejemplo
+
+.pull-left[
+En R, para obtener los coeficientes en la misma parametrización que vimos en clase (la de CT y la más común en economía), tenemos que convertir los coeficientes producidos por *survreg* como sigue
+
+$$\hat{\beta}_{j}=-\frac{\hat{\beta}_{j,survreg}}{\hat{\sigma}_{survreg}}$$
+En este ejemplo, el coeficiente de la edad es negativo, lo que se interpreta como una reducción en el riesgo ante un cambio de una unidad en la edad
+
+]
+
+.pull-right[
+Usando la función *ConvertWeibull* del paquete *SurvRegCensCov* esto se hace en un solo paso
+
+```{r, echo=T, eval=T, message=F, fig.height=6}
+SurvRegCensCov::ConvertWeibull(sweibull, conf.level = 0.95)
+```
+
+]
 
 ---
 
