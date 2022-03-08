@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 10. [Modelos de riesgo y sobrevivencia](./slides/duracion.html)
 
-11. Modelos de selección
+11. [Modelos de selección](./slides/muestra_seleccionada.html)
 
 12. Variables instrumentales
 

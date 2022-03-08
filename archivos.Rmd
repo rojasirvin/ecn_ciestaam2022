@@ -23,6 +23,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [duracion.R](./scripts/duracion.R)
 
+[muestra_seleccionada.R](./scripts/muestra_seleccionada.R)
+
+
 # Datos
 
 [mundata.csv](./data/mundata.csv)
@@ -36,3 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 [phd_articulos.csv](./data/phd_articulos.csv)
 
 [data_rossi.csv](./data/data_rossi.csv)
+
+[mroz.dta](./data/mroz.dta)
+
+[limdep_ambexp.data](./data/limdep_ambexp.dta)

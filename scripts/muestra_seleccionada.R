@@ -181,3 +181,35 @@ data %>%
     geom_line(data=filter(data,estadistica!="ystar"),
               aes(x=lnw,y=valor, color=estadistica))
     
+
+
+#Heckit----
+
+data.gasto <- read.dta("./data/limdep_ambexp.dta")
+
+#Heckit en un solo paso
+mheck.mv <- heckit(selection = dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                outcome = lambexp ~ age + female  + blhisp + totchr,
+                method = "ml",
+                data = data.gasto)
+
+mheck.2e <- heckit(selection = dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                   outcome = lambexp ~ age + female  + blhisp + totchr,
+                   method = "2step",
+                   data = data.gasto)
+
+
+#Ahora el estimador en dos etapas a mano
+
+mheck1 <- probit(dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                 data = data.gasto)
+
+data.gasto <- data.gasto %>% 
+  mutate(index=predict(mheck1,.),
+         imr = dnorm(index)/pnorm(index))
+
+mheck2 <- lm(lambexp ~ age + female  + blhisp + totchr + imr,
+             data = filter(data.gasto, dambexp==1))
+
+stargazer::stargazer(mheck.mv, mheck.2e, mheck1, mheck2,
+                     type = "text")
