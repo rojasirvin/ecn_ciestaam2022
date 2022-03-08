@@ -237,6 +237,144 @@ Si en vez de censura, ocurriera truncamiento, la log verosimilitud sería
 `$$\mathcal{L}_N(\beta,\sigma^2)=\sum_i \left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2}\ln(2\pi)-\frac{1}{2\sigma^2}(y_i-x'\beta)^2-\ln\left(\Phi(x_i'\beta/\sigma)\right)\right)$$`
 ---
 
+# Ejemplo: *tobit*
+
+Veamos un problema típico de economía laboral, la participación de las mujeres en el mercado de trabajo
+
+Usemos unos datos bastante estudiados *Mroz.csv*
+
+
+
+```r
+data.part &lt;- read.dta("../data/mroz.dta") 
+
+data.part %&gt;% 
+  filter(hours&lt;=3000) %&gt;% 
+  ggplot(aes(x=hours)) +
+  geom_histogram()
+```
+---
+
+# Ejemplo: *tobit*
+
+Estimemos ahora el tobit, usando *tobit* del paquete *AER*
+
+También estimamos MCO a la muestra completa y a la muestra de participantes
+
+
+```r
+#Hacemos MCO ignorando la solución de esquina
+mmco &lt;- lm(hours ~ nwifeinc + educ + exper +
+           expersq + age + kidslt6 + kidsge6,
+         data = data.part)
+
+#Si truncamos la muestra
+mmcot &lt;- lm(hours ~ nwifeinc + educ + exper +
+             expersq + age + kidslt6 + kidsge6,
+           data = filter(data.part,hours&gt;0))
+
+#Usando tobit
+mtobit &lt;- AER::tobit(hours ~ nwifeinc + educ + exper +
+        expersq + age + kidslt6 + kidsge6,
+        left = 0,
+        data = data.part)
+```
+---
+
+# Ejemplo: *tobit*
+
+.pull-left[
+
+```r
+sjPlot::tab_model(mmco, mmcot, mtobit,
+                  dv.labels = c("OLS (todas)", "OLS (h&gt;0)", "Tobit"),
+                  collapse.se = TRUE,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+```
+]
+
+
+.pull-right[
+&lt;table style="border-collapse:collapse; border:none;"&gt;
+&lt;tr&gt;
+&lt;th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; "&gt;&amp;nbsp;&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;OLS (todas)&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;OLS (h&gt;0)&lt;/th&gt;
+&lt;th colspan="1" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; "&gt;Tobit&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; "&gt;Predictors&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  "&gt;Estimates&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;(Intercept)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;1330.48 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(270.78)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;2056.64 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(346.48)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;965.31 &lt;sup&gt;**&lt;/sup&gt;&lt;br&gt;(446.44)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;nwifeinc&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;3.45 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(2.54)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;0.44 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(3.61)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;8.81 &lt;sup&gt;**&lt;/sup&gt;&lt;br&gt;(4.46)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;educ&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;28.76 &lt;sup&gt;**&lt;/sup&gt;&lt;br&gt;(12.95)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;22.79 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(16.43)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;80.65 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(21.58)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;exper&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;65.67 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(9.96)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;47.01 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(14.56)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;131.56 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(17.28)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;expersq&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.70 &lt;sup&gt;**&lt;/sup&gt;&lt;br&gt;(0.32)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;0.51 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(0.44)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;1.86 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(0.54)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;age&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;30.51 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(4.36)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;19.66 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(5.89)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;54.41 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(7.42)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;kidslt6&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;442.09 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(58.85)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;305.72 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(96.45)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;894.02 &lt;sup&gt;***&lt;/sup&gt;&lt;br&gt;(111.88)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; "&gt;kidsge6&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;32.78 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(23.18)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;72.37 &lt;sup&gt;**&lt;/sup&gt;&lt;br&gt;(30.36)&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "&gt;&amp;#45;16.22 &lt;sup&gt;&lt;/sup&gt;&lt;br&gt;(38.64)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;"&gt;Observations&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;753&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;428&lt;/td&gt;
+&lt;td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="1"&gt;753&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td colspan="4" style="font-style:italic; border-top:double black; text-align:right;"&gt;* p&amp;lt;0.1&amp;nbsp;&amp;nbsp;&amp;nbsp;** p&amp;lt;0.05&amp;nbsp;&amp;nbsp;&amp;nbsp;*** p&amp;lt;0.01&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+]
+
+---
+
 # ¿Cuáles son las consecuencias de la censura y el truncamiento?
 
 Para ver las consecuencias de ignorar el truncamiento o la censura, consideremos el modelo lineal de variable latente 
@@ -302,32 +440,9 @@ Comúnmente a `\(\lambda(z)=\frac{\phi(z)}{\Phi{z}}\)` se le conoce como **inver
 [1] En CT, el IRM está defnido como `\(\frac{\phi(z)}{\Phi{z}}\)`. En otros textos, el IRM está definido como `\(\frac{\phi(z)}{1-\Phi{z}}=\frac{\phi(z)}{\Phi{-z}}\)`, pues lo que Mills efectivamente tabuló fue `\(\frac{1-\Phi{z}}{\phi(z)}.\)`
 ]
 
-
 ---
 
-# Medias condicionales en el modelo Tobit
-
-Podemos entonces obtener una expresión para `\(E(\varepsilon|\varepsilon&gt;-x'\beta)\)`:
-
-$$
-`\begin{aligned}
-E(\varepsilon|\varepsilon&gt;-x'\beta)&amp;=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma&gt;-x'\beta/\sigma\right) \\
-&amp;=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
-&amp;=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
-&amp;=\sigma\lambda(x'\beta/\sigma)
-\end{aligned}`
-$$
-Finalmente, noten que:
-$$
-`\begin{aligned}
-P(\varepsilon&gt;-x'\beta)&amp;=P(-\varepsilon&lt;x'\beta) \\
-&amp;=P(-\varepsilon/\sigma&lt;x'\beta/\sigma)\\
-&amp;=\Phi(x'\beta/\sigma)
-\end{aligned}`
-$$
----
-
-# Medias condicionales en el modelo Tobit
+# Ilustración del IMR
 
 .pull-left[
 Veamos cómo luce el IRM, comparado con la densidad normal y la cdf normal
@@ -345,8 +460,8 @@ data &lt;- data %&gt;%
                names_to = "type",
                values_to = "value") 
 
-comparaciones &lt;- ggplot(data=data,
-       aes(x=c, y=value, color=type)) +
+comparaciones &lt;- data %&gt;% 
+  ggplot(aes(x=c, y=value, color=type)) +
   geom_line()+
   labs(x = "Corte c", y="CDF, densidad e IRM")
 ```
@@ -361,12 +476,35 @@ Noten que `\(\lambda(z)\)` es casi lineal en `\(c\)` para valores de `\(c&gt;0\)
 comparaciones
 ```
 
-![](figures/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+![](figures/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 
 
 ]
 
 
+---
+
+# Medias condicionales en el modelo Tobit
+
+Los momentos truncados nos sirven entonces obtener una expresión para `\(E(\varepsilon|\varepsilon&gt;-x'\beta)\)`:
+
+$$
+`\begin{aligned}
+E(\varepsilon|\varepsilon&gt;-x'\beta)&amp;=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma&gt;-x'\beta/\sigma\right) \\
+&amp;=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
+&amp;=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
+&amp;=\sigma\lambda(x'\beta/\sigma)
+\end{aligned}`
+$$
+
+Finalmente, noten que:
+$$
+`\begin{aligned}
+P(\varepsilon&gt;-x'\beta)&amp;=P(-\varepsilon&lt;x'\beta) \\
+&amp;=P(-\varepsilon/\sigma&lt;x'\beta/\sigma)\\
+&amp;=\Phi(x'\beta/\sigma)
+\end{aligned}`
+$$
 
 ---
 
@@ -414,8 +552,8 @@ data &lt;- data %&gt;%
          dy = ycens,
          dy = ifelse(ycens&gt;0,1,dy))
 
-sim_horas &lt;- ggplot(data=data,
-       aes(x=lnw, y=ystar, color=as.factor(dy)))+
+sim_horas &lt;- data %&gt;% 
+  ggplot(aes(x=lnw, y=ystar, color=as.factor(dy)))+
   geom_point()
 ```
 ]
@@ -426,7 +564,7 @@ sim_horas &lt;- ggplot(data=data,
 sim_horas
 ```
 
-![](figures/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](figures/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -459,14 +597,15 @@ data &lt;- data %&gt;%
 .pull-right[
 
 ```r
-ggplot()+
-  geom_point(data=filter(data,estadistica=="ystar"),
-             aes(x=lnw,y=valor))+
-  geom_line(data=filter(data,estadistica!="ystar"),
-            aes(x=lnw,y=valor, color=estadistica))
+data %&gt;% 
+  filter(estadistica=="ystar") %&gt;% 
+  ggplot(aes(x=lnw,y=valor))+
+    geom_point()+
+    geom_line(data=filter(data,estadistica!="ystar"),
+              aes(x=lnw,y=valor, color=estadistica))
 ```
 
-![](figures/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+![](figures/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -505,7 +644,7 @@ A veces la censura o el truncamiento ocurren simplemente por una cuestión de re
 
 Otras veces, la variable censurada o truncada tiene una interpretación de comportamiento económico
   
-  - Horas trabajadas deseadas `\(y^*\)` vs horas trabajadas observadas `\(y\)`
+Por ejemplo, horas trabajadas deseadas `\(y^*\)` vs horas trabajadas observadas `\(y\)`
   
 ---
 
@@ -644,7 +783,9 @@ Podemos pensar el problema en dos etapas
 
   1. Probit de `\(y_1\)` en `\(x_1\)` usando toda la muestra, dado que asumimos que `\(P(y_1^*&gt;0)=\Phi(X_1'\beta_1)\)`:
   
-        - Usamos `\(\hat{\beta}_1\)` para calcular el estimado del inverso de la razón de Mills: `$$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$`
+    - Usamos `\(\hat{\beta}_1\)` para calcular el estimado del inverso de la razón de Mills:
+        
+        `$$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$`
 
   1. Usamos los valores positivos de `\(y_2\)` para estimar la regresión `$$y_{2i}=x_{2i}'\beta_2+\sigma_{12}\lambda(x_{1i}'\beta_1)+v_i$$`
   
@@ -709,13 +850,13 @@ Algunos autores llaman a esto **restricción de exclusión**, término que no me
 
 # Resumen
 
-- Tanto el tobit como el modelo de muestras seleccionadas recaen en fuertes supuestos distribucionales
+Tanto el tobit como el modelo de muestras seleccionadas recaen en fuertes supuestos distribucionales
 
-- En el modelo de muestras seleccionadas relajamos el supuesto de que el mismo proceso da origen a la censura o truncamiento, y a la variable dependiente
+En el modelo de muestras seleccionadas relajamos el supuesto de que el mismo proceso da origen a la censura o truncamiento, y a la variable dependiente
 
-- El tobit requiere de una interpretación de `\(y^*\)` similar a la de *horas deseadas*
+El tobit requiere de una interpretación de `\(y^*\)` similar a la de *horas deseadas*
 
-- El modelo de muestra seleccionada es más intuitivo para un proceso del tipo:
+El modelo de muestra seleccionada es más intuitivo para un proceso del tipo:
   - Decisión de participación
   - Margen intensivo
 

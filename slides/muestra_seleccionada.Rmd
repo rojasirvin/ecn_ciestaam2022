@@ -275,12 +275,63 @@ data.part %>%
   geom_histogram()
 
 ```
-
 ---
 
-class: inverse, middle, center
+# Ejemplo: *tobit*
 
-# ¿Y si ignoramos la selección?
+Estimemos ahora el tobit, usando *tobit* del paquete *AER*
+
+También estimamos MCO a la muestra completa y a la muestra de participantes
+
+```{r, echo=T, eval=T, message=F, results=F, fig.height=6}
+#Hacemos MCO ignorando la solución de esquina
+mmco <- lm(hours ~ nwifeinc + educ + exper +
+           expersq + age + kidslt6 + kidsge6,
+         data = data.part)
+
+#Si truncamos la muestra
+mmcot <- lm(hours ~ nwifeinc + educ + exper +
+             expersq + age + kidslt6 + kidsge6,
+           data = filter(data.part,hours>0))
+
+#Usando tobit
+mtobit <- AER::tobit(hours ~ nwifeinc + educ + exper +
+        expersq + age + kidslt6 + kidsge6,
+        left = 0,
+        data = data.part)
+```
+---
+
+# Ejemplo: *tobit*
+
+.pull-left[
+```{r, echo=T, eval=F, message=F, fig.height=6}
+sjPlot::tab_model(mmco, mmcot, mtobit,
+                  dv.labels = c("OLS (todas)", "OLS (h>0)", "Tobit"),
+                  collapse.se = TRUE,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+
+```
+]
+
+
+.pull-right[
+```{r, echo=F, eval=T, message=F, fig.height=6}
+sjPlot::tab_model(mmco, mmcot, mtobit,
+                  dv.labels = c("OLS (todas)", "OLS (h>0)", "Tobit"),
+                  collapse.se = TRUE,
+                  show.ci = F,
+                  show.r2  =F,
+                  wrap.labels = 35,
+                  p.style = "stars",
+                  p.threshold = c(0.1, 0.05, 0.01))
+
+```
+]
 
 ---
 
@@ -349,32 +400,9 @@ Comúnmente a $\lambda(z)=\frac{\phi(z)}{\Phi{z}}$ se le conoce como **inverso d
 [1] En CT, el IRM está defnido como $\frac{\phi(z)}{\Phi{z}}$. En otros textos, el IRM está definido como $\frac{\phi(z)}{1-\Phi{z}}=\frac{\phi(z)}{\Phi{-z}}$, pues lo que Mills efectivamente tabuló fue $\frac{1-\Phi{z}}{\phi(z)}.$
 ]
 
-
 ---
 
-# Medias condicionales en el modelo Tobit
-
-Podemos entonces obtener una expresión para $E(\varepsilon|\varepsilon>-x'\beta)$:
-
-$$
-\begin{aligned}
-E(\varepsilon|\varepsilon>-x'\beta)&=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma>-x'\beta/\sigma\right) \\
-&=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
-&=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
-&=\sigma\lambda(x'\beta/\sigma)
-\end{aligned}
-$$
-Finalmente, noten que:
-$$
-\begin{aligned}
-P(\varepsilon>-x'\beta)&=P(-\varepsilon<x'\beta) \\
-&=P(-\varepsilon/\sigma<x'\beta/\sigma)\\
-&=\Phi(x'\beta/\sigma)
-\end{aligned}
-$$
----
-
-# Medias condicionales en el modelo Tobit
+# Ilustración del IMR
 
 .pull-left[
 Veamos cómo luce el IRM, comparado con la densidad normal y la cdf normal
@@ -391,8 +419,8 @@ data <- data %>%
                names_to = "type",
                values_to = "value") 
 
-comparaciones <- ggplot(data=data,
-       aes(x=c, y=value, color=type)) +
+comparaciones <- data %>% 
+  ggplot(aes(x=c, y=value, color=type)) +
   geom_line()+
   labs(x = "Corte c", y="CDF, densidad e IRM")
 ```
@@ -410,6 +438,29 @@ comparaciones
 ]
 
 
+---
+
+# Medias condicionales en el modelo Tobit
+
+Los momentos truncados nos sirven entonces obtener una expresión para $E(\varepsilon|\varepsilon>-x'\beta)$:
+
+$$
+\begin{aligned}
+E(\varepsilon|\varepsilon>-x'\beta)&=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma>-x'\beta/\sigma\right) \\
+&=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
+&=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
+&=\sigma\lambda(x'\beta/\sigma)
+\end{aligned}
+$$
+
+Finalmente, noten que:
+$$
+\begin{aligned}
+P(\varepsilon>-x'\beta)&=P(-\varepsilon<x'\beta) \\
+&=P(-\varepsilon/\sigma<x'\beta/\sigma)\\
+&=\Phi(x'\beta/\sigma)
+\end{aligned}
+$$
 
 ---
 
@@ -456,9 +507,10 @@ data <- data %>%
          dy = ycens,
          dy = ifelse(ycens>0,1,dy))
 
-sim_horas <- ggplot(data=data,
-       aes(x=lnw, y=ystar, color=as.factor(dy)))+
+sim_horas <- data %>% 
+  ggplot(aes(x=lnw, y=ystar, color=as.factor(dy)))+
   geom_point()
+
 
 ```
 ]
@@ -497,11 +549,12 @@ data <- data %>%
 
 .pull-right[
 ```{r echo=T, eval=T, fig.height=4.5}
-ggplot()+
-  geom_point(data=filter(data,estadistica=="ystar"),
-             aes(x=lnw,y=valor))+
-  geom_line(data=filter(data,estadistica!="ystar"),
-            aes(x=lnw,y=valor, color=estadistica))
+data %>% 
+  filter(estadistica=="ystar") %>% 
+  ggplot(aes(x=lnw,y=valor))+
+    geom_point()+
+    geom_line(data=filter(data,estadistica!="ystar"),
+              aes(x=lnw,y=valor, color=estadistica))
 ```
 ]
 
@@ -541,7 +594,7 @@ A veces la censura o el truncamiento ocurren simplemente por una cuestión de re
 
 Otras veces, la variable censurada o truncada tiene una interpretación de comportamiento económico
   
-  - Horas trabajadas deseadas $y^*$ vs horas trabajadas observadas $y$
+Por ejemplo, horas trabajadas deseadas $y^*$ vs horas trabajadas observadas $y$
   
 ---
 
@@ -680,7 +733,9 @@ Podemos pensar el problema en dos etapas
 
   1. Probit de $y_1$ en $x_1$ usando toda la muestra, dado que asumimos que $P(y_1^*>0)=\Phi(X_1'\beta_1)$:
   
-        - Usamos $\hat{\beta}_1$ para calcular el estimado del inverso de la razón de Mills: $$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$
+    - Usamos $\hat{\beta}_1$ para calcular el estimado del inverso de la razón de Mills:
+        
+        $$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$
 
   1. Usamos los valores positivos de $y_2$ para estimar la regresión $$y_{2i}=x_{2i}'\beta_2+\sigma_{12}\lambda(x_{1i}'\beta_1)+v_i$$
   

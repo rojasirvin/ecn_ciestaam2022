@@ -103,75 +103,81 @@ medias <- medias %>%
   mutate(index=predict(mtobit, newdata=medias),
          Phi = pnorm(index/mtobit$scale),
          efecto_educ = Phi*mtobit$coef[3])
-         
-
-
-
-#Heckit----
-
-#Cargo los datos porque ya le añadimos cosas antes
-data.part <- read.dta("./data/mroz.dta") 
-
-mheckit <- heckit(inlf ~ age + I( age^2 ) + kidslt6 + huswage + educ,
-                  log(wage) ~ educ + exper + I( exper^2 ) + city,
-                  data=data.part)
-
-summary(mheckit)
 
 
 
 
 
-stargazer::stargazer(mheckit, mlineal,
-                     type = "text")
+#Consecuencias de ignorar censura y truncamiento
 
+#Construimos un vector de -2 a 2 y calculamos la densidad
+#la cdf, el IMR y lo ponemos en un data frame
+c <- seq(from=-2, to=2, by=0.1)
+densidad <- dnorm(c)
+cdf <- pnorm(c)
+imr <- densidad /(1-cdf)
+data <- data.frame(cbind(c,densidad,cdf,imr))
 
-sjPlot::tab_model(mheckit, mlineal,
-                  collapse.se = TRUE,
-                  transform = F,
-                  show.ci = F,
-                  show.r2  =F,
-                  wrap.labels = 35,
-                  p.style = "stars",
-                  p.threshold = c(0.1, 0.05, 0.01))
+#Ponemos los puntos en una sola columna
+data <- data %>% 
+  pivot_longer(cols = c(cdf,densidad,imr),
+               names_to = "type",
+               values_to = "value") 
 
+data %>% 
+  ggplot(aes(x=c, y=value, color=type)) +
+  geom_line()+
+  labs(x = "Corte c", y="CDF, densidad e IRM")
 
-
-
-#Heckit----
-
-
-data.gastos <- read.dta("./data/limdep_ambexp.dta")
-
-data.gastos <- data.gastos %>% 
-  mutate(part=ifelse(ambexp>0,1,0))
-
-
-
-mheckit <- heckit(selection = part ~ educ + age + female + blhisp + fairpoor + totchr,
-                  outcome = lambexp ~ educ + age + female + I(age^2) + I(educ^2) + age*female,
-                  method = "ml",
-                  data=data.gastos) 
-summary(mheckit)
+#lambda(z) es casi lineal en c para valores de c>0
 
 
 
-#Hagámoslo a mano
-
-primera <- glm(part ~ educ + age + female + blhisp + fairpoor + totchr,
-               family = binomial(link = "probit"),
-               data = data.gastos)
-
-#Construyo el IMR
-data.gastos <- data.gastos %>% 
-  mutate(index = predict(primera, .)) %>%
-  mutate(imr = dnorm(index)/pnorm(index))
-
-#La segunda etapa solo usa a las mujeres que trabajan
-
-segunda <- lm(lambexp ~ educ + age + female + imr + I(age^2) + I(educ^2) + age*female,
-              data=filter(data.gastos, part==1))
 
 
-stargazer::stargazer(mheckit, primera, segunda,
-                     type = "text")
+
+#Experimento ----
+
+set.seed(109)
+e <- rnorm(200, mean = 0, sd = 1000)
+lnw <- rnorm(200, mean = 2.75, sd = 0.6)
+
+data <- data.frame(cbind(e,lnw))
+
+data <- data %>% 
+  mutate(ystar = -2500 + 1000*lnw + e,
+         ytrunc = ystar,
+         ytrunc = ifelse(ystar<0,NA,ystar),
+         ycens = ystar,
+         ycens = ifelse(ystar<0,0,ystar),
+         dy = ycens,
+         dy = ifelse(ycens>0,1,dy))
+
+data %>% 
+  ggplot(aes(x=lnw, y=ystar, color=as.factor(dy)))+
+  geom_point()
+
+
+#Calculemos ahora las medias truncadas y censuradas, que son claramente no lineales
+data <- data %>%
+  mutate(xb = -2500 + 1000*lnw,
+         sigma = 1000,
+          Phi = pnorm(xb/sigma),
+          phi = dnorm(xb/sigma),
+          lambda = phi / Phi,
+          media_trunc = xb+sigma*lambda,
+          media_cens = Phi*xb+sigma*phi)
+
+data <- data %>% 
+  select(ystar,media_trunc, media_cens,xb, lnw, dy) %>%
+  pivot_longer(cols=c(ystar,media_trunc, media_cens,xb),
+               names_to="estadistica",
+               values_to = "valor")
+
+data %>% 
+  filter(estadistica=="ystar") %>% 
+  ggplot(aes(x=lnw,y=valor))+
+    geom_point()+
+    geom_line(data=filter(data,estadistica!="ystar"),
+              aes(x=lnw,y=valor, color=estadistica))
+    
