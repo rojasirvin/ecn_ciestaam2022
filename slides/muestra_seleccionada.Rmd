@@ -102,7 +102,7 @@ Tanto $X$ como $y$ son no observados para ciertos valores de $y$
 
   - Truncamiento por abajo: $y=y^*$ si $y^*>L$ y no osbervada si $y^*\leq L$
   
-  - Truncamiento por abajo: $y=y^*$ si $y^*>U$ y no osbervada si $y^*\geq U$
+  - Truncamiento por arriba: $y=y^*$ si $y^*<U$ y no osbervada si $y^*\geq U$
 
 ---
 
@@ -147,7 +147,7 @@ $$f(y|x)=f^*(y|x)^dF^*(L|x)^{1-d}$$
 
 
 Y la función de log verosimilitud será
-$$\mathcal{L}_N(\theta)=\sum_i\left(d_i\ln f^*(y_i|x_i,\theta) + (1-d_i)F^*(L_i|x_i,\theta)\right)$$
+$$\mathcal{L}_N(\theta)=\sum_i\left(d_i\ln f^*(y_i|x_i,\theta) + (1-d_i)\ln F^*(L_i|x_i,\theta)\right)$$
 
 Noten que hemos dejado abierta la opción de que $L$ difiera entre individuos, es decir, que $L=L_i$
 
@@ -260,14 +260,16 @@ $$\mathcal{L}_N(\beta,\sigma^2)=\sum_i \left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{
 
 # Ejemplo: *tobit*
 
+
+.pull-left[
 Veamos un problema típico de economía laboral, la participación de las mujeres en el mercado de trabajo
 
-Usemos unos datos bastante estudiados *Mroz.csv*
+Usemos unos datos bastante estudiados *mroz.csv*
 
 
 ```{r, echo=T, eval=F, message=F, fig.height=6}
 
-data.part <- read.dta("../data/mroz.dta") 
+data.part <- read.dta("data/mroz.dta") 
 
 data.part %>% 
   filter(hours<=3000) %>% 
@@ -275,6 +277,21 @@ data.part %>%
   geom_histogram()
 
 ```
+]
+
+.pull-right[
+```{r, echo=F, eval=T, message=F, fig.height=6, warning=F}
+data.part <- read.dta("data/mroz.dta") 
+
+data.part %>% 
+  filter(hours<=3000) %>% 
+  ggplot(aes(x=hours)) +
+  geom_histogram()
+
+```
+
+]
+
 ---
 
 # Ejemplo: *tobit*
