@@ -31,17 +31,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 12. Variables instrumentales
 
-13. Mínimos cuadrados en dos etapas
-
 14. Temas de errores estándar
 
 15. Modelos de panel lineal
 
 16. Estimadores de panel lineal
 
-17. Regresión cuantil
-
-18. Métodos no paramétricos y semi paramétricos
+18. Métodos no paramétricos, semi paramétricos y regresión cuantil
 
 19. Econometría espacial
 
