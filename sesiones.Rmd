@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 11. [Modelos de selección](./slides/muestra_seleccionada.html)
 
-12. Variables instrumentales
+12. [Variables instrumentales](./slides/variables_instrumentales.html)
 
 14. Temas de errores estándar
 
