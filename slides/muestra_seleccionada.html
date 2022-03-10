@@ -782,6 +782,21 @@ E(y_2|x)&amp;=E_{y_{1}^{*}}(E(y_2|x,y_1^*)) \\
 $$
 ---
 
+# Estimación por MV
+
+Bajo los supuestos de normalidad podemos escribir la verosimilitud como sigue
+
+`$$L=\prod_{i=1}^{N}
+P(y_{1i}^*\leq 0)^{1-y_{1i}}\left(f(y_{2i}|y_{1i}^*&gt;0)\times P(y_{1i}^*&gt;0)\right)^{y_{1i}}$$`
+
+La forma final de la log verosimilitud es una fórmula larga que no tiene caso plantear aquí (ver Amemiya, 1985, p. 368)
+
+La intuición es que los parámetros de interés, especialmente `\(\beta_1\)`, son estimados de la misma manera en que hemos hecho en otros problemas
+
+El vector de parámetros estimados será consistente si la verosimilitud está bien planteada
+
+---
+
 # Estimador de Heckman en dos etapas
 
 Algunos autores lo conocen como *heckit*
@@ -811,6 +826,68 @@ Por tanto, una prueba de que `\(\rho=0\)` o `\(\sigma_{12}=0\)` es una prueba de
 
 Poner atención a la significancia del inverso de la razón de Mills en la segunda etapa
 
+---
+
+# Ejemplo: *heckit*
+
+Usamos datos de una muestra de hogares que reportan sus gastos médicos ambulatorios
+
+Muchos hogares tienen cero gastos
+
+
+
+```r
+data.gasto &lt;- read.dta("./data/limdep_ambexp.dta")
+```
+
+---
+  
+# Ejemplo: *heckit*
+
+
+```r
+#Heckit en un solo paso
+mheck.mv &lt;- heckit(selection = dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                outcome = lambexp ~ age + female  + blhisp + totchr,
+                method = "ml",
+                data = data.gasto)
+
+mheck.2e &lt;- heckit(selection = dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                   outcome = lambexp ~ age + female  + blhisp + totchr,
+                   method = "2step",
+                   data = data.gasto)
+```
+
+---
+
+# Ejemplo: *heckit*
+
+Procedimiento en dos etapas
+
+
+```r
+mheck1 &lt;- probit(dambexp ~ income + age + female + educ + blhisp + totchr + ins,
+                 data = data.gasto)
+
+data.gasto &lt;- data.gasto %&gt;% 
+  mutate(index=predict(mheck1,.),
+         imr = dnorm(index)/pnorm(index))
+
+mheck2 &lt;- lm(lambexp ~ age + female  + blhisp + totchr + imr,
+             data = filter(data.gasto, dambexp==1))
+```
+
+---
+
+# Ejemplo: *heckit*
+
+Otra función para presentar resultados: *stargazer*
+
+
+```r
+stargazer::stargazer(mheck.mv, mheck.2e, mheck1, mheck2,
+                     type = "text")
+```
 ---
 
 # Errores estándar

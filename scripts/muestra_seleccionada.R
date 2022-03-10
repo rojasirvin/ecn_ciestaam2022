@@ -1,6 +1,9 @@
 rm(list = ls()) 
 options(scipen=999) 
 
+#install.packages('stargazer')
+#install.packages('sampleSelection')
+
 library(tidyverse)
 library(magick)
 library(reticulate)
