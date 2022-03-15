@@ -25,6 +25,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [muestra_seleccionada.R](./scripts/muestra_seleccionada.R)
 
+[variables_instrumentales.R](./scripts/variables_instrumentales.R)
+
 
 # Datos
 
@@ -42,4 +44,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [mroz.dta](./data/mroz.dta)
 
-[limdep_ambexp.data](./data/limdep_ambexp.dta)
+[limdep_ambexp.dta](./data/limdep_ambexp.dta)
+
+[ingresos_iv.csv](./data/ingresos_iv.csv)

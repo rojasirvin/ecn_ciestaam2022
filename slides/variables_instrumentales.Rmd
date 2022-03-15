@@ -26,7 +26,9 @@ output:
 class: title-slide
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = F,
+                      message = F, fig.path = "figures/")
 library(tidyverse)
 library(magick)
 library(reticulate)
@@ -53,6 +55,8 @@ knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_
 .author[
 ### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
 ]
+
+---
 
 # Agenda
   
@@ -133,24 +137,21 @@ El sesgo puede ser sustancial en muestras pequeñas, por lo que se recomienda te
 
 # Ejemplo: rendimientos a la educación
 
-Angrist & Krueger (1991) estudiaron un debate muy activo en economía laboral: ¿cuánto paga un año más de educación en el mercado de trabajo?
+Card (1995) estudia el problema de retornos a la educación
 
-Como empezamos motivando esta sesión, es muy posible que la habilidad afecte tanto al desempeño del individuo en la escuela, como al desempeño del individuo en el trabajo
+Tenemos una muestra de 5,525 hombres de entre 14 y 24 años 
 
-Encontrar un instrumento casi nunca es tarea sencilla
+Nos interesa la relación entre educación e ingreso, pero sabemos que no observamos la habilidad
 
-Angrist y Krueger notan la siguiente regla para inscribir a un niño en la primaria
+Sabemos que si estimamos $\ln(w_i)=\beta_0+\beta_1 educ_i+u_i$, el coeficiente $\beta_1$ estará sesgado
 
-- Los niños pueden ingresar en el año en que **cumplen** 6 años
+Card emplea como instrumento una variable $z_i$ que indica si en el municipio de la persona $i$ hay una universidad
 
-- Un niño nacido en enero, entra en ese septiembre a la escuela (con 6 años y 8 meses)
+La intución es que la presencia de la universidad baja el costo de ir a la universidad, pero esto no afecta directamente el ingreso
 
-- Otro nacido en diciembre entra en el septiembre anterior a su cumpleaños a la escuela (con 5 años y 8 meses)
+Encontrar un instrumento casi nunca es tarea sencilla: se trata de enteder cómo los mecanismos, las instituciones y los contextos
 
-- Pero todos los adolecentes de 16 años deben pasar a secundaria
 
-- Habrá niños que pasen a secundaria con 9 y otros con 10 años de educación
-  
 ---
 
 # Lenguaje de VI
@@ -165,7 +166,7 @@ A $x_{1i}$ se le llama la variable **endógena**
 
 Se incluye también una o más variables **exógenas** como $x_{2i}$ que no están correlacionadas con $u_i$
 
-A una regresión de la variable de interés en función del instrumento y las variables exógenas, de interés en algunas aplicaciones, se le conoce como **forma reducida**
+A una regresión de la variable de interés en función del instrumento y las variables exógenas se le conoce como **forma reducida**
 
 
 $$y_i=\beta_0+\beta_1 z_{1i}+\beta_2 x_{2i}+u_i$$
@@ -173,8 +174,6 @@ $$y_i=\beta_0+\beta_1 z_{1i}+\beta_2 x_{2i}+u_i$$
 ---
 
 # Primera etapa
-
-Un instrumento $z_i$ cumple con la restricción de exclusión: $cov(z_i,u_i)=0$
 
 La **primera etapa** especifica la relación entre la variable endógena y el instrumento:
 
@@ -208,7 +207,6 @@ Para lograr identificación, se requiere que $\pi_1\neq 0$ o $\pi_2\neq 0$
 
 Podemos usar una prueba $F$ para probar que $\pi_1=\pi_2=0$
 
-
 ---
 
 # Mínimos cuadrados en dos etapas
@@ -221,37 +219,638 @@ El modelo presentado anteriormente sugiere que podemos estimar $\beta_1$ con un 
   
 Es como si *purgáramos* a $x_{1i}$ de su correlación con $u_i$
 
----
+Nunca hacemos esto *a mano*
 
-# Más sobre rendimientos a la educación
+- Cuando tenemos tantos instrumentos como endógenas, usamos el **estimador de variables instrumentales**
 
-Angrist y Krueger (1991) proponen usar el trimestre de nacimiento como variable instrumental de los años de educación
-
-El trimestre de nacimiento no afecta el ingreso directamente (a menos que estemos convencidos de la mayor productividad de los capricornio
-
-La relevancia del instrumento surge por la relación antes descrita entre el trimestre de nacimiento y el número de años que un niño pasa en la escuela
-
-La primera etapa es
-
-$$esc_i=\pi_0+\pi_1 z_1+ \sum_{j=1930}^{1938}\phi_j D_{j}+\nu_i$$
-donde $z_i= \begin{cases} 1 \quad\text{nació en el primer trimestre} \\ 0 \quad\text{otro caso}\\ \end{cases}$
+- Cuando tenemos más instrumentos que endógenas, recurrimos al método generalizado de momentos
 
 ---
 
 # Más sobre rendimientos a la educación
 
-En este ejemplo, la forma reducida es
+En el problema de Card (1995), la primera etapa es
 
-$$\ln(w_i)=\gamma_0+\gamma_1 z_1+  \sum_{j=1930}^{1938}\delta_j D_{j}+\varepsilon_i$$
+$$esc_i=\pi_0+\pi_1 X_i+ \phi unicerca_i +\nu_i$$
+donde $unicerca_i= \begin{cases} 1 \quad\text{había una universidad en el municipio} \\ 0 \quad\text{otro caso}\\ \end{cases}$
 
-Sabemos que el trimestre de nacimiento estará correlacionado con el ingreso, pero estas diferencias se deben a las diferencias de escolaridad
+Y la forma reducida es
+
+
+$$\ln(w_i)=\gamma_0+\gamma_1 X_i+  \delta unicerca_i+\varepsilon_i$$
+
+Sabemos que el salario estará correlacionado con la presencia de la universidad, pero estas diferencias ocurren por la vía de la escolaridad
 
 
 ---
 
-# Próxima sesión
+# Ejemplo: Card (1995)
 
-- Hablaremos con detalle sobre distintos tipos de errores estándar y formas de hacer inferencia
+Usamos los datos en *ingresos_iv.csv*, del estudio de Card que hemos mencionado como ejemplo
+
+La librería *AER*, que ya hemos usado, tiene la función *ivreg*
+
+También usaremos una nueva librería, *gmm*
+
+Estimemos la relación entre el log del salario y la educación
+
+```{r echo=T}
+data.ingresos <- read_csv("data/ingresos_iv.csv",
+                          locale = locale(encoding = "latin1"))
+#MCO
+mco <- lm(lwage ~ educ + exper + black + south + married + smsa,
+          data = data.ingresos)
+
+#Variables instrumentales (asume homocedasticidad)
+vi <- ivreg(lwage ~  educ + exper + black + south + married + smsa |
+               . - educ + nearc4, data = data.ingresos)
+
+```
+---
+
+# Ejemplo: Card (1995)
+
+Sabemos que $\beta_1$ estimado por MCO es inconsistente
+
+```{r results='asis'}
+stargazer(mco, vi,
+          type="html",
+          keep=c("educ"),
+          keep.stat = "n")
+```
+---
+
+# Ejemplo: Card (1995)
+
+.pull-left[
+La primera etapa de este ejercicio es
+
+```{r echo=T}
+# Primera etapa
+pe_vi <- lm(educ ~  nearc4 + exper + black + south + married + smsa,
+            data = data.ingresos)
+```
+]
+.pull-right[
+```{r echo=F, results='asis'}
+stargazer(mco, vi, pe_vi,
+          type="html",
+          keep=c("educ", "nearc"),
+          keep.stat = "n")
+```
+]
+
+---
+
+# Ejemplo: Card (1995)
+
+Debemos verificar el estadístico $F$ de la primera etapa (para los instrumentos)
+
+```{r echo=T}
+#F de los instrumentos
+linearHypothesis(pe_vi, c("nearc4=0"))
+```
+
+
+---
+
+class: inverse, middle, center
+
+# Método Generalizado de Momentos
+
+---
+
+
+# Método generalizado de momentos
+
+El GMM generaliza una serie de estimadores comúnmente usados en econometría (incluyendo MCO, MV, VI, etc)
+
+Asumimos que existen $r$ condiciones de momentos independientes para $q$ parámetros $$E(h(w_i,\theta_0))=0$$
+
+donde $\theta$ es un vector de $q\times 1$, $h(\cdot)$ es una función vector de $r \times 1$ con $r\geq q$
+
+$w_i$ son los datos observables, incluyendo las variables dependientes, los regresores exógenos, potenciales regresores endógenos, así como instrumentos
+
+
+---
+
+# Método generalizado de momentos
+
+La forma de $h(\cdot)$ es equivalente a escoger el modelo
+
+
+Por ejemplo:
+
+| $h(\cdot)$ | Método de estimación |
+|:---:|:---:|
+| $x(y-x'\beta)$ | MCO |
+| $\partial\mathcal{L}/\partial\theta$ | MV |
+| $z(y-x'\beta)$ | VI |
+
+---
+
+# Método generalizado de momentos
+
+Cuando $r=q$, tenemos un modelo **exactamente identificado**, es decir, tenemos tantos momentos como parámetros a estimar
+
+Podemos obtener el **estimador de método de momentos** $\hat{\theta}_{MM}$ como la solución a
+
+$$\frac{1}{N}h(w_i,\hat{\theta})=0$$
+
+---
+
+# Método generalizado de momentos
+
+El caso que nos ocupa más en el contexto de MC2E es cuando $r>q$, es decir, un **modelo sobreidentificado**
+
+En este caso, tenemos más ecuaciones que incógnitas en la condición de momentos
+
+El **estimador de método generalizado de momentos** $\hat{\theta}_{GMM}$ se define como el vector de parámetros que minimiza la forma cuadrática
+
+$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)'W_N\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)$$
+
+donde $W_N$ es una matriz simétrica y positiva definida que no depende de $\theta$
+
+Diferentes matrices $W_N$ dan origen a distintos estimadores
+
+---
+
+# Estimador de MGM
+
+**Proposición 6.1 en CT**: bajo una serie de supuestos para poder establecer LGN y TLC, $\hat{\theta}_{GMM}$, definido como una raíz de las condiciones de primer orden $\partial Q_N(\theta) / \partial \theta=0$, es tal que:
+
+$$\sqrt{N}\left(\hat{\theta}_{GMM}-\theta_0\right)\stackrel{a}{\sim}\mathcal{N}\left(0,(G_0'W_0G_0)^{-1}(G_0'W_0S_0W_0G_0)(G_0'W_0G_0)^{-1}\right)$$
+
+donde $W_0$ es una matriz finita, simétrica y positiva definida, y
+
+$$
+\begin{aligned}
+G_0&=p\lim\frac{1}{N}\sum_{i=1}^N \left(\frac{\partial h_i}{\partial\theta'}\Bigg|_{\theta_0}\right) \\
+S_0&=p\lim \frac{1}{N} \sum_{i=1}^N \sum_{j=1}^N \left(h_i h_j \Bigg|_{\theta_0} \right)
+\end{aligned}
+$$
+---
+
+# Matriz de varianzas óptima
+
+Para implementar MGM debemos especificar las condiciones de momentos y la matriz $W_N$
+
+En el caso de modelos sobreidentificados y con $S_0$ conocida, el estimador de MGM más eficiente se obtiene al especificar $W_N=S_0^{-1}$
+
+ Con esta elección, la expresión para la varianza de $\hat{\beta}_{MGM}$ se simplifica a
+ 
+$$\sqrt{N}\left(\hat{\theta}_{GMM}-\theta_0\right)\stackrel{a}{\sim}\mathcal{N}\left(0,(G_0'S_0^{-1}G_0)^{-1}\right)$$
+
+En la práctica, $S_0$ es desconocida, así que la sustituimos por un estimador consistente $\hat{S}$
+
+
+---
+
+# MGM óptimo
+
+La matriz de varianzas se estima siguiendo un procedimiento de dos etapas
+
+1. Obtener el estimador de MGM usando una matriz subóptima, generalmente $W_N=I_r$ y con estos coeficientes obtener un estimador para $S_0$: $$\hat{S}=\frac{1}{N}\sum_i h_i(\hat{\theta})h_j(\hat{\theta})'$$
+  
+1. Obtener un estimador de MGM óptimo o **estimador de MGM de dos etapas óptimo** $\hat{\theta}_{MGM,O}$ minimizando
+  
+$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(\theta)\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_ih(\theta)\right)$$
+
+---
+
+# MGM óptimo
+
+Para estimar la varianza de $\hat{\theta}_{MGM,O}$ usamos
+
+$$\hat{V}(\hat{\theta}_{MGM,O})=N^{-1}(\hat{G}\tilde{S}^{-1}\hat{G})^{-1}$$
+
+donde $\hat{G}$ y $\tilde{S}$ se evalúan en $\hat{\theta}_{MGM,O}$
+
+
+---
+
+class: inverse, middle, center
+
+# MGM para VI
+
+---
+
+# Estimador lineal de MGM
+
+Cuando estamos en un problema de VI, la restricción de exclusión nos especifica una condición de momentos
+
+$$E(z_i(y_i-x_i'\beta))=0$$
+
+El estimador GMM minimiza la forma cuadrática siguiente
+
+$$
+\begin{aligned}
+Q(\beta)&=\left(\frac{1}{N}\sum_i (y_i-x_i'\beta)z_i\right)'W_N\left(\frac{1}{N}\sum_i (y_i-x_i'\beta)z_i\right) \\
+&=\left(\frac{1}{N}(y-X\beta)'Z\right)W_N\left(\frac{1}{N}Z'(y-X\beta)\right)
+\end{aligned}
+$$
+
+Las condiciones de primer orden son
+
+$$\frac{\partial Q_N(\beta)}{\partial\beta}=-2\left(\frac{1}{N}X'Z\right)W_N\Big(\frac{1}{N}Z'(y-X\beta)\Big)=0$$
+
+---
+
+# Estimador lineal de MGM
+
+Resolviendo para $\beta$ obtenemos el **estimador lineal de VI de GMM**:
+
+$$\hat{\beta}_{GMM}=(X'ZW_NZ'X)^{-1}X'ZW_NZ'y$$
+
+Las propiedades asintóticas de este estimador se pueden obtener de manera similar a como se obtuvieron las del estimador de MCO o usando las propiedades más generales para problemas de MGM
+
+---
+
+# Estimador de la varianza de $\hat{\beta}_{MGM}$
+
+El estimador $\hat{\beta}_{MGM}$ es asintóticamente normal, centrado en $\beta$ y con una varianza asintótica estimada dada por
+
+$$\hat{V}(\hat{\beta}_{GMM})=N(X'ZW_NZ'X)^{-1}(X'ZW_N\hat{S}W_NZ'X)(X'ZW_NZ'X)^{-1}$$
+donde $\hat{S}$ es un estimador consistente de
+
+$$S=\lim \frac{1}{N}\sum_{i=1}^NE(u_i^2z_iz_i')$$
+
+Dependiendo de si estamos en un modelo exactamente identificado o sobreidentificado y de cómo especificamos la matriz $W_N$, los resultados anteriores sobre $\hat{\beta}_{GMM}$ y $\hat{V}(\hat{\beta}_{GMM})$ se especializan
+
+---
+
+class: inverse, middle, center
+
+# Caso sobre identificado
+
+---
+
+# Estimador óptimo de MGM
+
+Para obtener el **estimador óptimo** escogemos una forma particular para la matriz de pesos
+
+$$W=\hat{S}^{-1}$$
+
+Y entonces el estimador de MGM se vuelve
+
+$$\hat{\beta}_{GMM,O}=(X'Z\hat{S}^{-1}Z'X)^{-1}X'Z\hat{S}^{-1}Z'y$$
+
+Y el estimador de varianza se simplifica a
+
+$$\hat{V}(\hat{\beta}_{GMM,O})=N(X'Z\hat{S}^{-1}Z'X)^{-1}$$
+
+Hasta aquí no asumimos nada sobre la forma de los errores
+
+Lo único que nos permitió pasar de la forma general al estimador óptimo es la elección de $W$
+
+Con esto obtenemos el estimador más eficiente
+
+---
+
+# Mínimos cuadrados en dos etapas
+
+Si estamos dispuestos a asumir errores homocedásticos
+
+$$\hat{S}^{-1}=\left(\frac{1}{N}s^2Z'Z\right)^{-1}$$
+
+Y entonces hacemos
+
+$$W=\left(\frac{1}{N}Z'Z\right)^{-1}$$
+
+Con esta simplificación, el estimador de MGM es
+
+$$
+\begin{aligned}
+\hat{\beta}_{MC2E}&=(X'Z(Z'Z)^{-1}Z'X)^{-1}X'ZZ(Z'Z)^{-1}Z'y \\
+&=(X'P_ZX)^{-1}X'P_Zy
+\end{aligned}
+$$
+
+Este es el **estimador de MC2E**, también llamado **estimador de variables instrumentales generalizado**
+
+---
+
+# Mínimos cuadrados en dos etapas
+
+A $P_Z=Z(Z'Z)^{-1}Z'$ se le conoce como matriz de proyección
+
+Y la matriz de varianzas se simplifica a
+
+$$\hat{V}(\hat{\beta}_{MC2E})=s^2\left(X'P_z X\right)^{-1}$$
+
+---
+
+class: inverse, middle, center
+
+# Caso exactamente identificado
+
+---
+
+# Estimador de variables instrumentales
+
+En el caso cuando $r=q$, es decir, tantos instrumentos como variables endógenas, $X'Z$ es una matriz cuadrada que puede ser invertida, resultando que
+
+$$(X'ZW_NZ'X)^{-1}(X'Z)^{-1}=(Z'X)^{-1}W_N(X'Z)^{-1}$$
+
+
+Sustituyendo esto en la forma general del estimador de MGM obtenemos:
+
+$$\hat{\beta}_{VI}=(Z'X)^{-1}Z'y$$
+
+Este es el estimador de **variables instrumentales**
+
+En otras palabras, el estimador de MGM es igual al de VI para cualquier matriz $W_N$
+
+---
+
+# Modelo exactamente identificado
+
+Con posible heterocedasticidad, tenemos una matriz de varianzas de la forma
+
+$$\begin{align}\hat{V}(\hat{\beta}_{VI})&=N(Z'X)^{-1}\hat{S}(X'Z)^{-1}\end{align}$$
+
+con $\hat{S}=Z'DZ/N$, y donde $D=diag[\hat{u}_i^2]$
+ 
+
+Y con homocedasticidad, la matriz de varianzas de nuevo es:
+
+$$\hat{V}(\hat{\beta}_{VI})=s ^2\left(X'P_z X\right)^{-1}$$
+
+---
+
+# Recapitulando
+
+Siguiendo las convenciones de Camerony Trivedi (2005)
+
+El **estimador de MGM** es el estimador para el caso general de método de momentos, cuales quiera que sean las formas de los momentos especificados
+
+El **estimador óptimo de MGM** ocurre cuando asumimos una forma particular para la matriz de pesos, $W=\hat{S}^{-1}$
+
+El **estimador óptimo de MGM** se emplea en el caso más general de modelos de variables instrumentales sobreidentificados con heterocedasticidad
+
+El **estimador de variables instrumentales generalizado** se obtiene cuando asumimos homocedasticidad en el modelo sobreidentificado y lleva el *apellido* generalizado porque es la generalización del estimador IV para el caso sobreidentificado
+
+El **estimador de variables instrumentales** surge en el modelo exactamente identificado
+
+---
+
+# Ejemplo: Card (1995)
+
+Usando *gmm* podemos verificar que IV es un caso especial de GMM
+
+```{r echo=T}
+gmm_iv <- gmm(lwage ~ educ + exper + black + south + married + smsa, 
+                   ~ nearc4 + exper + black + south + married + smsa,
+                   vcov = "iid",
+                   wmatrix = "optimal", # es igual si usamos optimal
+                   data = data.ingresos)
+
+```
+---
+
+# Ejemplo: Card (1995)
+
+
+```{r results='asis'}
+stargazer(vi, gmm_iv,
+          type="text",
+          keep = c("educ"),
+          digits = 4,
+          keep.stat = "n")
+```
+---
+
+# Ejemplo: Card (1995)
+
+Con GMM podemos relajar fácilmente el supuesto de homocedasticidad
+
+```{r echo=T}
+gmm_iv_het <- gmm(lwage ~ educ + exper + black + south + married + smsa, 
+                  ~ nearc4 + exper + black + south + married + smsa,
+                  vcov = "HAC",
+                  wmatrix = "optimal",
+                  type = "twoStep",
+                  data = data.ingresos)
+``` 
+---
+
+# Ejemplo: Card (1995)
+
+```{r results='asis'}
+stargazer(vi, gmm_iv, gmm_iv_het,
+          type="text",
+          keep = c("educ"),
+          digits = 4,
+          keep.stat = "n")
+
+``` 
+---
+
+# Ejemplo: Card (1995)
+
+Podemos especificar un modelo sobreidentificado
+
+```{r echo=T}
+gmm_opt <- gmm(lwage ~ educ + exper + black + south + married + smsa, 
+                  ~ nearc4 + nearc2 + exper + black + south + married + smsa,
+                  vcov = "HAC",
+                  wmatrix = "optimal",
+                  type = "twoStep",
+                  data = data.ingresos)
+```
+
+---
+
+# Ejemplo: Card (1995)
+
+```{r results='asis'}
+stargazer(vi, gmm_iv, gmm_iv_het, gmm_opt,
+          type="text",
+          keep = c("educ"),
+          digits = 4)
+```
+
+
+---
+
+class: inverse, middle, center
+
+# Prueba de Hausman
+
+---
+
+# Prueba de Hausman
+
+En general, las pruebas que comparan dos estimadores distintos se conocen como pruebas de Hausman, Wu-Hausman o Durbin-Wu-Hausman
+
+Consideremos dos estimadores $\tilde{\theta}$ y $\hat{\theta}$ que tienen la misma probabilidad límite bajo la $H_0$ pero que difieren bajo la $H_a$
+
+$$
+\begin{aligned}
+H_0:\quad\quad p\lim(\tilde{\theta}-\hat{\theta})=0 \\
+H_a:\quad\quad p\lim(\tilde{\theta}-\hat{\theta})\neq 0 \\
+\end{aligned}
+$$
+
+Construimos el estadístico de prueba $H$:
+
+$$H=(\tilde{\theta}-\hat{\theta})'(\hat{V}(\tilde{\theta}-\hat{\theta}))^{-1}(\tilde{\theta}-\hat{\theta})\stackrel{a}{\sim}\chi^2(q)$$
+
+Se rechaza la $H_0$ si $H>\chi^2_{\alpha}(q)$
+
+La implementación es un poco complicada dado que
+
+$$\hat{V}(\tilde{\theta}-\hat{\theta})=\hat{V}(\tilde{\theta})-\hat{V}(\hat{\theta})-2cov(\tilde{\theta},\hat{\theta})$$
+
+---
+
+# Prueba de Hausman
+
+Con errores homocedásticos, el estimador de MCO es eficiente
+
+En ese caso, se puede mostrar que
+
+$$H_{h}=(\tilde{\theta}-\hat{\theta})'(\hat{V}(\tilde{\theta})-\hat{V}(\hat{\theta}))^{-1}(\tilde{\theta}-\hat{\theta})\stackrel{a}{\sim}\chi^2(q)$$
+que es fácil de calcular en el software
+
+Si no estamos dispuestos a asumir homocedasticidad, se requiere estimar $cov(\tilde{\theta},\hat{\theta})$, que se implementa en R y otros paquetes
+
+La prueba de Hausman puede usarse para comparar dos estimadores, uno más eficiente que otro
+
+La estimación de la prueba robusta puede complicarse en algunas aplicaciones, aunque como prueba de endogeneidad casi todo está disponible como funciones en R y otros paquetes
+
+---
+
+class: inverse, middle, center
+
+# Prueba de sobreidentificación
+
+---
+
+# Prueba de sobreidentificación
+
+También conocida como prueba de Hansen, quien propuso la forma general de la prueba, o prueba de Sargan, quien propuso la forma particular para el modelo lineal de VI
+
+Es una prueba sobre qué tan cerca está de cumplirse la hipótesis nula de que $E(h(w,\theta_0))=0$
+
+Hansen (1982) define el estadístico de prueba como
+
+$$J=\left(\frac{1}{N}\sum_i \hat{h}_i\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_i \hat{h}_i\right)\stackrel{a}{\sim}\chi^2(r-q)$$
+
+El estadístico $J$ es la función objetivo de MGM evaluada en $\hat{\theta}_{MGM}$
+
+Si el estadístico es grande en magnitud, rechazamos la hipótesis de que las condiciones de momentos poblacionales se cumplen y se concluye que el estimador de MGM es inconsistente
+
+---
+
+# Prueba de sobreidentificación
+
+En el caso de variables instrumentales, el estadístico tiene la forma específica:
+
+$$J=\hat{u}'Z\hat{S}^{-1}Z'\hat{u}$$
+donde $\hat{u}=y-X'\hat{\beta}_{MGM}$
+
+Si se rechaza $H_0$, hay evidencia de que los instrumentos $z$ son endógenos (aunque también podría ser que haya una mala especificación del modelo)
+
+Rechazar la $H0$ indica que debemos replantear el modelo, aunque no nos dice cómo
+
+---
+
+# Ejemplo: Card (1995)
+
+Podemos acceder a las pruebas de diagnóstico usando la opción *diagnostics*
+
+```{r echo=T, eval=F}
+summary(vi, diagnostics=T)
+
+```
+
+
+---
+
+class: inverse, middle, center
+
+# Instrumentos débiles
+
+
+---
+
+# Instrumentos débiles
+
+Discusión intuitiva en Angrist & Pischke (MHE, 2009)
+
+El estimador de MCO tiene las propiedades de ser consistente e insesgado
+
+En una muestra de tamaño arbitrario, la distribución del coeficiente de MCO está centrada en el coeficiente de  poblacional
+
+En cambio, el estimador de MC2E, aunque consistente, **es sesgado**
+
+En muestras grandes el el estimador está *cerca* del coeficiente poblacional
+
+Esto tiene importantes consecuencias para la estimación y la inferencia
+
+
+---
+
+# Sesgo del estimador de MC2E
+
+Consideremos el modelo simple con un solo regresor endógeno $y=\beta x+ \eta$
+
+Supongamos que tenemos una matriz de instrumentos $Z$, por lo que la primera etapa es:
+
+$$x=Z\pi+\xi$$
+
+El estimador de MC2E es:
+
+$$\hat{\beta}_{MC2E}=\beta+(x'P_Z x)^{-1}x'P_Z\eta$$
+
+Sustituyendo $x$
+
+$$\hat{\beta}_{MC2E}-\beta=(x'P_z x)^{-1}\pi'Z'\eta+(x'P_z x)^{-1}\xi'P_z\eta=sesgo_{Mc2E}$$
+
+No podemos calcular directamente el sesgo pues el operador esperanza es un operador lineal
+
+Angrist & Pischke (2009) aproximan el sesgo como.
+
+
+$$E(\hat{\beta}_{MC2E}-\beta)\approx(E(x'P_z x))^{-1}E(\pi'Z'\eta)+(E(x'P_z x))^{-1}\xi'P_z\eta$$
+---
+
+# Sesgo del estimador de MC2E
+
+La expresión del sesgo puede reescribirse como
+
+$$E(\hat{\beta}_{MC2E}-\beta)\approx\frac{\sigma_{\eta\xi}}{\sigma_{xi}^2}\frac{1}{F+1}$$
+
+donde $\frac{\sigma_{\eta \xi}}{\sigma_{xi}^2}$ es el sesgo del estimador de MCO
+
+Cuando $\pi=0$, el sesgo de MC2E es el mismo que el de MCO
+
+Es decir, cuando $F$ es pequeña, el sesgo de MC2E se acerca al sesgo de MCO: el estimador de MC2E está sesgado hacia el de MCO cuando la primera etapa es débil
+
+Staiger & Stock (1997) mostraron con simulaciones que cuando $F>10$, el sesgo máximo en el estimador de MC2E es de 10%
+
+De aquí viene la regla de dedo frecuentemente usada para juzgar instrumentos débiles
+
+
+---
+
+# Recomendaciones prácticas
+
+1. Reportar la primera etapa y ver si los coeficientes tienen sentido económico
+
+1. Reportar el estadístico $F$ de la primera etapa para los instrumentos excluidos
+
+1. Reportar los resultados usando un modelo exactamente identificado usando el *mejor* instrumento
+
+1. Reportar las prubeas de sobreidentificación, cuando sea posible
+
+1. Poner atención a la forma reducida, recordando que la forma reducida es proporcional al efecto causal de interés
+
+> "Si no puedes ver la relación causal de interés en la forma reducida es porque probablemente no haya nada ahí."
+>
+> --- Angrist & Krueger (2001)
+
 
 ---
 
