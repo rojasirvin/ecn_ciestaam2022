@@ -667,7 +667,8 @@ gmm_opt <- gmm(lwage ~ educ + exper + black + south + married + smsa,
 stargazer(vi, gmm_iv, gmm_iv_het, gmm_opt,
           type="html",
           keep = c("educ"),
-          digits = 4)
+          digits = 4,
+          keep.stat = "n")
 ```
 
 
