@@ -623,21 +623,18 @@ gmm_iv &lt;- gmm(lwage ~ educ + exper + black + south + married + smsa,
 
 
 
-=========================================
-                 Dependent variable:     
-             ----------------------------
-                        lwage            
-               instrumental       GMM    
-                 variable                
-                   (1)            (2)    
------------------------------------------
-educ             0.1242**      0.1242**  
-                 (0.0500)      (0.0499)  
-                                         
------------------------------------------
-Observations      3,003          3,003   
-=========================================
-Note:         *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;lwage&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;instrumental&lt;/em&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;GMM&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;variable&lt;/em&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;educ&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.0500)&lt;/td&gt;&lt;td&gt;(0.0499)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
 ---
 
 # Ejemplo: Card (1995)
@@ -658,21 +655,18 @@ gmm_iv_het &lt;- gmm(lwage ~ educ + exper + black + south + married + smsa,
 # Ejemplo: Card (1995)
 
 
-===========================================
-                  Dependent variable:      
-             ------------------------------
-                         lwage             
-             instrumental        GMM       
-               variable                    
-                 (1)        (2)      (3)   
--------------------------------------------
-educ           0.1242**   0.1242** 0.1242**
-               (0.0500)   (0.0499) (0.0518)
-                                           
--------------------------------------------
-Observations    3,003      3,003    3,003  
-===========================================
-Note:           *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;lwage&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;instrumental&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;GMM&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;variable&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;educ&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.0500)&lt;/td&gt;&lt;td&gt;(0.0499)&lt;/td&gt;&lt;td&gt;(0.0518)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
 ---
 
 # Ejemplo: Card (1995)
@@ -694,24 +688,21 @@ gmm_opt &lt;- gmm(lwage ~ educ + exper + black + south + married + smsa,
 # Ejemplo: Card (1995)
 
 
-==================================================================
-                                 Dependent variable:              
-                    ----------------------------------------------
-                                        lwage                     
-                       instrumental                GMM            
-                         variable                                 
-                           (1)           (2)      (3)       (4)   
-------------------------------------------------------------------
-educ                     0.1242**      0.1242** 0.1242** 0.1620***
-                         (0.0500)      (0.0499) (0.0518) (0.0518) 
-                                                                  
-------------------------------------------------------------------
-Observations              3,003         3,003    3,003     3,003  
-R2                        0.2513                                  
-Adjusted R2               0.2498                                  
-Residual Std. Error 0.3843 (df = 2996)                            
-==================================================================
-Note:                                  *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="4"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="4"&gt;lwage&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;instrumental&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;GMM&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;variable&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;td&gt;(4)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;educ&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1242&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1620&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.0500)&lt;/td&gt;&lt;td&gt;(0.0499)&lt;/td&gt;&lt;td&gt;(0.0518)&lt;/td&gt;&lt;td&gt;(0.0518)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;td&gt;3,003&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.2513&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.2498&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;0.3843 (df = 2996)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="4" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
 
 
 ---

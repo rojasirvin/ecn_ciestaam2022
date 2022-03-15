@@ -613,7 +613,7 @@ gmm_iv <- gmm(lwage ~ educ + exper + black + south + married + smsa,
 
 ```{r results='asis'}
 stargazer(vi, gmm_iv,
-          type="text",
+          type="html",
           keep = c("educ"),
           digits = 4,
           keep.stat = "n")
@@ -638,7 +638,7 @@ gmm_iv_het <- gmm(lwage ~ educ + exper + black + south + married + smsa,
 
 ```{r results='asis'}
 stargazer(vi, gmm_iv, gmm_iv_het,
-          type="text",
+          type="html",
           keep = c("educ"),
           digits = 4,
           keep.stat = "n")
@@ -665,7 +665,7 @@ gmm_opt <- gmm(lwage ~ educ + exper + black + south + married + smsa,
 
 ```{r results='asis'}
 stargazer(vi, gmm_iv, gmm_iv_het, gmm_opt,
-          type="text",
+          type="html",
           keep = c("educ"),
           digits = 4)
 ```
