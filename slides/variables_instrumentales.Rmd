@@ -37,7 +37,9 @@ library(stargazer)
 library(gtsummary)
 library(foreign)
 library(AER)
-library(sampleSelection)
+library(econocharts)
+library(gmm)
+
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
@@ -311,6 +313,60 @@ Debemos verificar el estadístico $F$ de la primera etapa (para los instrumentos
 linearHypothesis(pe_vi, c("nearc4=0"))
 ```
 
+---
+
+# Ejemplo con oferta y demanda
+
+Supongamos que nos interesa estimar la elasticidad del consumo de mantequilla
+
+$$\ln(q_{_i})=\alpha + \beta \ln(p_i) + \varepsilon_i$$
+Supongamos que tenemos datos del precio y el consumo en una muestra grande de localidades $i$
+
+Si estimamos la ecuación anterior por MCO, el coeficiente estimado $\hat{\beta}$ será inconsistente por un problema de simulateneidad
+
+El precio y la cantidad se determinan en equilibrio por la interacción de la oferta y la demanda
+
+Un choque a la oferta o la demanda afectará tanto la cantidad como el precio de equilibrio
+
+---
+
+# Ejemplo con oferta y demanda
+
+.pull-left[
+
+Podemos usar variables instrumentales para estimar la elasticidad de la demanda
+
+Necesitamos una variable $z$ que afecte solo la oferta, pero que no afecte directamente la demanda
+
+$z$ puede ser precipitación o temperatura
+
+Al desplazar la oferta, manteniendo la demanda fija, se revela la forma de la curva de demanda
+
+Podemos estimar la elasticidad de la demanda
+]
+
+.pull-right[
+```{r echo=F, results=F, out.height=400}
+# Add custom curves
+demand1 <- data.frame(Hmisc::bezier(c(1, 3, 9),
+                                    c(9, 3, 1))) 
+
+supply1 <- data.frame(Hmisc::bezier(c(1, 8, 9),
+                                    c(1, 5, 9))) 
+
+supply2 <- data.frame(Hmisc::bezier(c(1, 8, 9),
+                                    c(3, 8, 12))) 
+
+supply3 <- data.frame(Hmisc::bezier(c(1, 8, 9),
+                                    c(5, 10, 14))) 
+
+
+# Supply and demand curves and arrows
+sdcurve(supply1, demand1, supply2, demand1, supply3, demand1,
+        names = c("S[1]", "D[1]","S[2]", "D[1]", "S[3]", "D[1]"),
+        xmax = 15, ymax=10)
+```
+]
 
 ---
 

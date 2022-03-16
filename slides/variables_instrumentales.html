@@ -315,13 +315,48 @@ linearHypothesis(pe_vi, c("nearc4=0"))
 ## Model 1: restricted model
 ## Model 2: educ ~ nearc4 + exper + black + south + married + smsa
 ## 
-##   Res.Df   RSS Df Sum of Sq      F     Pr(&gt;F)    
-## 1   2997 11304                                   
-## 2   2996 11245  1    59.176 15.767 0.00007334 ***
+##   Res.Df   RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1   2997 11304                                  
+## 2   2996 11245  1    59.176 15.767 7.334e-05 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
+---
+
+# Ejemplo con oferta y demanda
+
+Supongamos que nos interesa estimar la elasticidad del consumo de mantequilla
+
+`$$\ln(q_{_i})=\alpha + \beta \ln(p_i) + \varepsilon_i$$`
+Supongamos que tenemos datos del precio y el consumo en una muestra grande de localidades `\(i\)`
+
+Si estimamos la ecuación anterior por MCO, el coeficiente estimado `\(\hat{\beta}\)` será inconsistente por un problema de simulateneidad
+
+El precio y la cantidad se determinan en equilibrio por la interacción de la oferta y la demanda
+
+Un choque a la oferta o la demanda afectará tanto la cantidad como el precio de equilibrio
+
+---
+
+# Ejemplo con oferta y demanda
+
+.pull-left[
+
+Podemos usar variables instrumentales para estimar la elasticidad de la demanda
+
+Necesitamos una variable `\(z\)` que afecte solo la oferta, pero que no afecte directamente la demanda
+
+`\(z\)` puede ser precipitación o temperatura
+
+Al desplazar la oferta, manteniendo la demanda fija, se revela la forma de la curva de demanda
+
+Podemos estimar la elasticidad de la demanda
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-6-1.png" height="400" /&gt;
+]
 
 ---
 
