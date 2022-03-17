@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Errores estándar</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Errores estándar
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+# Agenda
+
+1. En esta sesión nos concentraremos en la estimación de errores estándar
+
+1. Definiremos los estimadores de la matriz de varianzas robusta empleadas por los programas más usados
+
+1. Estudiaremos el uso de rutinas bootstrap para la estimación de errores estándar
+
+1. Estudiaremos las implicaciones de los datos agrupados en la estimación de errores estándar
+
+---
+
+class: inverse, middle, center
+
+# Errores estándar no estándar
+
+---
+
+# Errores estándar robustos
+
+Recordemos que con errores homocedásticos, la matriz de varianzas del estimador de MCO puede ser estimada como:
+
+`$$\hat{V}(\beta_{MCO}^H)=\hat{\sigma}^2(X'X)^{-1}$$`
+
+donde `\(\hat{\sigma}^2=\frac{1}{N-k}\hat{u}_i^2\)` y `\(\hat{u}_i^2=(y_i-X_i'\hat{\beta}_{MCO})^2\)`
+
+Una primera *desviación*  respecto a los errores clásicos ocurre cuando relajamos el supuesto de homocedasticidad
+
+La varianza asintótica robusta a heterocedasticidad
+
+`$$V(\hat{\beta}_{MCO}^{R})=(X'X)^{-1}X'\Omega X(X'X)^{-1}$$`
+---
+
+# Errores robustos a la heterocedasticidad
+
+Un estimador de la varianza del estimador de MCO que no asume homocedasticidad es el estimador propuesto por White (1980)
+
+`$$\hat{V}(\beta_{MCO}^R)=(X'X)^{-1}\left(\sum_i\hat{u}_i^2x_ix_i'\right)(X'X)^{-1}$$`
+
+[Aquí un recordatorio](http://mlwiki.org/index.php/Matrix-Matrix_Multiplication) de por qué podemos escribir `\(X'uu'X\)` como una sumatoria
+
+Consideremos la *carnita* del sándiwch
+
+`$$\sum_i\hat{u}_i^2x_ix_i \equiv \sum_i \hat{\psi}_i x_ix_i'$$`
+
+
+---
+
+# Errores estándar robustos
+
+Dependiendo de cómo se especifique `\(\hat{\psi}_i\)`, obtenemos distintas versiones del estimador de varianzas robusto
+
+La propuesta de White original es:
+
+`$$HC0:\quad\hat{\psi}_i=\hat{u}_i^2$$`
+
+Este estimador asintóticamente consistente
+
+En muestras pequeñas, muchas veces se emplea la siguiente corrección:
+
+`$$HC1:\quad\hat{\psi}_i=\frac{N}{N-k}\hat{u}_i^2$$`
+
+---
+
+# Desviación a la influencia
+
+Un par de resultados nos ayudarán a entender qué hacen las otras correcciones a la matriz robusta en el software
+
+Definimos la **influencia** de la observación `\(i\)` como:
+
+`$$h_{ii}=X_i'(X'X)^{-1}X_i$$`
+
+`\(h_{ii}\)` nos dice qué tanto *jala* la observación `\(i\)` a la línea de regresión
+
+En una regresión con un solo regresor `\(x\)`, se puede mostrar que la influencia de la observación `\(i\)` es:
+
+`$$h_{ii}=\frac{1}{N}+\frac{(x_i-\bar{x})^2}{\sum(x_j-\bar{x})^2}$$`
+es decir, que la influencia se incrementa cuando `\(x_i\)` se aleja de la media
+
+La influencia es un número entre 0 y 1 y además `\(\sum_i h_{ii}=k\)`, siendo `\(k\)` el número de regresores
+
+---
+
+# Errores estándar robustos
+
+Algunos autores sugieren usar la influencia en la matriz de varianzas robusta
+
+Se proponen algunas alternativas:
+
+`$$HC2:\quad\hat{\psi}_i=\frac{1}{1-h_{ii}}\hat{u}_i^2$$`
+
+`$$HC3:\quad\hat{\psi}_i=\frac{1}{(1-h_{ii})^2}\hat{u}_i^2$$`
+
+Long &amp; Ervin (2000) realizaron un experimento de simulación y recomendaron usar `\(HC3\)` en muestras pequeñas, por lo que el paquete *sandwich* en R usa `\(HC3\)` por default
+
+Es importante tener en cuenta qué tipo de errores estándar piden que el software calcule
+
+
+---
+
+# Ejemplo
+
+Los datos en *elemapi2.dta* tienen información sobre 400 escuelas en 37 distritos escolares
+
+Nos interesa la relación entre una medida de desempeño (**api00**), el tamaño de la clase en los primeros grados (**acs_k3** y **acs_46**), la presencia de profesores certificados (**full**) y el tamaño de la escuela (**enroll**)
+
+---
+# Ejemplo
+
+Estimamos por MCO y obtenemos errores clásicos y errores robustos a heterocedasticidad
+
+
+```r
+data.des &lt;- haven::read_dta("data/elemapi2.dta")
+
+summary(m.mco &lt;- lm(api00 ~ acs_k3 + acs_46 + full + enroll,
+                    data=data.des))$coef
+```
+
+```
+##               Estimate  Std. Error     t value
+## (Intercept) -5.2004067 84.95491785 -0.06121372
+## acs_k3       6.9543811  4.37109654  1.59099234
+## acs_46       5.9660147  1.53104887  3.89668470
+## full         4.6682211  0.41425372 11.26899022
+## enroll      -0.1059909  0.02695393 -3.93229905
+##                                      Pr(&gt;|t|)
+## (Intercept) 0.9512203586080624218013213067024
+## acs_k3      0.1124215146649954755186939792111
+## acs_46      0.0001147539777547598510362703017
+## full        0.0000000000000000000000001086937
+## enroll      0.0000995650036511801879088312539
+```
+---
+
+# Ejemplo
+
+Usamos *vcovHC* para pedir la matriz de varianzas robusta (la original de White (1986))
+
+
+```r
+coeftest(m.mco, vcov = vcovHC(m.mco, type = "HC0"))[,1:3]
+```
+
+```
+##               Estimate  Std. Error     t value
+## (Intercept) -5.2004067 86.11282886 -0.06039062
+## acs_k3       6.9543811  4.59126195  1.51469927
+## acs_46       5.9660147  1.56322550  3.81647735
+## full         4.6682211  0.41204837 11.32930359
+## enroll      -0.1059909  0.02783754 -3.80748172
+```
+
+El error estándar de **acs_46** pasa de 1.53 a 1.56
+
+---
+
+# Ejemplo
+
+.pull-left[
+Coleccionamos los resultados con y sin errores robustos
+
+Con *stargazer*, basta con estimar un modelo, y luego podemos especificar distintas formas para la matriz de varianzas
+
+
+```r
+stargazer(m.mco, m.mco,
+          se = list(NULL,
+                    sqrt(diag(vcovHC(m.mco, type = "HC0")))),
+          type="text",
+          keep=c("acs_k3", "acs_46"),
+          keep.stat = "n")
+```
+]
+
+.pull-right[
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;api00&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Homoc.&lt;/td&gt;&lt;td&gt;HC0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_k3&lt;/td&gt;&lt;td&gt;6.954&lt;/td&gt;&lt;td&gt;6.954&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(4.371)&lt;/td&gt;&lt;td&gt;(4.591)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_46&lt;/td&gt;&lt;td&gt;5.966&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.966&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1.531)&lt;/td&gt;&lt;td&gt;(1.563)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+]
+---
+
+# Ejemplo
+
+Podemos especificar distintas formas de la matriz robusta, de acuerdo a lo descrito antes
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="5"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="5"&gt;api00&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Homoc.&lt;/td&gt;&lt;td&gt;HC0&lt;/td&gt;&lt;td&gt;HC1&lt;/td&gt;&lt;td&gt;HC2&lt;/td&gt;&lt;td&gt;HC3&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;td&gt;(4)&lt;/td&gt;&lt;td&gt;(5)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_k3&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(4.3711)&lt;/td&gt;&lt;td&gt;(4.5913)&lt;/td&gt;&lt;td&gt;(4.6206)&lt;/td&gt;&lt;td&gt;(4.6524)&lt;/td&gt;&lt;td&gt;(4.7154)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_46&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1.5310)&lt;/td&gt;&lt;td&gt;(1.5632)&lt;/td&gt;&lt;td&gt;(1.5732)&lt;/td&gt;&lt;td&gt;(1.5990)&lt;/td&gt;&lt;td&gt;(1.6364)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="5" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+class: inverse, middle, center
+
+# Errores agrupados
+
+---
+
+# Errores agrupados
+
+Surgen naturalmente cuando las observaciones están agrupadas
+
+  - Niños en salones de clase
+  - Hogares en localidades
+  - Solicitudes de empleo en una empresa
+  - Ahorradoras en un banco
+
+El supuesto de errores independientes claramente no se cumple
+
+Pensemos en un problema simple para entender la intución:
+
+`$$y_{ig}=\beta_0+\beta_1 x_g+e_{ig}$$`
+
+Aquí, `\(x_g\)` es un regresor que es el mismo para todos los miembros del grupo `\(g\)`
+
+Asumamos que todos los grupos tienen tamaño `\(n\)`
+
+---
+
+# Errores agrupados
+
+Podemos mostrar que la correlación de errores entre dos observaciones `\(i\)` y `\(j\)` que pertenecen a `\(g\)` es `$$E(e_{ig}e_{jg})=\overbrace{\rho_e}^{\substack{\text{coeficiente de correlación} \\ \text{intraclase residual}}} \underbrace{\sigma_e^2}_{\text{varianza residual}}$$`
+
+Le damos una estructura aditiva a los errores:
+
+`$$e_{ig}=\nu_g+\eta_{ig}$$`
+donde `\(\nu_g\)` captura toda la correlación dentro del grupo
+
+`\(\eta_{ig}\)` es un error idiosincrático con media cero e independiente de cualquier otro `\(\eta_{jg}\)`
+
+Como queremos analizar el problema del agrupamiento, asumimos que tanto `\(v_g\)` y `\(\eta_{ig}\)` son homocedásticos
+
+
+---
+
+# Errores agrupados
+
+Con esta estructura de errores, el coeficiente de correlación intraclase es:
+
+`$$\rho_e=\frac{\sigma_{\nu}^2}{\sigma_{\nu}^2+\sigma_{\eta}^2}$$`
+
+Deberíamos calcular la matriz de varianzas `\(V_C(\hat{\beta})\)` tomando en cuenta esta estructura
+
+¿Qué pasa si hacemos MCO en el contexto de este problema?
+
+Moulton (1984) muestra que:
+
+`$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+(n-1)\rho_e$$`
+- A `\(\sqrt{\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}}\)` se le conoce como el *factor de Moulton*
+
+---
+
+# Factor de Moulton
+
+El factor de Moulton nos dice qué tanto sobreestimamos la precisión al ignorar la correlación intra clase
+
+Visto de otro modo:
+
+`$$V_C(\hat{\beta})=\left(1+(n-1)\rho_e\right)V_{MCO}(\hat{\beta})$$`
+
+Es decir entre más grande sea la correlación dentro de los grupos, más deberíamos *inflar* los errores de MCO
+
+Consideremos el caso extremo de que `\(\rho_e=1\)`, es decir, que todas las `\(y_{ig}\)` dentro del mismo `\(g\)` son iguales
+
+Entonces el factor de Moulton es simplemente `\(\sqrt{n}\)`
+
+Visto de otro modo, la matriz de varianzas correcta se obtendría multiplicando por `\(n\)` la matriz `\(V_{MCO}(\hat{\beta})\)`
+
+`$$V_C(\hat{\beta})=n V_{MCO}(\hat{\beta})$$`
+---
+
+# Errores agrupados en general
+
+En general, `\(x_{ig}\)` varía a nivel individual y tenemos grupos de tamaño `\(n_g\)`
+
+En este caso, el factor de Moulton es la raíz cuadrada de:
+
+`$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+\left(\frac{V(n_g)}{\bar{n}}+\bar{n}-1\right)\rho_x\rho_e$$`
+donde `\(\bar{n}\)` es el tamaño promedio del grupo y `\(\rho_x\)` es la correlación intraclase de `\(x_{ig}\)`
+
+No es necesario asumir una forma para `\(\rho_x\)` (se puede calcular)
+
+Noten que el error que cometemos es más grande entre más heterogéneo es el tamaño de grupos y entre más grande es `\(\rho_x\)`
+
+Por tanto, cuando el tratamiento no varía entre grupos, este error es grande
+
+---
+
+# Soluciones para errores agrupados
+
+Solución paramétrica: calcular directamente el factor de Moulton e inflar los errores de MCO
+
+Bootstrap por bloques: ver más adelante el concept de bootstrap
+
+Estimar los errores agrupados (*clustered standard errors*)
+
+---
+
+# Errores estándar agrupados
+
+Con errores agrupados podemos escribir el estimador de MCO como
+
+$$
+`\begin{aligned}
+\hat{\beta}&amp;=\beta+(X'X)^{-1}X'u \\
+&amp;=(X'X)^{-1}\left(\sum_{g=1}^G X_gu_g\right)
+\end{aligned}`
+$$
+
+Suponiendo independencia entre `\(g\)` y correlación dentro de cada grupo:
+
+`$$E(u_{ig}u_{jg'}|x_{ig}x_{jg'})=0$$` 
+
+excepto cuando `\(g=g'\)`
+
+
+En este caso, el estimador de MCO tiene una varianza asintótica dada por
+
+`$$V({\hat{\beta}}_{MCO})=(X'X)^{-1}\left(\sum_{g=1}^G X_g'u_gu_g'X\right)(X'X)^{-1}$$`
+---
+
+# Errores estándar agrupados
+
+Con errores heterocedásticos, pero sin agrupamiento, la matriz de varianzas de White (1980) tiene una estructura como sigue:
+
+`$$\hat{V}(\hat{\beta}_{R})=(X'X)^{-1}X'\hat{\Sigma} X (X'X)^{-1}$$`
+
+Donde
+
+`$$\hat{\Sigma}=\left(\begin{matrix} \hat{u}_{1}^2 &amp; 0  &amp; 0  &amp; \ldots &amp; 0 \\ 0 &amp; \hat{u}_{2}^2 &amp; 0 &amp; \ldots &amp; 0 \\ \vdots &amp; &amp; &amp; &amp; \\ 0 &amp; &amp; &amp;  \ldots &amp; \hat{u}_{n}^2\end{matrix}\right)$$`
+---
+
+# Errores estándar agrupados
+
+Para estimar la varianza con errores agrupados empleamos una generalización de la propuesta de White para errores robustos
+
+Si `\(G\to\infty\)`, el estimador de la matriz de errores agrupados robusta (CRVE) es consistente para estimar `\(V(\hat{\beta})\)`:
+
+`$$\hat{V}_{CR}(\hat{\beta})=(X'X)^{-1}\left(\sum_{g=1}^G X_g'\hat{u}_g\hat{u}_g'X_g\right)(X'X)^{-1}$$`
+donde `\(\hat{u}_g\hat{u}_g'\)` es la matriz de varianzas para los individuos del grupo `\(g\)`
+
+De manera compacta
+
+`$$\hat{V}_{CR}(\hat{\beta})=(X'X)^{-1}X'\hat{\Sigma} X(X'X)^{-1}$$`
+
+---
+
+# Errores estándar agrupados
+
+Y en este caso la matriz `\(\hat{\Sigma}\)` tiene una estructura agrupada
+
+`$$\small \hat{\Sigma}=\left(\begin{matrix} \hat{u}_{1,1}^2 &amp; \hat{u}_{1,1}\hat{u}_{2,1} &amp; \ldots &amp; \hat{u}_{1,1} \hat{u}_{n,1}&amp; 0 &amp; 0 &amp; \ldots &amp;  0 &amp; \ldots &amp; 0 &amp; 0 &amp; \ldots &amp;  0 \\ \hat{u}_{2,1}\hat{u}_{1,1} &amp; \hat{u}_{2,1}^2 &amp; \ldots &amp; \hat{u}_{2,1}\hat{u}_{n,1} &amp; 0 &amp; 0 &amp; \ldots &amp; 0 &amp; \ldots  &amp; 0 &amp; 0 &amp; \ldots &amp;  0\\ 
+\vdots &amp; \vdots  &amp; &amp; \vdots &amp; \vdots &amp; \vdots  &amp; &amp;  \vdots&amp; &amp; \vdots &amp; \vdots &amp;  &amp;  \vdots \\ \hat{u}_{n,1}\hat{u}_{1,1} &amp; \hat{u}_{n,1}\hat{u}_{2,1}&amp; \ldots &amp; \hat{u}_{n,1}^2&amp; 0 &amp; 0 &amp;\ldots &amp; 0 &amp; \ldots &amp; 0 &amp; 0 &amp; \ldots &amp;  0 \\  0 &amp; 0 &amp; \ldots &amp;  0 &amp; \hat{u}_{1,2}^2 &amp; \hat{u}_{1,2}\hat{u}_{2,2} &amp; \ldots &amp; \hat{u}_{1,2}\hat{u}_{n,2} &amp;\ldots &amp; 0 &amp; 0 &amp; \ldots &amp;  0  \\ 0 &amp; 0 &amp; \ldots &amp;  0 &amp; \hat{u}_{2,2}\hat{u}_{1,2} &amp; \hat{u}_{2,2}^2 &amp; \ldots &amp; \hat{u}_{2,2}\hat{u}_{n,2} &amp;\ldots &amp; 0 &amp; 0 &amp; \ldots &amp;  0 \\ \vdots &amp; \vdots  &amp; &amp; \vdots &amp; \vdots &amp; \vdots  &amp; &amp;  \vdots&amp; &amp; \vdots &amp; \vdots &amp;  &amp;  \vdots  \\ 0 &amp; 0 &amp; \ldots &amp;  0 &amp; \hat{u}_{n,2}\hat{u}_{1,2} &amp; \hat{u}_{n,2}\hat{u}_{2,2} &amp; \ldots &amp; \hat{u}_{n,2}^2 &amp;\ldots &amp; 0 &amp; 0 &amp; \ldots &amp;  0 \\ \vdots &amp; \vdots  &amp; &amp; \vdots &amp; \vdots &amp; \vdots  &amp; &amp;  \vdots&amp; &amp; \vdots &amp; \vdots &amp;  &amp;  \vdots \\ 0 &amp; 0 &amp; \ldots &amp;  0 &amp; 0 &amp;  0 &amp; \ldots &amp; 0 &amp;\ldots &amp; \hat{u}_{1,G}^2 &amp; \hat{u}_{12,G}\hat{u}_{2,G} &amp; \ldots &amp;  \hat{u}_{1,G}\hat{u}_{n,G} \\  0 &amp; 0 &amp; \ldots &amp;  0 &amp; 0 &amp;  0 &amp; \ldots &amp; 0 &amp;\ldots &amp; \hat{u}_{2,G}\hat{u}_{1,G} &amp; \hat{u}_{2,G}^2 &amp; \ldots &amp;  \hat{u}_{2,G}\hat{u}_{n,G} \\ \vdots &amp; \vdots  &amp; &amp; \vdots &amp; \vdots &amp; \vdots  &amp; &amp;  \vdots&amp; &amp; \vdots &amp; \vdots &amp;  &amp;  \vdots \\  0 &amp; 0 &amp; \ldots &amp;  0 &amp; 0 &amp;  0 &amp; \ldots &amp; 0 &amp;\ldots &amp; \hat{u}_{n,G}\hat{u}_{1,G} &amp; \hat{u}_{n,G}\hat{u}_{2,G} &amp; \ldots &amp;  \hat{u}_{n,G}^2 \end{matrix}\right)$$`
+
+
+---
+
+# Errores estándar agrupados
+
+El resultado asintótico de consistencia depende de que `\(G\to\infty\)`
+
+Si `\(G\)` está fijo, no importa qué tan grande sea `\(N\)`, `\(\hat{V}_{CRVE}(\hat{\beta})\)` no será consistente
+
+Algunos paquetes ajustan esta matriz de varianzas haciendo una corrección parecida a `\(HC1\)`, pero ahora tomando en cuanta también `\(G\)` y no solo `\(N\)` (ver por ejemplo, *vcovCR* en R)
+
+Con pocos grupos, subestimamos los errores estándar y rechazamos la `\(H_0\)` más veces de lo que deberíamos (*over-rejection*)
+
+Si tenemos pocos grupos, recurrimos a otras soluciones (ver Cameron y Miller, 2015)
+  - Inflar los errores con un corrector de sesgo
+  - Bootstrap agrupado con refinamiento asintótico
+  
+La recomendación práctica es que se tomen en serio el problema de los pocos clusters
+
+¿Cuánto es poco? Cameron y Miller (2015) citan 50. (¡Qué raro, el número de estados en EUA!)
+
+---
+
+# Ejemplo
+
+Ahora calculamos los errores agrupados a nivel distrito
+
+
+```
+## 
+## t test of coefficients:
+## 
+##               Estimate Std. Error t value       Pr(&gt;|t|)
+## (Intercept)  -5.200407 121.785594 -0.0427        0.96596
+## acs_k3        6.954381   6.901117  1.0077        0.31421
+## acs_46        5.966015   2.531075  2.3571        0.01891
+## full          4.668221   0.703464  6.6360 0.000000000108
+## enroll       -0.105991   0.042948 -2.4679        0.01402
+##                
+## (Intercept)    
+## acs_k3         
+## acs_46      *  
+## full        ***
+## enroll      *  
+## ---
+## Signif. codes:  
+## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+# Ejemplo
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;api00&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Homoc.&lt;/td&gt;&lt;td&gt;HC0&lt;/td&gt;&lt;td&gt;Agrupados&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_k3&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;td&gt;6.9544&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(4.3711)&lt;/td&gt;&lt;td&gt;(4.5913)&lt;/td&gt;&lt;td&gt;(6.9011)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;acs_46&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;5.9660&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1.5310)&lt;/td&gt;&lt;td&gt;(1.5632)&lt;/td&gt;&lt;td&gt;(2.5311)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+---
+
+class: inverse, middle, center
+
+# Bootstrap
+
+---
+
+# Bootstrap
+
+A veces es difícil encontrar una expresión analítica de los errores estándar
+
+La idea de las técnicas bootstrap es consutrir una distribución empírica del estimador de interés
+
+Una muestra bootstrap es una muestra tomada de los mismos datos
+
+En las rutinas para errores bootstrap, pensamos en `\(\{(y_1,x_1),\ldots,(y_N,X_n)\}\)` como la población
+
+Una muestra bootstrap es una muestra de tamaño `\(N\)` tomada de la muestra original
+
+El procedimiento bootstrap más usado es el bootstrap no paramétrico o boostrap en parejas (nos enfocaremos en este tipo de bootstrap en el curso)
+
+La idea es remuestrear la pareja completa `\((y_i,x_i)\)`
+
+---
+
+# Algoritmo para errores estándar bootstrap
+
+1. Dada una muestra `\(W_1,\ldots,W_N\)`, obtener una muestra de tamaño `\(N\)`, remuestreando de la muestra original **con reemplazo**
+
+1. Calcular el estadístico `\(\hat{\theta}_b\)` usado con la muestra bootstrap (coeficiente de regresión, diferencia de medias, función de coeficientes)
+
+1. Repetir los pasos 1 y 2 `\(B\)` veces, donde `\(B\)` es lo suficientemente grande (usualmente 1000 es suficiente)
+
+1. Usar las `\(B\)` repeticiones para obtener el error estándar del estadístico como la raíz cuadrada de `\(s^2_{\hat{\theta},B}\)`:
+
+`$$s^2_{\hat{\theta},B}=\frac{1}{B-1}\sum_{b=1}^B(\hat{\theta}_{b}-\bar{\hat{\theta}})^2$$`
+donde `\(\bar{\hat{\theta}}=\frac{1}{B}\sum_{b=1}^B\hat{\theta}_b\)`
+
+---
+
+# ¿Cómo hacer remuestreo en R?
+
+.pull-left[
+
+```r
+set.seed(927)
+
+data.ingresos &lt;- read.csv("data/ingresos_iv.csv")
+
+obs &lt;- nrow(data.ingresos)
+obs
+```
+
+```
+## [1] 3010
+```
+
+```r
+# En la muestra original
+mean(data.ingresos$lwage)
+```
+
+```
+## [1] 6.261832
+```
+]
+
+.pull-right[
+
+```r
+# Una muestra bootstrap
+data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE),
+    ]
+
+mean(data.b$lwage)
+```
+
+```
+## [1] 6.261918
+```
+
+```r
+# Otra muestra bootstrap
+data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE),
+    ]
+
+mean(data.b$lwage)
+```
+
+```
+## [1] 6.262326
+```
+]
+
+---
+
+# Aplicaciones comunes de bootstrap
+
+Métodos de varias etapas (por ejemplo, el estimador de dos etapas de Heckman)
+
+Funciones de estimadores (aunque aquí el método Delta también podría ser usado)
+
+Datos agrupados con pocos grupos (remuestrear grupos en vez de individuos)
+
+El consejo práctico es usar resultados teóricos cuando se puede (por ejemplo, las matrices robustas descritas antes)
+
+Pensemos siempre en la estructura de los datos antes de hacer boostrap
+
+
+Usar una semilla siempre para poder reproducir sus resultados
+
+---
+
+# Próxima sesión
+
+Estudiaremos métodos para datos en panel
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
