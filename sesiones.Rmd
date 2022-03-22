@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 12. [Variables instrumentales](./slides/variables_instrumentales.html)
 
-14. Temas de errores estándar
+14. [Temas de errores estándar](./slides/errores_estandar.html)
 
 15. Modelos de panel lineal
 

@@ -27,6 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [variables_instrumentales.R](./scripts/variables_instrumentales.R)
 
+[errores_estandar.R](./scripts/errores_estandar.R)
 
 # Datos
 
@@ -47,3 +48,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [limdep_ambexp.dta](./data/limdep_ambexp.dta)
 
 [ingresos_iv.csv](./data/ingresos_iv.csv)
+
+[elemapi2.dta](./data/elemapi2.dta)
