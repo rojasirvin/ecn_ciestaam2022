@@ -153,18 +153,12 @@ summary(m.mco &lt;- lm(api00 ~ acs_k3 + acs_46 + full + enroll,
 ```
 
 ```
-##               Estimate  Std. Error     t value
-## (Intercept) -5.2004067 84.95491785 -0.06121372
-## acs_k3       6.9543811  4.37109654  1.59099234
-## acs_46       5.9660147  1.53104887  3.89668470
-## full         4.6682211  0.41425372 11.26899022
-## enroll      -0.1059909  0.02695393 -3.93229905
-##                                      Pr(&gt;|t|)
-## (Intercept) 0.9512203586080624218013213067024
-## acs_k3      0.1124215146649954755186939792111
-## acs_46      0.0001147539777547598510362703017
-## full        0.0000000000000000000000001086937
-## enroll      0.0000995650036511801879088312539
+##               Estimate  Std. Error     t value     Pr(&gt;|t|)
+## (Intercept) -5.2004067 84.95491785 -0.06121372 9.512204e-01
+## acs_k3       6.9543811  4.37109654  1.59099234 1.124215e-01
+## acs_46       5.9660147  1.53104887  3.89668470 1.147540e-04
+## full         4.6682211  0.41425372 11.26899022 1.086937e-25
+## enroll      -0.1059909  0.02695393 -3.93229905 9.956500e-05
 ```
 ---
 
@@ -439,25 +433,23 @@ La recomendación práctica es que se tomen en serio el problema de los pocos cl
 Ahora calculamos los errores agrupados a nivel distrito
 
 
+```r
+coeftest(m.mco,
+         vcovCR(m.mco, cluster=data.des$dnum, type="CR1S"))
+```
+
 ```
 ## 
 ## t test of coefficients:
 ## 
-##               Estimate Std. Error t value       Pr(&gt;|t|)
-## (Intercept)  -5.200407 121.785594 -0.0427        0.96596
-## acs_k3        6.954381   6.901117  1.0077        0.31421
-## acs_46        5.966015   2.531075  2.3571        0.01891
-## full          4.668221   0.703464  6.6360 0.000000000108
-## enroll       -0.105991   0.042948 -2.4679        0.01402
-##                
-## (Intercept)    
-## acs_k3         
-## acs_46      *  
-## full        ***
-## enroll      *  
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  -5.200407 121.785594 -0.0427  0.96596    
+## acs_k3        6.954381   6.901117  1.0077  0.31421    
+## acs_46        5.966015   2.531075  2.3571  0.01891 *  
+## full          4.668221   0.703464  6.6360 1.08e-10 ***
+## enroll       -0.105991   0.042948 -2.4679  0.01402 *  
 ## ---
-## Signif. codes:  
-## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 ---
@@ -479,6 +471,8 @@ Ahora calculamos los errores agrupados a nivel distrito
 &lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;td&gt;395&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;
+
+
 
 
 ---
@@ -529,6 +523,7 @@ donde `\(\bar{\hat{\theta}}=\frac{1}{B}\sum_{b=1}^B\hat{\theta}_b\)`
 ```r
 set.seed(927)
 
+# Los datos que usamos en el problema de VI
 data.ingresos &lt;- read.csv("data/ingresos_iv.csv")
 
 obs &lt;- nrow(data.ingresos)
@@ -553,8 +548,7 @@ mean(data.ingresos$lwage)
 
 ```r
 # Una muestra bootstrap
-data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE),
-    ]
+data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE), ]
 
 mean(data.b$lwage)
 ```
@@ -565,8 +559,7 @@ mean(data.b$lwage)
 
 ```r
 # Otra muestra bootstrap
-data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE),
-    ]
+data.b &lt;- data.ingresos[sample(nrow(data.ingresos), obs, replace = TRUE), ]
 
 mean(data.b$lwage)
 ```
@@ -575,6 +568,69 @@ mean(data.b$lwage)
 ## [1] 6.262326
 ```
 ]
+
+---
+
+# Ejemplo bootstrap
+
+Seleccionamos el número de muestras e inicializamos una matrix para guardar los resultados
+
+
+```r
+B=500
+
+beta &lt;- data.frame(beta=matrix(ncol = 1, nrow = B))
+```
+
+Usamos un ciclo para programar la rutina
+
+
+```r
+for (i in 1:B)
+{
+  data.b &lt;-data.ingresos[sample(nrow(data.ingresos),obs, replace = TRUE),]
+  
+  m &lt;- lm(lwage ~  educ + exper + black + south + married + smsa,
+           data = data.b)
+  
+  #Guardamos en cada entrada el ratio estimado
+  beta[i,1] &lt;- as.numeric(m$coefficients[2])
+}
+```
+
+---
+# Ejemplo bootstrap
+
+El error estimado es simplemente la desviación estándar de los `\(B\)` estadísticos estimados
+
+
+```r
+sd(beta$beta)
+```
+
+```
+## [1] 0.003546238
+```
+
+Comparamos con el error estimado con *ivreg*
+
+
+```r
+summary(lm(lwage ~  educ + exper + black + south + married + smsa
+           , data = data.ingresos))$coef[,1:3]
+```
+
+```
+##                Estimate  Std. Error    t value
+## (Intercept)  5.06331642 0.063740193  79.436792
+## educ         0.07117286 0.003482405  20.437845
+## exper        0.03415182 0.002214445  15.422291
+## black       -0.16602742 0.017613672  -9.426054
+## south       -0.13155178 0.014969062  -8.788245
+## married     -0.03587071 0.003401161 -10.546607
+## smsa         0.17578711 0.015457781  11.372079
+```
+
 
 ---
 
@@ -592,6 +648,14 @@ Pensemos siempre en la estructura de los datos antes de hacer boostrap
 
 
 Usar una semilla siempre para poder reproducir sus resultados
+
+---
+
+# Tarea
+
+Obtenga el error estándar del coeficiente de MC2E *estimado a mano*. Es decir, para cada muestra bootstrap, estime la primera etapa y obtenga los valores ajustados de la educación. Luego estime una segunda etapa con estos errores ajustados como regresor en la ecuación estructural y coleccione el coeficiente estimado de la educación (ajustada) en la segunda etapa.
+
+Repita esto 500 veces y obtenga la desviación estándar de los coeficientes coleccionados. ¿Cómo se compara con lo que obtiene con *ivreg*?
 
 ---
 

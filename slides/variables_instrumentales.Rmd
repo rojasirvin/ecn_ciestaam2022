@@ -778,6 +778,14 @@ La estimación de la prueba robusta puede complicarse en algunas aplicaciones, a
 
 ---
 
+# Prueba de Hausman
+
+Más que como una *prueba de endogeneidad*, la prueba de Hausman se interpreta como una prueba de las consecuencias de usar un estimador diferente para la misma ecuación (Baum, Schaffer y Stillman, 2003)
+
+Bajo la hipótesis nula de que MCO es el método apropiado, solo habría una pérdida de eficiencia si usamos VI
+
+---
+
 class: inverse, middle, center
 
 # Prueba de sobreidentificación
@@ -818,8 +826,16 @@ Rechazar la $H0$ indica que debemos replantear el modelo, aunque no nos dice có
 Podemos acceder a las pruebas de diagnóstico usando la opción *diagnostics*
 
 ```{r echo=T, eval=F}
-summary(vi, diagnostics=T)
 
+vi.ei <- ivreg(lwage ~  educ + exper + black + south + married + smsa |
+              . - educ + nearc4, data = data.ingresos)
+
+vi.si <- ivreg(lwage ~  educ + exper + black + south + married + smsa |
+                 . - educ + nearc4 + nearc2, data = data.ingresos)
+
+summary(vi.ei, diagnostics=T, vcov = sandwich)
+
+summary(vi.si, diagnostics=T, vcov = sandwich)
 ```
 
 
@@ -842,7 +858,7 @@ En una muestra de tamaño arbitrario, la distribución del coeficiente de MCO es
 
 En cambio, el estimador de MC2E, aunque consistente, **es sesgado**
 
-En muestras grandes el el estimador está *cerca* del coeficiente poblacional
+En muestras grandes el estimador está *cerca* del coeficiente poblacional
 
 Esto tiene importantes consecuencias para la estimación y la inferencia
 

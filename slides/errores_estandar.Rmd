@@ -430,9 +430,9 @@ La recomendación práctica es que se tomen en serio el problema de los pocos cl
 
 Ahora calculamos los errores agrupados a nivel distrito
 
-```{r}
+```{r echo=T}
 coeftest(m.mco,
-         vcovCL(m.mco, cluster=data.des$dnum))
+         vcovCR(m.mco, cluster=data.des$dnum, type="CR1S"))
 ```
 
 ---
@@ -444,12 +444,14 @@ stargazer(m.mco, m.mco, m.mco,
           column.labels = c("Homoc.", "HC0", "Agrupados"),
           se = list(NULL,
                     sqrt(diag(vcovHC(m.mco, type = "HC0"))),
-                    sqrt(diag(vcovCL(m.mco, cluster=data.des$dnum)))),
+                    sqrt(diag(vcovCR(m.mco, type = "CR1S", cluster=data.des$dnum)))),
           type="html",
           keep=c("acs_k3", "acs_46"),
           keep.stat = "n",
           digits = 4)
 ```
+
+
 
 
 ---
@@ -499,6 +501,7 @@ donde $\bar{\hat{\theta}}=\frac{1}{B}\sum_{b=1}^B\hat{\theta}_b$
 ```{r tidy=TRUE, include=T,echo=T,warning=FALSE, message=FALSE}
 set.seed(927)
 
+#Los datos que usamos en el problema de VI
 data.ingresos <- read.csv("data/ingresos_iv.csv")
 
 obs <- nrow(data.ingresos)
@@ -506,6 +509,7 @@ obs
 
 #En la muestra original
 mean(data.ingresos$lwage)
+
 ```
 ]
 
@@ -525,6 +529,51 @@ mean(data.b$lwage)
 
 ---
 
+# Ejemplo bootstrap
+
+Seleccionamos el número de muestras e inicializamos una matrix para guardar los resultados
+
+```{r echo=T}
+B=500
+
+beta <- data.frame(beta=matrix(ncol = 1, nrow = B))
+```
+
+Usamos un ciclo para programar la rutina
+
+```{r echo=T, cache=T}
+for (i in 1:B)
+{
+  data.b <-data.ingresos[sample(nrow(data.ingresos),obs, replace = TRUE),]
+  
+  m <- lm(lwage ~  educ + exper + black + south + married + smsa,
+           data = data.b)
+  
+  #Guardamos en cada entrada el ratio estimado
+  beta[i,1] <- as.numeric(m$coefficients[2])
+}
+
+```
+
+---
+# Ejemplo bootstrap
+
+El error estimado es simplemente la desviación estándar de los $B$ estadísticos estimados
+
+```{r echo=T}
+sd(beta$beta)
+```
+
+Comparamos con el error estimado con *ivreg*
+
+```{r echo=T}
+summary(lm(lwage ~  educ + exper + black + south + married + smsa
+           , data = data.ingresos))$coef[,1:3]
+```
+
+
+---
+
 # Aplicaciones comunes de bootstrap
 
 Métodos de varias etapas (por ejemplo, el estimador de dos etapas de Heckman)
@@ -539,6 +588,14 @@ Pensemos siempre en la estructura de los datos antes de hacer boostrap
 
 
 Usar una semilla siempre para poder reproducir sus resultados
+
+---
+
+# Tarea
+
+Obtenga el error estándar del coeficiente de MC2E *estimado a mano*. Es decir, para cada muestra bootstrap, estime la primera etapa y obtenga los valores ajustados de la educación. Luego estime una segunda etapa con estos errores ajustados como regresor en la ecuación estructural y coleccione el coeficiente estimado de la educación (ajustada) en la segunda etapa.
+
+Repita esto 500 veces y obtenga la desviación estándar de los coeficientes coleccionados. ¿Cómo se compara con lo que obtiene con *ivreg*?
 
 ---
 

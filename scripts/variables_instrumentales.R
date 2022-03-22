@@ -1,5 +1,3 @@
-#Modelos de conteo
-
 rm(list = ls()) 
 options(scipen=999) 
 
@@ -93,5 +91,12 @@ stargazer(vi, gmm_iv, gmm_iv_het, gmm_opt,
 
 #Los tests pueden accederse con la opción diagnostics
 
-summary(vi, diagnostics=T)
+vi.ei <- ivreg(lwage ~  educ + exper + black + south + married + smsa |
+              . - educ + nearc4, data = data.ingresos)
 
+vi.si <- ivreg(lwage ~  educ + exper + black + south + married + smsa |
+                 . - educ + nearc4 + nearc2, data = data.ingresos)
+
+summary(vi.ei, diagnostics=T, vcov = sandwich)
+
+summary(vi.si, diagnostics=T, vcov = sandwich)
