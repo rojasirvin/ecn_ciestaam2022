@@ -593,7 +593,7 @@ Usar una semilla siempre para poder reproducir sus resultados
 
 # Tarea
 
-Obtenga el error estándar del coeficiente de MC2E *estimado a mano*. Es decir, para cada muestra bootstrap, estime la primera etapa y obtenga los valores ajustados de la educación. Luego estime una segunda etapa con estos errores ajustados como regresor en la ecuación estructural y coleccione el coeficiente estimado de la educación (ajustada) en la segunda etapa.
+Obtenga el error estándar del coeficiente de educación usando MC2E *estimado a mano*. Es decir, para cada muestra bootstrap, estime la primera etapa y obtenga los valores ajustados de la educación. Luego estime una segunda etapa con estos errores ajustados como regresor en la ecuación estructural de salarios y coleccione el coeficiente estimado de la educación (ajustada) en la segunda etapa.
 
 Repita esto 500 veces y obtenga la desviación estándar de los coeficientes coleccionados. ¿Cómo se compara con lo que obtiene con *ivreg*?
 
