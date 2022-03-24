@@ -108,3 +108,43 @@ phtest(anti ~ self + pov,
 
 
 
+
+#Equivalencia de estimadores
+
+data.comp.sub <- data.comp %>% 
+  filter(year!=90) %>% 
+  select(id, year, anti, self, pov)
+
+
+#Efectos fijos es MCO con dummies
+
+m.fe <- lm(anti ~ self + pov + factor(id),
+                data.comp.sub)
+
+
+m.dummies <- lm(anti ~ self + pov + factor(id),
+                data.comp.sub)
+
+stargazer(m.fe, m.dummies,
+          type = "text",
+          keep=c("self", "pov"))
+
+
+#Efectos fijos es equivalente (los coeficientes) a MCO a las primeras diferencias
+
+data.comp.sub <- data.comp.sub %>% 
+  group_by(id) %>% 
+  mutate(danti=anti-dplyr::lag(anti, order_by = year),
+         dself=self-dplyr::lag(self, order_by = year),
+         dpov=pov-dplyr::lag(pov, order_by= year)) %>% 
+  ungroup()
+
+
+m.dif <- lm(danti ~ -1 + dself + dpov,
+                data.comp.sub)
+
+stargazer(m.fe, m.dummies, m.dif,
+          type = "text",
+          keep=c("self", "pov", "dself", "dpov"))
+
+

@@ -34,10 +34,10 @@ library(magick)
 library(reticulate)
 library(sandwich)
 library(stargazer)
-library(gtsummary)
+library(plm)
 library(foreign)
 library(AER)
-
+library(clubSandwich)
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
@@ -106,6 +106,64 @@ La forma en que tratemos a $\alpha$ resultará en los dos tipos de modelos princ
 
 # Ejemplo de datos en panel
 
+Los datos en panel pueden venir en diversas formas
+
+Los dos formatos más usados son el *wide* y el *long*
+
+```{r out.height=400,fig.align='center'}
+knitr::include_graphics("https://www.statology.org/wp-content/uploads/2021/12/wideLong1-1-768x543.png")
+```
+
+---
+
+# Ejemplo de datos en panel
+
+Tenemos datos de una muestra de niños identificados por **id** en el archivo *comportamiento_wide.csv*
+
+Algunas características están fijas en el tiempo
+
+Otras características están medidas en tres puntos del tiempo
+
+```{r echo=T}
+data.comp <- read_csv("data/comportamiento_wide.csv",
+                      locale = locale(encoding = "latin1"))
+```
+
+Pasamos de formato *wide* a *long*
+
+```{r echo=T}
+data.comp <- data.comp %>% 
+  pivot_longer(cols = c(anti90:anti94, self90:self94, pov90:pov94),
+               names_to = c(".value", "year"),
+               names_pattern =  "([A-Za-z]+)(\\d+)")
+
+```
+
+
+---
+
+class: inverse, middle, center
+
+# Modelos para datos en panel
+
+---
+
+# Modelo agrupado o *pooled*
+
+Si asumimos coeficientes constantes, como en sección cruzada
+
+$$y_{it}=\alpha+x_{it}'\beta+u_{it}$$
+tenemos lo que se conoce como modelo pooled o de **coeficientes constantes**
+
+Este modelo no explota la estructura del panel
+
+El modelo es correcto si los regresores no están correlacionados con el errror
+
+Podemos estimar consistemente $\beta$ por MCO
+
+Los errores estándar deben tomar en cuenta la correlación serial
+
+Si estamos dispuestos a asumir un modelo pooled, debemos al menos estimar un modelo de MCO con errores robustos agrupados **a nivel individual**
 
 ---
 
@@ -244,6 +302,106 @@ Sin embargo, en panel esto es un supuesto fuerte pues esperamos que, auque las o
 
 Generalmente usamos una versión robusta, que considera la correlación serial y permite heterocedasticidad (ver ecuación 21.28 en CT)
 
+
+---
+
+# Ejemplo
+
+Se busca explicar el comportamiento antisocial (**anti**) en función de la autoestima (**self**) y la condición de pobreza (**pov**)
+
+$$anti_{it}=\alpha_i+\beta_1 self_{it}+\beta_2 pov_{it}+\varepsilon_{it}$$
+
+Estimemos el modelo por MCO usando *lm* y usando la función *plm* del paquete del mismo nombre
+
+Notemos que para usar *plm* debemos especificar el índice, es decir, especificar los indicadores de panel y de tiempo
+
+```{r echo=T, results=F}
+
+#MCO ignorando estructura de panel
+summary(m.mco.a <- lm(anti ~ self + pov,
+                       data = data.comp))
+
+
+summary(m.mco.b <- plm(anti ~ self + pov,
+                     data = data.comp,
+                     model = "pooling",
+                     index = c("id","year")))
+```
+---
+
+# Ejemplo
+
+```{r echo=F, results='asis'}
+stargazer(m.mco.a, m.mco.b,
+          type = 'html',
+          keep.stat = "n",
+          dep.var.caption = NULL)
+```
+
+---
+
+# Ejemplo
+
+Si estamos dispuestos a usar el estimador *pooled*, al menos debemos corregir por correlación serial
+
+```{r echo=T, results=F}
+stargazer(m.mco.a, m.mco.b, m.mco.b,
+          type = 'text',
+          se = list(NULL,
+                    NULL,
+                    sqrt(diag(vcovCR(m.mco.b, type = "CR1S", cluster = data.comp$id)))))
+```
+---
+
+# Ejemplo
+
+```{r echo=F, results='asis'}
+stargazer(m.mco.a, m.mco.b, m.mco.b,
+          type = 'html',
+          se = list(NULL,
+                    NULL,
+                    sqrt(diag(vcovCR(m.mco.b, type = "CR1S", cluster = data.comp$id)))))
+```
+
+---
+
+# Ejemplo
+
+Usemos ahora el estimador de efectos fijos especificando el tipo de modelo *within*
+
+```{r echo=T, results=F}
+m.fe <- plm(anti ~ self + pov,
+            data = data.comp,
+            model = "within",
+            index = c("id", "year"))
+```
+
+---
+
+# Ejemplo
+
+```{r echo=F, results='asis'}
+stargazer(m.mco.b, m.fe,
+          type = 'html',
+          se = list(sqrt(diag(vcovCR(m.mco.b, type = "CR1S", cluster = data.comp$id))),
+                    sqrt(diag(vcovCR(m.fe, type = "CR1S", cluster = data.comp$id)))))
+```
+
+
+---
+
+# Ejemplo
+
+Si nos interesa el efecto de ser de raza negra (**black**)
+
+```{r echo=F}
+summary(plm(anti ~ self + pov + black,
+    data = data.comp,
+    model = "within",
+    index = c("id", "year")))
+```
+
+
 ---
 
 class: inverse, middle, center
@@ -343,31 +501,31 @@ Con paneles cortos, es natural requerir suficientes individuos en la muestra
 
 Por otro lado, CT proveen dos expresiones para las matrices de varianza en los casos de homocedasticidad (es decir, si $\varepsilon_{it}$ y $\alpha_i$ son iid) y para el caso general donde donde se permite heterocedasticidad y autocorrelación de $\varepsilon_{it}$
 
+---
+
+# Ejemplo
+
+Para usar el estimador de efectos aleatorios, basta con especificar el tipo de modelo como *random*
+
+```{r echo=T, results=F}
+m.re <- plm(anti ~ self + pov,
+            data = data.comp,
+            model = "random",
+            index = c("id", "year"))
+```
 
 ---
 
-class: inverse, middle, center
+# Ejemplo
 
-# Modelo agrupado o *pooled*
+```{r echo=F, results='asis'}
 
----
-
-# Modelo agrupado o *pooled*
-
-Si asumimos coeficientes constantes, como en sección cruzada
-
-$$y_{it}=\alpha+x_{it}'\beta+u_{it}$$
-tenemos lo que se conoce como modelo pooled o de **coeficientes constantes**
-
-Este modelo no explota la estructura del panel
-
-El modelo es correcto si los regresores no están correlacionados con el errror
-
-Podemos estimar consistemente $\beta$ por MCO
-
-Los errores estándar deben tomar en cuenta la correlación serial
-
-Si estamos dispuestos a asumir un modelo pooled, debemos al menos estimar un modelo de MCO con errores robustos agrupados **a nivel individual**
+stargazer(m.mco.b, m.fe, m.re,
+          type = 'html',
+          se = list(sqrt(diag(vcovCR(m.mco.b, type = "CR1S", cluster=data.comp$id))),
+                    sqrt(diag(vcovCR(m.fe, type = "CR1S", cluster=data.comp$id))),
+                    sqrt(diag(vcovCR(m.re, type = "CR1S", cluster=data.comp$id)))))
+```
 
 ---
 
@@ -401,6 +559,39 @@ Si los efectos individuales son efectos fijos correlaciondos con el error, el es
 La $H_0$ es que los efectos fijos no están correlacionados con el error
 
 Si se rechaza la $H_0$, existe evidencia en favor de usar un estimador de efectos fijos
+
+---
+
+# Ejemplo
+
+La función *phtest* hace la prueba de Hausman
+
+Proveemos el estimador de efectos fijos y el de efectos aleatorios
+
+La versión robusta del test se obtiene con la tercera especificación
+
+```{r echo = T, results=F}
+phtest(m.fe, m.re)
+
+phtest(anti ~ self + pov,
+       data = data.comp,
+       index = c("id", "year"))
+
+phtest(anti ~ self + pov,
+       data = data.comp,
+       method = "aux",
+       index = c("id", "year"),
+       vcov = function(x) vcovCR(x, type="CR1S", cluster=data.comp$id))
+```
+
+---
+
+# Tarea
+
+1. Compruebe que el estimador de efectos fijos es equivalente a hacer MCO con dummies por individuo (**id**)
+
+1. Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Conserve solo los años 1992 y 1994 y estime por MCO el modelo con variables transformadas **sin intercepto**. Para una columna *x*, la función *lag* en *dplyr* permite calcular la primera diferencia como *dx = x - dplyr::lag(x, order_by = year)*
+
 
 ---
 

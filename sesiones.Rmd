@@ -33,9 +33,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 14. [Temas de errores estándar](./slides/errores_estandar.html)
 
-15. Modelos de panel lineal
-
-16. Estimadores de panel lineal
+15. [Modelos y estimadores de panel lineal](./slides/panel_lineal.html)
 
 18. Métodos no paramétricos, semi paramétricos y regresión cuantil
 
