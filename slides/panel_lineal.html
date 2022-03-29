@@ -219,7 +219,7 @@ Frecuentemente no estamos interesados en estimar los efectos fijos, es decir, lo
 
 Si quisiéramos estimarlos directamente, podríamos incluir dummies individuales
 
-Se requieren páneles largos ($T\to\infty$) para que los efectos estimados sean consistentes
+Se requieren páneles largos, `\(T\to\infty\)`, para que los efectos estimados sean consistentes
 
 En microeconometría nos enfocamos en casos donde podemos ignorar estos parámetros incómodos
 
@@ -644,10 +644,7 @@ phtest(anti ~ self + pov,
 
 # Tarea
 
-1. Compruebe que el estimador de efectos fijos es equivalente a hacer MCO con dummies por individuo (**id**)
-
 1. Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Conserve solo los años 1992 y 1994 y estime por MCO el modelo con variables transformadas **sin intercepto**. Para una columna *x*, la función *lag* en *dplyr* permite calcular la primera diferencia como *dx = x - dplyr::lag(x, order_by = year)*
-
 
 ---
 

@@ -31,6 +31,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [panel.R](./scripts/panel.R)
 
+[no_parametricos.R](./scripts/no_parametricos.R)
+
+
 # Datos
 
 [mundata.csv](./data/mundata.csv)
@@ -54,3 +57,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [elemapi2.dta](./data/elemapi2.dta)
 
 [comportamiento_wide.csv](./data/comportamiento_wide.csv)
+
+[salarios.csv](./data/salarios.csv)

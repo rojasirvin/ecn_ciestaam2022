@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 15. [Modelos y estimadores de panel lineal](./slides/panel_lineal.html)
 
-18. Métodos no paramétricos, semi paramétricos y regresión cuantil
+18. [Métodos no paramétricos y semi paramétricos](./slides/no_parametricos.html)
 
 19. Econometría espacial
 
