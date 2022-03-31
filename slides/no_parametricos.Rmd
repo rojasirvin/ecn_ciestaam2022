@@ -405,7 +405,7 @@ $$\hat{m}(x_0)=\sum_{i=1}^Nw_{i0,h}y_i$$
 
 # Promedios locales ponderados
 
-- Si decidimos que cada observación en la vecindad dada por $h$, el estimador local es
+- Si decidimos que cada observación en la vecindad dada por $h$ pesa igual, el estimador local es
 
 $$\hat{m}(x_0)=\frac{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)y_i}{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)}$$
 - El numerador es la suma de $y_i$ para las observaciones dentro del ancho de banda

@@ -104,7 +104,7 @@ h1 &lt;- data.salarios %&gt;%
                    fill="#69b3a2",
                    color="#e9ecef",
                    alpha=0.9) +
-    ggtitle("Histograma del log del salario por horar") +
+    labs(title = "Histograma del log del salario por hora") +
     theme(plot.title = element_text(size=15))
 ```
 ]
@@ -288,8 +288,8 @@ k2 &lt;- data.salarios %&gt;%
     geom_density(aes(x=lnhwage, color='Óptimo'), kernel="epanechnikov", bw=h/2, adjust=1)+
     geom_density(aes(x=lnhwage, color='1/2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=0.5)+
     geom_density(aes(x=lnhwage, color='2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=2)+
-    theme(legend.position = 'right')+
-    scale_color_manual("h",values = c('Óptimo' = 'black', '1/2 óptimo' = 'red', '2 óptimo'='blue'))
+    scale_color_manual("h",values = c('Óptimo' = 'black', '1/2 óptimo' = 'red', '2 óptimo'='blue'))+
+  theme(legend.position = 'right')
 ```
 ]
 
@@ -377,7 +377,7 @@ class: inverse, middle, center
 
 # Promedios locales ponderados
 
-- Si decidimos que cada observación en la vecindad dada por `\(h\)`, el estimador local es
+- Si decidimos que cada observación en la vecindad dada por `\(h\)` pesa igual, el estimador local es
 
 `$$\hat{m}(x_0)=\frac{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|&lt;1\right)y_i}{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|&lt;1\right)}$$`
 - El numerador es la suma de `\(y_i\)` para las observaciones dentro del ancho de banda
