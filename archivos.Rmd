@@ -33,6 +33,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [no_parametricos.R](./scripts/no_parametricos.R)
 
+[cauntil.R](./scripts/cuantil.R)
+
 
 # Datos
 
@@ -59,3 +61,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [comportamiento_wide.csv](./data/comportamiento_wide.csv)
 
 [salarios.csv](./data/salarios.csv)
+
+[vietnam_hogares.csv](./data/vietnam_hogares.csv)

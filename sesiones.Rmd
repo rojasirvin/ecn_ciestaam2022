@@ -37,6 +37,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 18. [Métodos no paramétricos y semi paramétricos](./slides/no_parametricos.html)
 
+18. [Regresión cuantil](./slides/cuantil.html)
+
 19. Econometría espacial
 
 20. Introducción a la inferencia causal
