@@ -70,7 +70,7 @@ donde `\(F_y\)` es la función de distribución acumulada de `\(y\)`
   
   - `\(q=0.75\)` es el cuartil superior
 
-- Por ejemplo, si `\(y\)` es el salario mensual y `\(\mu_{0.75}=6,000\)`, entonces el 75% de los individuos tiene un salario menor o igual que 6,000
+- Por ejemplo, si `\(y\)` es el salario mensual y `\(\mu_{0.75}=6,000\)`, entonces la probabilidad de que `\(y\leq 6,000\)` es 0.75 (75% de los individuos tiene un salario menor o igual que 6,000)
 
 
 ---
@@ -79,7 +79,9 @@ donde `\(F_y\)` es la función de distribución acumulada de `\(y\)`
 
 - Consideremos ahora la regresión de `\(y\)` dado `\(x\)`
 
-- El cuantil poblacional `\(q\)` es la función `\(\mu_q(x)\)` tal que `\(y\)` condicional en `\(x\)` es menor o igual que `\(\mu_q(x)\)`
+- El cuantil poblacional `\(q\)` de `\(y\)` dado `\(x\)` es la función `\(\mu_q(x)\)` tal que `\(y\)` condicional en `\(x\)` es menor o igual que `\(\mu_q(x)\)` con probabilidad `\(q\)`
+
+- Análogamente
 
 `$$\mu_q(x)=F^{-1}_{y|x}(q)$$`
 
@@ -93,13 +95,12 @@ donde `\(F_{y|x}\)` es la cdf de `\(y\)` dado `\(x\)`
 
   1. Ordenamos la muestra en orden ascendente
   
-  1. `\(\hat{\mu}_q\)` será la `\(int(Nq)\)`ésima observación
+  1. `\(\hat{\mu}_q\)` será la `\([Nq]\)`ésima observación más pequeña, donde `\([X]\)` significa *redondear al siguiente entero*
 
-- Por ejemplo, si `\(N=97\)` y buscamos el cuartil inferior, `\(p=0.25\)`
+- Por ejemplo, si `\(N=97\)` y buscamos el cuartil inferior, `\(q=0.25\)`
 
-  - `\(\hat{\mu}_{0.25}\)` es el valor de `\(y\)` de la observación `\(int(24.25)=25\)`
+  - `\(\hat{\mu}_{0.25}\)` es el valor de `\(y\)` de la observación 25 porque `\([97*0.25]=[24.25]=25\)`
   
-
 - Kroenker &amp; Bassett (1978) mostraron que `\(\hat{\mu}_q\)` puede ser estimado como la solución al siguiente problema de minimización
 
 `$$\hat{\mu}_q=\arg\min_{\beta} \sum_{i|y_i\geq \beta}^N q|y_i-\beta|+\sum_{i|y_i &lt;\beta}^N(1-q)|y_i-\beta|$$`
@@ -112,7 +113,7 @@ donde `\(F_{y|x}\)` es la cdf de `\(y\)` dado `\(x\)`
 `$$\hat{\beta}_q=\arg\min_{\beta_q} \sum_{i|y_i\geq x_i'\beta}^N q|y_i-x_i'\beta_q|+\sum_{i|y_i &lt;x_i'\beta}^N(1-q)|y_i-x_i'\beta_q|$$`
 - Se hace explícito que `\(\beta_q\)` depende de `\(q\)`, es decir, el cuantil elegido
 
-- Este es un problema de minimización de una función de pérdida, como de los que hablamos de forma general en la [Clase 2](https://ecnii-2021.netlify.app/clases/clase_2.html#4)
+- Este es un problema de minimización de una función de pérdida, como de los que hablamos de forma general en la [clase de teoría asintótica](https://rojasirvin.github.io/ecn_ciestaam2022/slides/teoria_asintotica.html#4)
 
 - En el caso de la regresión cuantil tiene la característica de pesar asimétricamente los errores
   - `\((1-q)\)` es la penalización para las sobrepredicciones
@@ -128,7 +129,7 @@ donde `\(F_{y|x}\)` es la cdf de `\(y\)` dado `\(x\)`
 
 - Regresión en la mediana minimiza `\(\sum_i |e_i|\)`
 
-- En el caso de regresión en la mediana, el problema es encontrar `\(\hat{\beta}_0.5\)` que minimiza
+- En el caso de regresión en la mediana, el problema es encontrar `\(\hat{\beta}_{0.5}\)` que minimiza
 
 $$\sum_i |y_i-x_i'\beta| $$
 
@@ -246,7 +247,9 @@ summary(r.q90 &lt;- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
 
 
 ```r
-g1 &lt;- ggplot(data.wb, aes(x=lntotal,y=lnmed)) + geom_point() + 
+g1 &lt;- data.wb %&gt;% 
+  ggplot(aes(x=lntotal,y=lnmed)) + 
+  geom_point(alpha=0.3, size=.1) + 
   geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")+
   geom_abline(intercept=coef(r.mco)[1], slope=coef(r.mco)[2], color="red")
 ```

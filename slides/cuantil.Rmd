@@ -237,9 +237,7 @@ summary(r.q90 <- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
 - Gráficamente
 
 ```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
-g1 <- ggplot(data.wb, aes(x=lntotal,y=lnmed)) + geom_point() + 
-  geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")+
-  geom_abline(intercept=coef(r.mco)[1], slope=coef(r.mco)[2], color="red")data.wb %>% 
+g1 <- data.wb %>% 
   ggplot(aes(x=lntotal,y=lnmed)) + 
   geom_point(alpha=0.3, size=.1) + 
   geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")+
