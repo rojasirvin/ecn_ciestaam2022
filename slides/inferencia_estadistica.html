@@ -509,17 +509,17 @@ summary(rmco)
 ## -2.2440 -0.5145 -0.0757  0.4286  2.9426 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)  1.41543    0.05834  24.261 &lt; 0.0000000000000002 ***
-## educ         0.06340    0.01192   5.320         0.0000001071 ***
-## genderMALE   0.10256    0.01900   5.397         0.0000000701 ***
-## pareduc      0.03067    0.01367   2.244               0.0248 *  
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.41543    0.05834  24.261  &lt; 2e-16 ***
+## educ         0.06340    0.01192   5.320 1.07e-07 ***
+## genderMALE   0.10256    0.01900   5.397 7.01e-08 ***
+## pareduc      0.03067    0.01367   2.244   0.0248 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 0.7453 on 6496 degrees of freedom
 ## Multiple R-squared:  0.06107,	Adjusted R-squared:  0.06064 
-## F-statistic: 140.8 on 3 and 6496 DF,  p-value: &lt; 0.00000000000000022
+## F-statistic: 140.8 on 3 and 6496 DF,  p-value: &lt; 2.2e-16
 ```
 ]
 
@@ -549,11 +549,11 @@ coeftest(rmco,
 ## 
 ## t test of coefficients:
 ## 
-##             Estimate Std. Error t value              Pr(&gt;|t|)    
-## (Intercept) 1.415434   0.057225 24.7344 &lt; 0.00000000000000022 ***
-## educ        0.063402   0.011726  5.4071         0.00000006632 ***
-## genderMALE  0.102561   0.018170  5.6445         0.00000001727 ***
-## pareduc     0.030671   0.013376  2.2929               0.02188 *  
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) 1.415434   0.057225 24.7344 &lt; 2.2e-16 ***
+## educ        0.063402   0.011726  5.4071 6.632e-08 ***
+## genderMALE  0.102561   0.018170  5.6445 1.727e-08 ***
+## pareduc     0.030671   0.013376  2.2929   0.02188 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -588,9 +588,9 @@ linearHypothesis(rmco, c("educ=0",
 ## Model 1: restricted model
 ## Model 2: log(wage) ~ educ + gender + pareduc
 ## 
-##   Res.Df    RSS Df Sum of Sq      F                Pr(&gt;F)    
-## 1   6498 3826.1                                              
-## 2   6496 3608.5  2     217.6 195.86 &lt; 0.00000000000000022 ***
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1   6498 3826.1                                  
+## 2   6496 3608.5  2     217.6 195.86 &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -607,10 +607,8 @@ deltaMethod(rmco, "pareduc", rhs = 0)
 ```
 
 ```
-##          Estimate        SE     2.5 %    97.5 % Hypothesis z value
-## pareduc 0.0306707 0.0136652 0.0038873 0.0574541  0.0000000  2.2444
-##         Pr(&gt;|z|)  
-## pareduc   0.0248 *
+##          Estimate        SE     2.5 %    97.5 % Hypothesis z value Pr(&gt;|z|)  
+## pareduc 0.0306707 0.0136652 0.0038873 0.0574541  0.0000000  2.2444   0.0248 *
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -633,10 +631,8 @@ deltaMethod(rmco,
 ```
 
 ```
-##              Estimate       SE    2.5 %   97.5 % Hypothesis z value
-## educ/pareduc  2.06718  1.28933 -0.45986  4.59422    3.00000 -0.7235
-##              Pr(&gt;|z|)
-## educ/pareduc   0.4694
+##              Estimate       SE    2.5 %   97.5 % Hypothesis z value Pr(&gt;|z|)
+## educ/pareduc  2.06718  1.28933 -0.45986  4.59422    3.00000 -0.7235   0.4694
 ```
 
 No rechazamos la `\(H_0\)`: los datos observados son consistentes con la hipótesis de que `\(\beta_{educ}/\beta_{pareduc}=3\)`
@@ -684,16 +680,16 @@ summary(prob_probit)
 ## -1.3926  -0.8569  -0.6192   1.1672   2.9527  
 ## 
 ## Coefficients:
-##               Estimate Std. Error z value             Pr(&gt;|z|)    
-## (Intercept) -0.3138333  0.0513646  -6.110   0.0000000009968437 ***
-## pcnv        -0.5529251  0.0715055  -7.733   0.0000000000000105 ***
-## avgsen       0.0127395  0.0209105   0.609                0.542    
-## tottime     -0.0076485  0.0165677  -0.462                0.644    
-## ptime86     -0.0811996  0.0171629  -4.731   0.0000022328106154 ***
-## inc86       -0.0046346  0.0004853  -9.551 &lt; 0.0000000000000002 ***
-## black        0.4666077  0.0718600   6.493   0.0000000000839834 ***
-## hispan       0.2911005  0.0653907   4.452   0.0000085187882525 ***
-## born60       0.0112067  0.0556932   0.201                0.841    
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -0.3138333  0.0513646  -6.110 9.97e-10 ***
+## pcnv        -0.5529251  0.0715055  -7.733 1.05e-14 ***
+## avgsen       0.0127395  0.0209105   0.609    0.542    
+## tottime     -0.0076485  0.0165677  -0.462    0.644    
+## ptime86     -0.0811996  0.0171629  -4.731 2.23e-06 ***
+## inc86       -0.0046346  0.0004853  -9.551  &lt; 2e-16 ***
+## black        0.4666077  0.0718600   6.493 8.40e-11 ***
+## hispan       0.2911005  0.0653907   4.452 8.52e-06 ***
+## born60       0.0112067  0.0556932   0.201    0.841    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -845,15 +841,15 @@ summary(reg.sim &lt;- lm(Y ~ X))
 ## -25.9373  -3.0149  -0.0955   3.3615  26.5239 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value    Pr(&gt;|t|)    
-## (Intercept)   1.4900     0.8312   1.793      0.0761 .  
-## X             0.9433     0.1788   5.275 0.000000793 ***
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   1.4900     0.8312   1.793   0.0761 .  
+## X             0.9433     0.1788   5.275 7.93e-07 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual standard error: 8.298 on 98 degrees of freedom
 ## Multiple R-squared:  0.2212,	Adjusted R-squared:  0.2132 
-## F-statistic: 27.83 on 1 and 98 DF,  p-value: 0.0000007932
+## F-statistic: 27.83 on 1 and 98 DF,  p-value: 7.932e-07
 ```
 ]
 
@@ -880,9 +876,9 @@ coeftest(reg.sim,
 ## 
 ## t test of coefficients:
 ## 
-##             Estimate Std. Error t value     Pr(&gt;|t|)    
-## (Intercept)  1.49003    0.83123  1.7926      0.07613 .  
-## X            0.94330    0.17881  5.2754 0.0000007932 ***
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)  1.49003    0.83123  1.7926   0.07613 .  
+## X            0.94330    0.17881  5.2754 7.932e-07 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```

@@ -352,8 +352,8 @@ La línea del percentil 90 muestra el salario por arriba del cual se encuentra e
 ]
 
 .pull-right[
-```{r out.height=120}
-knitr::include_graphics("./slides/figures/quantile_goals.png")
+```{r out.height=500, fig.cap='Fuente: Leeds (2014)', fig.align='center'}
+knitr::include_graphics("../slides/figures/quantile_goals.png", error=F)
 ```
 ]
 
