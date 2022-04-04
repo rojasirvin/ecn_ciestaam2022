@@ -174,6 +174,7 @@ $$\sum_i |y_i-x_i'\beta| $$
 
 $$\sqrt{N}(\hat{\beta}_q-\beta_q)\stackrel{d}{\sim}\mathcal{N}\left(0,A^{-1}BA^{-1}\right)$$
 con $$A=p\lim\frac{1}{N}\sum_i f_{u_q}(0|x_i)x_ix_i' \\ B=p\lim\frac{1}{N}\sum_i q(1-q)x_ix_i'$$
+
 - $f_{u_q}(0|x)$ es la densidad condicional del término de error, $u_q=y-x'\beta_q$
 
 ---
@@ -219,7 +220,7 @@ summary(r.mco <- lm(lnmed  ~ lntotal, data=data.wb))
 ---
 # Ejemplo
 
-- Estimemos la regresión cuantil en el cuantil 90
+- Estimemos la regresión cuantil en el cuantil 90, es decir, estimemos $\hat{\beta}_{90}$
 
 ```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
 summary(r.q90 <- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
@@ -281,7 +282,78 @@ coef(r.q1_9)
 
 .pull-right[
 ```{r out.width="80%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-plot(summary(r.q1_9), parm="lntotal", ylab="log del gasto total")
+plot(summary(r.q1_9),
+     mar = c(5.1, 4.1, 2.1, 2.1), 
+     parm="lntotal", 
+     main = "Coeficientes de regresión cuantil",
+     ylab="Coeficiente de lntotal",
+     xlab="Cuantil")
+```
+]
+
+---
+
+# Interpretación
+
+En nuestro ejemplo, cuando estimamos el coeficiente de regresión cuantil con $\hat{\beta}_{90}$, interpretamos que cuando el ingreso cambia en 1% en hogares en el percentil 90 de la distriubción condicional del (log) gasto en medicamentos, entonces el gasto en medicamentos se incrementa 0.8%
+
+Un incremento de 1% del ingreso tiene un efecto más grande en el gasto en medicamentos en hogares más ricos que en hogares más pobres (porque $\hat{\beta}_q$ va creciendo conforme $q$ crece)
+
+---
+
+# Interpretación incorrecta
+
+El coeficiente de regresión cuantil con $\hat{\beta}_{90}$ **no dice** que un incremento en el salario incrementa el gasto en medicamentos en el 10% de hogares más ricos en 0.8%
+
+**Tampoco** dice que un incremento en el salario incrementa el gasto en medicamenos en el 10% de hogares con más gasto en medicamentos en 0.8%
+
+Lo anterior equivaldría a quedarnos con un subconjunto de la muestra de hogares (el 10% más rico o el 10% con más gasto en medicamentos)
+
+Cuando usamos regresión cuantil usamos **toda** la muestra para estimar los coeficientes para el $q$ elegido
+
+---
+
+# Interpretación
+
+.pull-left[
+Regresión cuantil le pasa un línea al gráfico de puntos de tal manera que los valores del gasto en medicamentos tengan una probabilidad $q$ de esstar arriba de dicha línea **para cada valor** del ingreso
+
+El 90% de los puntos están debajo de la recta con pendiente $\hat{\beta}_{90}$
+
+$\hat{\beta}_{90}$ indica cómo afecta un incremento en el ingreso al gasto en medicamentos de hogares tienen un alto gasto en medicamentos relativo a otros hogares, para un nivel dado de ingreso
+]
+
+.pull-right[
+```{r echo=F}
+data.wb %>% 
+  ggplot(aes(x=lntotal,y=lnmed)) + 
+  geom_point(alpha=0.3, size=.1) + 
+  geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")
+```
+]
+
+
+---
+
+# Cuantiles vs percentiles
+
+.pull-left[
+
+[Leeds (2014)](https://www.researchgate.net/publication/281764022_Quantile_Regression_for_Sports_Economics?_iepl%5BgeneralViewId%5D=sKkaCuHYNzrCrfkfhPJW82MeqZfZegD1non1&_iepl%5Bcontexts%5D%5B0%5D=searchReact&_iepl%5BviewId%5D=AbSsMt0q9B1B5DIqHv5G6lpomp66SLQg2V1R&_iepl%5BsearchType%5D=publication&_iepl%5Bdata%5D%5BcountLessEqual20%5D=1&_iepl%5Bdata%5D%5BinteractedWithPosition1%5D=1&_iepl%5Bdata%5D%5BwithoutEnrichment%5D=1&_iepl%5Bposition%5D=1&_iepl%5BrgKey%5D=PB%3A281764022&_iepl%5BtargetEntityId%5D=PB%3A281764022&_iepl%5BinteractionType%5D=publicationTitle) hace la distinción entre cuantiles y percentiles
+
+Se enfoca en la relación entre salarios y goles en jugadores de hockey
+
+La línea que marca el cuantil con $q=0.9$ pasa por la cola superior de las dos distribuciones
+
+El cuantil 90 puede corresponder a jugadores de salario bajo
+
+La línea del percentil 90 muestra el salario por arriba del cual se encuentra el 10% de los jugadores mejor pagados
+
+]
+
+.pull-right[
+```{r out.height=120}
+knitr::include_graphics("./slides/figures/quantile_goals.png")
 ```
 ]
 

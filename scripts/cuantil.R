@@ -18,10 +18,6 @@ data.wb<-read_csv("data/vietnam_hogares.csv",
 #Hacemos MCO
 summary(r.mco <- lm(lnmed  ~ lntotal, data=data.wb))
 
-#Generamos valores ajustados
-data.wb <- data.wb %>% 
-  mutate(pols=predict(r.mco,))
-
 
 #Regresión cuantil
 summary(r.q90 <- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
@@ -35,7 +31,20 @@ data.wb %>%
   geom_abline(intercept=coef(r.mco)[1], slope=coef(r.mco)[2], color="red")
 
 
-#Para nueve cuantiles
+#Generamos valores ajustados con MCO y regresión en el cuantil .9
+data.wb <- data.wb %>% 
+  mutate(pmco=predict(r.mco,),
+         prq90=predict(r.q90,)) %>% 
+  mutate(arriba_prq90=ifelse(lnmed>prq90,1,0))
+
+#El 90% de las observaciones están por abajo de la recta de regresión cuantil .9
+table(data.wb$arriba_prq90)*100/(nrow(data.wb))
+
+
+
+
+
+#Para nueve cuantiles----
 r.q1_9 <- rq(lnmed  ~ lntotal, data=data.wb, tau= 1:9/10)
 
 #Ver los coeficientes
@@ -46,11 +55,15 @@ plot(r.q1_9)
 
 #Podemos recuperar los coeficientes que nos interesan
 #Por el contexto de los datos, estos son "Coeficientes de Engel"
-plot(summary(r.q1_9), parm="lntotal")
+plot(summary(r.q1_9),
+     mar = c(5.1, 4.1, 2.1, 2.1), 
+     parm="lntotal", 
+     main = "Coeficientes de regresión cuantil",
+     ylab="Coeficiente de lntotal",
+     xlab="Cuantil")
 
 
-plot(r.q1_9, parm = 2, mar = c(5.1, 4.1, 2.1, 2.1), main = "", xlab = "tau",
-     ylab = "income coefficient", cex = 1, pch = 19)
+
 
 
 #Curvas de Engel
@@ -84,6 +97,9 @@ data.wb %>%
   geom_quantile(quantiles = .5,
                 size= .5,
                 color='green')
+
+
+
 
 
 #Simulación----
@@ -152,5 +168,3 @@ data %>%  ggplot(aes(x,y)) +
 #Graficando tau
 plot(summary(q1_9),
      parm="x")
-
-
