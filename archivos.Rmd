@@ -63,3 +63,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [salarios.csv](./data/salarios.csv)
 
 [vietnam_hogares.csv](./data/vietnam_hogares.csv)
+
+[MunichRent.rda](./data/MunichRent.rda)

@@ -11,8 +11,8 @@
       "path": "archivos.html",
       "title": "Archivos",
       "author": [],
-      "contents": "\r\nScripts\r\nmanejo_datos_r_ejercicios.R\r\nrecordatorio_mco.R\r\nteoria_asintotica.R\r\ndependiente_binaria.R\r\nprueba_hipotesis.R\r\nconteo.R\r\nduracion.R\r\nmuestra_seleccionada.R\r\nvariables_instrumentales.R\r\nerrores_estandar.R\r\npanel.R\r\nno_parametricos.R\r\ncauntil.R\r\nDatos\r\nmundata.csv\r\nfishing_data_clean.csv\r\ngrogger.csv\r\nedudat2.dta\r\nphd_articulos.csv\r\ndata_rossi.csv\r\nmroz.dta\r\nlimdep_ambexp.dta\r\ningresos_iv.csv\r\nelemapi2.dta\r\ncomportamiento_wide.csv\r\nsalarios.csv\r\nvietnam_hogares.csv\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-03-31T15:41:53-06:00"
+      "contents": "\r\nScripts\r\nmanejo_datos_r_ejercicios.R\r\nrecordatorio_mco.R\r\nteoria_asintotica.R\r\ndependiente_binaria.R\r\nprueba_hipotesis.R\r\nconteo.R\r\nduracion.R\r\nmuestra_seleccionada.R\r\nvariables_instrumentales.R\r\nerrores_estandar.R\r\npanel.R\r\nno_parametricos.R\r\ncauntil.R\r\nDatos\r\nmundata.csv\r\nfishing_data_clean.csv\r\ngrogger.csv\r\nedudat2.dta\r\nphd_articulos.csv\r\ndata_rossi.csv\r\nmroz.dta\r\nlimdep_ambexp.dta\r\ningresos_iv.csv\r\nelemapi2.dta\r\ncomportamiento_wide.csv\r\nsalarios.csv\r\nvietnam_hogares.csv\r\nMunichRent.rda\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-04-05T10:41:54-05:00"
     },
     {
       "path": "index.html",
