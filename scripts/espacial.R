@@ -5,25 +5,9 @@ options(scipen=999) # Prevenir notación científica
 library(tidyverse)
 library(sf)
 library(leaflet) #Mapas temáticos (la usa el NYT)
-library(geojsonio)
-
-library(janitor)
-library(sandwich)
-library(pastecs)
-library(nnet)
-library(MASS)
-library(AER)
-library(survival)
-#library(sampleSelection)
-#library(COUNT)
-#library(quantreg)
-library(rgdal) # Leer objetos espaciales
-
-library(spatialreg)
-library(sf) #leer shapefiles
-library(sp)
-library(spdep) #análisis de regresión
-library(tmap)
+library(rgdal) # Para construir W
+library(spdep)
+library(spatialreg) # Econometría espacial
 
 #Tenemos dos basesitas con el número de robos y el número de totems por colonia en la CDMX----
 
@@ -172,153 +156,27 @@ leaflet(colonias) %>%
                 direction = "auto")) %>% 
   addLegend(pal = paleta,
           values = ~robos,
-          oppacity = 0.7,
           title = NULL,
-          position = "bottomright")
-
-  
-  
-  addLegend(pal = paleta,
-            values = ~robos,
-            opacity = 0.7,
-            title = NULL,
-            position = "bottomright") %>% 
-  setView(lng=-99.1615, lat=19.430586, 
-          zoom = 15)
-
-
-
-
-
-
-
-
-
-
-
-leaflet(colonias) %>%
-  addPolygons(weight = 1, smoothFactor = 0.5,
-              opacity = 1.0, fillOpacity = 0.5,
-              fillColor = ~robos,
-              highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                  bringToFront = TRUE))
-
-
-
-colonias <- geojsonio::geojson_read("data/coloniascdmx.shp",
-                                  what = "sp")
-class(colonias)
-
-%>%
-  addProviderTiles("MapBox",options = providerTileOptions(
-    id = "mapbox.light",
-    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
-
-
-
-
-
-
-#Para mapas temáticos usamos el paquete tmap----
-tm_shape(colonias) +
-  tm_fill("robos",
-          title="Robos a transeúnte en 2019")+
-  tm_borders(alpha = 0.1)+
-  tmap_style("col_blind") +
-  tmap_options(check.and.fix = TRUE) 
-
-
-
-
-tmap_mode("view") # Con esto lo hacemos interactivo
-
-#Regresamos al modo de plots
-tmap_mode("plot")
-
-#La opción style nos permite dividir los datos
-c1 <-tm_shape(colonias) +
-  tm_fill("robos",title="Robos a transeúnte en 2019",style="Equal")+
-  tm_borders(alpha = 0.1)+
-  tmap_style("col_blind")
-
-c2 <-tm_shape(colonias) +
-  tm_fill("robos",title="Robos a transeúnte en 2019",style="jenks")+
-  tm_borders(alpha = 0.1)+
-  tmap_style("col_blind")
-
-c3 <-tm_shape(colonias) +
-  tm_fill("robos",title="Robos a transeúnte en 2019",style="quantile")+
-  tm_borders(alpha = 0.1)+
-  tmap_style("col_blind")
-
-c4 <-tm_shape(colonias) +
-  tm_fill("robos",title="Robos a transeúnte en 2019",style="cont")+
-  tm_borders(alpha = 0.1)+
-  tmap_style("col_blind")
-
-#Podemos ver cuál nos convence más
-tmap_arrange(c2, c2, c3, c4)
-
-
-
-
-
-#Mapas con símbolos----
-tm_shape(colonias) + 
-  tm_bubbles("robos")
-
-
-tm_shape(colonias) +                        
-  tm_bubbles("robos", border.lwd=NA) +      
-  tm_borders(alpha=0.1) +                   
-  tm_layout(legend.position = c("right", "bottom"),
-            legend.title.size = 0.8,
-            legend.text.size = 0.5)
-
-
-#Quizás nos importa una Alcaldia
-colonias_cuauhtemoc <- colonias %>% 
-  filter(alcaldia=="CUAUHTEMOC")
-
-tm_shape(colonias_cuauhtemoc) +                         
-  tm_bubbles("robos", border.lwd=NA, col="blue") +              
-  tm_borders(alpha=0.1) +                           
-  tm_layout(legend.position = c("right", "bottom"), 
-            legend.title.size = 0.8,
-            legend.text.size = 0.5)
-
-
-#Pongámosle un fondo con Leaflet
-m <- leaflet(colonias_cuauhtemoc) %>%
-  addTiles() %>%
-  addPolygons() %>% 
+          position = "bottomright") %>% 
   setView(lng=-99.1615, lat=19.430586, 
           zoom = 15) 
-m
 
-
-#Ahora podemos colorear por el valor de robos
-pal <- colorBin("YlOrRd", domain = colonias_cuauhtemoc$robos)
-
-
-m <- leaflet(colonias_cuauhtemoc) %>%
-  addTiles() %>%
-  addPolygons(fillColor = ~pal(robos),
-              weight = 2,
-              opacity = 1,
-              color = "white",
-              dashArray = "3",
-              fillOpacity = 0.7) %>%
-  addLegend(pal = pal, values = ~robos, opacity = 0.7, title = NULL,
-            position = "bottomright") %>% 
-  setView(lng=-99.1615, lat=19.430586, 
-          zoom = 15) 
-m
 
 #Acá una intro a leaflet https://rstudio.github.io/leaflet/
 
 
+
+
+
+
 #Regresión espacial----
+#Bordes por colonia
+#Usamos el paquete rgdal
+colonias_shp <- readOGR("data","coloniascdmx",
+                        use_iconv = TRUE,
+                        encoding = "UTF-8")
+
+
 #Usemos la base de colonias y le pegamos nuestras bases de crimen y totems
 colonias_shp@data <- colonias_shp@data %>% 
   left_join(num_robo, by="cve_col")
@@ -332,13 +190,15 @@ colonias_shp@data <- colonias_shp@data %>%
 
 
 
+
 #MCO
-summary(m.mco<-lm(robos ~ totems, data=colonias_shp@data))
+summary(m.mco<-lm(robos ~ totems, data=colonias_shp))
 
 
 #Matrices de pesos
 #La matriz de contiguidad a veces se le conoce como tipo "reina" por que así es como se mueve una reina en el ajedrez
 #style indica que tipo de estandarización. W es por filas, por ejemplo
+sf::sf_use_s2(FALSE) 
 list.queen<-poly2nb(colonias_shp, queen=TRUE)
 Wqueen_row<-nb2listw(list.queen, style="W", zero.policy=TRUE)
 

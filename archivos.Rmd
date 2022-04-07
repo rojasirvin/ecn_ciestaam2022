@@ -35,6 +35,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [cauntil.R](./scripts/cuantil.R)
 
+[espacial.R](./scripts/espacial.R)
+
 
 # Datos
 
@@ -65,3 +67,15 @@ knitr::opts_chunk$set(echo = TRUE)
 [vietnam_hogares.csv](./data/vietnam_hogares.csv)
 
 [MunichRent.rda](./data/MunichRent.rda)
+
+[coloniascdmx.shp](./data/coloniascdmx.shp)
+
+[coloniascdmx.shx](./data/coloniascdmx.shx)
+
+[coloniascdmx.dbf](./data/coloniascdmx.dbf)
+
+[coloniascdmx.prj](./data/coloniascdmx.prj)
+
+[num_totems.csv](./data/num_totems.csv)
+
+[num_robos.csv](./data/num_robos.csv)
