@@ -78,4 +78,4 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [num_totems.csv](./data/num_totems.csv)
 
-[num_robos.csv](./data/num_robos.csv)
+[num_robo.csv](./data/num_robo.csv)
