@@ -41,9 +41,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 19. [Introducción  a econometría espacial](./slides/espacial.html)
 
-20. Introducción a la inferencia causal
+20. [Introducción a la inferencia causal](./slides/inferencia_causal.html)
 
-21. Métodos experimentales
+21. [Métodos experimentales](./slides/experimentales.html)
 
 22. Diferencia en diferencias
 
