@@ -34,6 +34,9 @@ library(magick)
 library(reticulate)
 library(kableExtra)
 library(xaringancolor)
+library(stargazer)
+library(sandwich)
+library(clubSandwich)
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
@@ -51,9 +54,6 @@ knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_
 .author[
 ### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
 ]
-
----
-
 
 ---
 
@@ -414,7 +414,503 @@ table.star %>%
 
 ---
 
-# Ejemplo
+class: inverse, middle, center
+
+# Ejemplo: Proyecto Esperanza
+
+---
+
+# La esperanza importa
+
+Banerjee et al. (2015): las microfinanzas pueden funcionar para algunos, pero no para todos
+
+Duflo (2012): la esperanza importa
+
+Multiples lecciones de la economía del comportamiento
+
+- Sistemas duales
+- Puntos de referencia y aversión a la pérdida
+- Carencia de auto control
+- Normas
+
+En esta presentación hablaré sobre un estudio basado en estas ideas
+
+Rojas, Wydick and Lybbert (2021), [Can hope elevate microfinance? Evidence from Oaxaca, Mexico]((https://academic.oup.com/oep/article/74/1/236/6154385?login=true)), *Oxford Economic Papers*
+
+---
+
+# Un modelo de la esperanza
+
+Concepto de esperanza de la teoría de Snyder (1993)
+
+- Aspiraciones
+
+- Avenidas
+
+- Habilidades
+
+Diferencia a la esperanza *deseosa* de la **esperanza aspiracional**
+
+Operacionalizamos estos conceptos en un modelo microeconómico
+
+- Aspiraciones: modeladas con una función de utilidad que depende de un punto de referencia (aspiración)
+
+- Avenidas: modeladas con una función de producción con restricciones
+
+- Habilidad: modelada con la productividad marginal del esfuerzo
+
+Ver [Wydick y Lybbert (2018)](https://www.journals.uchicago.edu/doi/full/10.1086/696968)
+
+---
+
+# Proyecto Esperanza en Oaxacca
+
+Colaboración con *Fuentes Libres*, una ONG cristiana
+
+Fuentes opera en el Valle de Oaxaca y en el Istmo de Tehuantepec
+
+En el momento del estudio tenía 52 grupos de ahorro y crédito (*bancos*)
+
+Aleatorizamos un tratamiento en parejas de bancos que tenían características similares
+
+- Localización
+- Oficial de banco
+- Tipos de negocio
+- Tamaño
+- Edad promedio
+
+En cada pareja, un banco es asignado a tratamiento y otro a control
+
+Tratamiento con tres componentes
+
+---
+
+# Documental *Historias de Esperanza*
+
+.center[
+<iframe width="800" height="470" src="https://www.youtube.com/embed/gAidmWKCCD0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+]
+
+---
+
+# Documental *Historias de Esperanza*
+
+.center[
+```{r out.width="80%"}
+knitr::include_graphics("../slides/figures/screenshot_doc.jpg", error=F)
+``` 
+]
+---
+
+# Ejercicio de fijación de metas
+
+.center[
+```{r}
+knitr::include_graphics("../slides/figures/magnet.png", error=F)
+``` 
+]
+---
+
+# Mini curso de fijación de conceptos
+
+.center[
+```{r out.width="60%"}
+knitr::include_graphics("../slides/figures/curriculum_session.jpg", error=F)
+``` 
+]
+
+
+---
+
+# Valle de Oaxaca
+
+.pull-left[
+```{r out.width="80%"}
+knitr::include_graphics("http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-a-comp_orig.jpg")
+```
+]
+
+.pull-right[
+```{r  out.width="80%"}
+knitr::include_graphics("http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-b-comp_orig.jpg")
+```
+
+]
+
+
+---
+
+# Istmo de Tehuantepec
+
+
+
+.pull-left[
+```{r}
+knitr::include_graphics("http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-d-comp_orig.jpg")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-c-comp_orig.jpg")
+
+knitr::include_graphics("http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-e-comp_orig.png")
+```
+
+]
+
+---
+
+# Datos
+
+Se recolecataron datos de cada socia en tres puntos del tiempo
+
+- En la línea base
+- Un mes después de la intervención
+- Un año después de la intervención
+
+Construimos índices de cada una de las dimensiones de la esperanza
+
+Por ejemplo, para el índice de agencia (que usaremos en la replicación), pedimos a cada socia que evaluara del 0 al 10 las siguientes expresiones:
+- ¿Qué tan importante es el trabajo duro para los negocios?
+- ¿Qué tan importante es la suerte para los negocios?
+- Mi futuro está determinado por mis propias acciones y no por las de otros
+- Es difícil para personas como yo ser líderes en la comunidad
+- Mujeres como yo pueden tener un impacto positivo en nuestra comunidad
+
+Recolectamos información sobre los negocios de las socias
+
+Tuvimos acceso a registros administrativos sobre ahorro y crédito
+
+---
+
+# Integridad del diseño
+
+Para obtener un estimador consistente del efecto del tratamiento se debe cumplir que aquellas socias que recibieron la intervención son estadísticamente iguales a las socias que no la recibieron
+
+Se colectaron las siguientes características en la línea base y se verificó que fueran estadísticamente iguales entre el grupo tratado y el de control
+
+.pull-left[
+**Características predeterminadas**
+- Edad
+- Educación
+- Religió
+- Número de hijos
+- Líder del grupo
+- Tipo de negocio
+]
+
+.pull-right[
+**Variables de resultados**
+- Índice de aspiraciones
+- Índice de agencia
+- Índice de avenidas
+- Felicidad
+- Optimismo
+- Orientación al futuro
+- Aversión al riesgo
+- Horas trabajadas
+- Ventas
+- Ganancias
+- Ahorros
+- Empleados
+
+]
+
+---
+
+# Efecto del tratamiento
+
+Si la aleatorización fue exitosa, el efecto del tratamiento puede obtenerse comparando las variables de resultados entre el grupo de tratamiento y control, usando los datos de seguimiento, un año después de la intervención
+
+Lo anterior puede ser realizado con una regresión
+
+$$y_{ij}=\alpha + \tau HopeGroup_j + X_i'\beta + \gamma D_p + \varepsilon_{i,t}$$
+donde
+
+$y_{ij}$ es la variable de impacto
+
+$HopeGroup_j$ toma el valor de uno para las socias en el grupo de tratamiento y cero para las del grupo de control
+
+$X_i$ son las características predeterminadas (ayudan a mejorar la precisión de la estimación)
+
+$D_p$ es un indicador de las parejas
+
+Los errores estándar están agrupados a nivel banco
+
+---
+# Descripción de variables
+
+Los datos que usaremos se encuentran en el archivo *analysis_dataset.dta*
+
+
+```{r echo=T}
+data <- haven::read_dta("data/analysis_hope.dta")
+```
+
+Consideremos la variable **educ**, que indica la educación de la socia en años
+
+Usando los datos de la línea base sabemos que la edad promedio de las socias es de 7.62 años
+
+```{r echo=T}
+bl <- data %>% 
+  filter(t==0)
+
+summary(bl$educ)
+```
+---
+
+# El balance
+
+Para estimar de forma consistente el efecto del tratamiento debe suceder que la asignación al tratamiento sea independiente de las características de las socias en la línea base
+
+Veamos la media de la educación de quienes recibieron y no recibieron el tratamiento
+
+```{r echo=T}
+#Por grupos
+bl %>% 
+  group_by(hopegroup) %>%
+  summarize(mean=mean(educ,na.rm=T)) %>% 
+  ungroup()
+```
+
+---
+
+# El balance
+
+Hacemos una prueba de diferencia de medias
+
+Planteamos una hipótesis nula $H0: educ_{tratadas}=educ_{no tratadas}$
+
+Construimos un estadístico $t$ y formulamos una regla de decisión
+
+Si $p<\alpha=0.05$ rechazamos la $H_0$
+
+.scroll-output[
+
+```{r echo=T, message=F}
+t.test(educ ~ hopegroup,
+       data = bl)
+```
+]
+---
+
+# El balance
+
+Podemos hacer uso de una regresión lineal para hacer exactamente lo mismo
+
+$$educ_i=\gamma_0 + \gamma_1 HopeGroup_i + e_i$$
+
+```{r echo=T}
+summary(m1 <- lm(educ ~ hopegroup,
+   data = bl))$coef[,c(1:2,4)]
+```
+
+---
+
+# El balance
+
+Sin embargo, la prueba realizada anteriormente asume que los errores son independientes e idénticamente distribuidos (iid)
+
+En otras palabras, que los individuos en nuestra muestra reciben choques aleatorios que no están correlacionados
+
+Esto no sucede en nuestro caso: tenemos socias que son parte de grupos de crédito y ahorro y que, por tanto, reciben choques que están correlacionados (mercado laboral, clima, programas)
+
+Debemos tomar en cuenta que estos errores no son independientes para estimar correctamente la matriz de varianzas de $\hat{\beta}$
+
+---
+
+# El balance
+
+Recordemos que antes hemos usado *stargazer* para presentar resultados y *pasar* errores agrupados
+
+```{r echo=F, results='asis'}
+stargazer(m1, m1,
+          column.labels = c("Err. Clásicos", "Err. Agrupados"),
+          se = list(NULL,
+                    sqrt(diag(vcovCR(m1, type = "CR1S", cluster=bl$communitybank)))),
+          type="html",
+          keep.stat = "n",
+          digits = 4)
+```
+
+---
+
+# El balance
+
+En una evaluación, tenemos que verificar el supuesto de independencia al mostrar evidencia de que las características de los individuos **antes** de la intervención no difieren entre tratados y no tratados
+
+Estimo una regresión para cada características usando la especificación que usé antes para la educación
+
+```{r echo=T}
+#Para el resto de los covariables
+m2 <- lm(age ~ hopegroup,
+         data = bl)
+
+m3 <- lm(evangelical ~ hopegroup,
+                data = bl)
+
+m4 <- lm(children ~ hopegroup,
+                data = bl)
+
+m5 <- lm(bankleader ~ hopegroup,
+                data = bl)
+
+```
+
+---
+
+# El balance
+
+Puedo presentar los resultados de estimar la misma especificación para varias características usando *stargazer* y estimando los errores agrupados
+
+```{r echo=T, eval=F}
+stargazer(m1, m2, m3, m4, m5,
+          dep.var.labels.include = F,
+          dep.var.caption	= "",
+          covariate.labels = c("Tratado","Constante (media en control)"),
+          column.labels = c("Educación", "Edad", "Evangélica", "Hijos", "Líder" ),
+          se = list(sqrt(diag(vcovCR(m1, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m2, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m3, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m4, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m5, type = "CR1S", cluster=bl$communitybank)))),
+          type="html",
+          keep.stat = "n",
+          digits = 4)
+
+```
+---
+
+# El balance
+
+Puedo presentar los resultados de estimar la misma especificación para varias características usando *stargazer* y estimando los errores agrupados
+
+```{r echo=F, results='asis'}
+stargazer(m1, m2, m3, m4, m5,
+          dep.var.labels.include = F,
+          dep.var.caption	= "",
+          covariate.labels = c("Tratado","Constante (media en control)"),
+          column.labels = c("Educación", "Edad", "Evangélica", "Hijos", "Líder" ),
+          se = list(sqrt(diag(vcovCR(m1, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m2, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m3, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m4, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m5, type = "CR1S", cluster=bl$communitybank)))),
+          type="html",
+          keep.stat = "n",
+          digits = 4)
+
+```
+---
+
+# El efecto del tratamiento
+
+Si el supuesto de independencia se cumple, el efecto del tratamiento en una variable $y$ puede ser identificado simplmente al comparar $y$ para tratados y no tratados **después de la intervención**
+
+Sabemos que podemos hacer esto con una regresión como sigue
+
+$$y_i=\beta_0+\beta_1 HopeGroup_i + \varepsilon_i$$
+
+donde $\hat{\beta_1}$ es el efecto del tratamiento
+
+Estimemos el efecto de haber sido asignado a la intervención del Proyecto Esperanza sobre un índice de agencia, **StdAnderAgencyIndex** usando los datos recabados un año después del tratamiento
+
+---
+
+# El efecto del tratamiento
+
+Primero estimemos una regresión con errores robustos (ignorando errores agrupados)
+
+```{r echo=T}
+el <- data %>% 
+  filter(t==2)
+
+#Regresión corta
+summary(e1corta <- lm(StdAnderAgencyIndex ~ hopegroup,
+                         data = el))$coef
+```
+
+El tratamiento tiene un efecto positivo de 0.14 $\sigma$ en el índice de agencia
+
+Este efecto es estadísticamente significativo, $p=0.054$
+
+---
+
+# El efecto del tratamiento
+
+Notemos qué pasa cuando agregamos un vector de *controles*
+
+Es común en evaluación estimar una *regresión larga*
+
+$$y_i=\beta_0+\beta_1 HopeGroup_i + BX_i +  \varepsilon_i$$
+
+donde $X_i$ representa un vector de características que explican $y_i$, pero que no fueron afectadas por el tratamiento
+
+```{r echo=T, results=F}
+summary(e1 <- lm(StdAnderAgencyIndex ~ hopegroup + age + educ + evangelical + children + children_under_18 + bankleader + Dwelling_Index + factor(pair_number),
+                        data = el))$coef
+```
+
+---
+
+# El efecto del tratamiento
+
+Comparamos las estimaciones que hemos hecho hasta ahora
+
+```{r echo=F, eval=T, results='asis'}
+stargazer(e1corta, e1,
+          dep.var.labels.include = F,
+          dep.var.caption	= "",
+          column.labels = c("Corta", "Larga" ),
+          se = list(sqrt(diag(vcovCR(e1corta, type = "CR1S", cluster=el$communitybank))),
+                    sqrt(diag(vcovCR(e1, type = "CR1S", cluster=el$communitybank)))),
+          type="html",
+          keep = "hopegroup",
+          keep.stat = "n",
+          digits = 4)
+```
+---
+
+# El efecto del tratamiento
+
+El efecto en un índice agregado de los componentes de la esperanza
+
+Construimos un índice, **StdAnderHope3Index**, que resume los tres componentes de la teoría de la esperanza
+
+
+```{r echo=T, results=F}
+summary(e6 <- lm(StdAnderHope3Index ~ hopegroup + age + educ + evangelical + children + children_under_18 + bankleader + Dwelling_Index + factor(pair_number),
+                        data = el))$coef
+```
+
+
+
+```{r echo=F, results='asis'}
+
+stargazer(e1, e6,
+          dep.var.labels.include = F,
+          dep.var.caption	= "",
+          column.labels = c("Agencia", "Hope 3" ),
+          se = list(sqrt(diag(vcovCR(e1, type = "CR1S", cluster=el$communitybank))),
+                    sqrt(diag(vcovCR(e6, type = "CR1S", cluster=el$communitybank)))),
+          type="html",
+          keep.stat = "n",
+          keep = "hopegroup",
+          digits = 4)
+```
+
+
+---
+
+# Tarea
+
+¿Cuál es el impacto en los otros dos componentes de la esperanza, vistos de manera individual: aspiraciones (**StdAnderAspIndex**) y avenidas (**StdAnderAveIndex**)?
+
+¿Cuál es el impacto en el índice de desempeño de los negocios **StdAnderBPIndex**?
+
+
+
 
 ---
 

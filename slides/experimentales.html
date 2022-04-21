@@ -36,9 +36,6 @@ class: title-slide
 
 ---
 
-
----
-
 class: inverse, middle, center
 
 # La experimentación para resolver el problema del sesgo de selección
@@ -596,7 +593,529 @@ La Tabla 2.2.2 en MHE muestra los efectos de tratamiento estimados con regresió
 
 ---
 
-# Ejemplo
+class: inverse, middle, center
+
+# Ejemplo: Proyecto Esperanza
+
+---
+
+# La esperanza importa
+
+Banerjee et al. (2015): las microfinanzas pueden funcionar para algunos, pero no para todos
+
+Duflo (2012): la esperanza importa
+
+Multiples lecciones de la economía del comportamiento
+
+- Sistemas duales
+- Puntos de referencia y aversión a la pérdida
+- Carencia de auto control
+- Normas
+
+En esta presentación hablaré sobre un estudio basado en estas ideas
+
+Rojas, Wydick and Lybbert (2021), [Can hope elevate microfinance? Evidence from Oaxaca, Mexico]((https://academic.oup.com/oep/article/74/1/236/6154385?login=true)), *Oxford Economic Papers*
+
+---
+
+# Un modelo de la esperanza
+
+Concepto de esperanza de la teoría de Snyder (1993)
+
+- Aspiraciones
+
+- Avenidas
+
+- Habilidades
+
+Diferencia a la esperanza *deseosa* de la **esperanza aspiracional**
+
+Operacionalizamos estos conceptos en un modelo microeconómico
+
+- Aspiraciones: modeladas con una función de utilidad que depende de un punto de referencia (aspiración)
+
+- Avenidas: modeladas con una función de producción con restricciones
+
+- Habilidad: modelada con la productividad marginal del esfuerzo
+
+Ver [Wydick y Lybbert (2018)](https://www.journals.uchicago.edu/doi/full/10.1086/696968)
+
+---
+
+# Proyecto Esperanza en Oaxacca
+
+Colaboración con *Fuentes Libres*, una ONG cristiana
+
+Fuentes opera en el Valle de Oaxaca y en el Istmo de Tehuantepec
+
+En el momento del estudio tenía 52 grupos de ahorro y crédito (*bancos*)
+
+Aleatorizamos un tratamiento en parejas de bancos que tenían características similares
+
+- Localización
+- Oficial de banco
+- Tipos de negocio
+- Tamaño
+- Edad promedio
+
+En cada pareja, un banco es asignado a tratamiento y otro a control
+
+Tratamiento con tres componentes
+
+---
+
+# Documental *Historias de Esperanza*
+
+.center[
+&lt;iframe width="800" height="470" src="https://www.youtube.com/embed/gAidmWKCCD0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+]
+
+---
+
+# Documental *Historias de Esperanza*
+
+.center[
+&lt;img src="../slides/figures/screenshot_doc.jpg" width="80%" /&gt;
+]
+---
+
+# Ejercicio de fijación de metas
+
+.center[
+&lt;img src="../slides/figures/magnet.png" width="1636" /&gt;
+]
+---
+
+# Mini curso de fijación de conceptos
+
+.center[
+&lt;img src="../slides/figures/curriculum_session.jpg" width="60%" /&gt;
+]
+
+
+---
+
+# Valle de Oaxaca
+
+.pull-left[
+&lt;img src="http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-a-comp_orig.jpg" width="80%" /&gt;
+]
+
+.pull-right[
+&lt;img src="http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-b-comp_orig.jpg" width="80%" /&gt;
+
+]
+
+
+---
+
+# Istmo de Tehuantepec
+
+
+
+.pull-left[
+![](http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-d-comp_orig.jpg)&lt;!-- --&gt;
+]
+
+.pull-right[
+![](http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-c-comp_orig.jpg)&lt;!-- --&gt;![](http://oaxacahope-project.weebly.com/uploads/8/0/9/9/80995658/groups-map-e-comp_orig.png)&lt;!-- --&gt;
+
+]
+
+---
+
+# Datos
+
+Se recolecataron datos de cada socia en tres puntos del tiempo
+
+- En la línea base
+- Un mes después de la intervención
+- Un año después de la intervención
+
+Construimos índices de cada una de las dimensiones de la esperanza
+
+Por ejemplo, para el índice de agencia (que usaremos en la replicación), pedimos a cada socia que evaluara del 0 al 10 las siguientes expresiones:
+- ¿Qué tan importante es el trabajo duro para los negocios?
+- ¿Qué tan importante es la suerte para los negocios?
+- Mi futuro está determinado por mis propias acciones y no por las de otros
+- Es difícil para personas como yo ser líderes en la comunidad
+- Mujeres como yo pueden tener un impacto positivo en nuestra comunidad
+
+Recolectamos información sobre los negocios de las socias
+
+Tuvimos acceso a registros administrativos sobre ahorro y crédito
+
+---
+
+# Integridad del diseño
+
+Para obtener un estimador consistente del efecto del tratamiento se debe cumplir que aquellas socias que recibieron la intervención son estadísticamente iguales a las socias que no la recibieron
+
+Se colectaron las siguientes características en la línea base y se verificó que fueran estadísticamente iguales entre el grupo tratado y el de control
+
+.pull-left[
+**Características predeterminadas**
+- Edad
+- Educación
+- Religió
+- Número de hijos
+- Líder del grupo
+- Tipo de negocio
+]
+
+.pull-right[
+**Variables de resultados**
+- Índice de aspiraciones
+- Índice de agencia
+- Índice de avenidas
+- Felicidad
+- Optimismo
+- Orientación al futuro
+- Aversión al riesgo
+- Horas trabajadas
+- Ventas
+- Ganancias
+- Ahorros
+- Empleados
+
+]
+
+---
+
+# Efecto del tratamiento
+
+Si la aleatorización fue exitosa, el efecto del tratamiento puede obtenerse comparando las variables de resultados entre el grupo de tratamiento y control, usando los datos de seguimiento, un año después de la intervención
+
+Lo anterior puede ser realizado con una regresión
+
+`$$y_{ij}=\alpha + \tau HopeGroup_j + X_i'\beta + \gamma D_p + \varepsilon_{i,t}$$`
+donde
+
+`\(y_{ij}\)` es la variable de impacto
+
+`\(HopeGroup_j\)` toma el valor de uno para las socias en el grupo de tratamiento y cero para las del grupo de control
+
+`\(X_i\)` son las características predeterminadas (ayudan a mejorar la precisión de la estimación)
+
+`\(D_p\)` es un indicador de las parejas
+
+Los errores estándar están agrupados a nivel banco
+
+---
+# Descripción de variables
+
+Los datos que usaremos se encuentran en el archivo *analysis_dataset.dta*
+
+
+
+```r
+data &lt;- haven::read_dta("data/analysis_hope.dta")
+```
+
+Consideremos la variable **educ**, que indica la educación de la socia en años
+
+Usando los datos de la línea base sabemos que la edad promedio de las socias es de 7.62 años
+
+
+```r
+bl &lt;- data %&gt;% 
+  filter(t==0)
+
+summary(bl$educ)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##    0.00    6.00    9.00    7.62    9.00   21.00       3
+```
+---
+
+# El balance
+
+Para estimar de forma consistente el efecto del tratamiento debe suceder que la asignación al tratamiento sea independiente de las características de las socias en la línea base
+
+Veamos la media de la educación de quienes recibieron y no recibieron el tratamiento
+
+
+```r
+#Por grupos
+bl %&gt;% 
+  group_by(hopegroup) %&gt;%
+  summarize(mean=mean(educ,na.rm=T)) %&gt;% 
+  ungroup()
+```
+
+```
+## # A tibble: 2 x 2
+##   hopegroup  mean
+##       &lt;dbl&gt; &lt;dbl&gt;
+## 1         0  7.31
+## 2         1  7.87
+```
+
+---
+
+# El balance
+
+Hacemos una prueba de diferencia de medias
+
+Planteamos una hipótesis nula `\(H0: educ_{tratadas}=educ_{no tratadas}\)`
+
+Construimos un estadístico `\(t\)` y formulamos una regla de decisión
+
+Si `\(p&lt;\alpha=0.05\)` rechazamos la `\(H_0\)`
+
+.scroll-output[
+
+
+```r
+t.test(educ ~ hopegroup,
+       data = bl)
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  educ by hopegroup
+## t = -1.5771, df = 533.39, p-value = 0.1154
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -1.2465200  0.1363455
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        7.313765        7.868852
+```
+]
+---
+
+# El balance
+
+Podemos hacer uso de una regresión lineal para hacer exactamente lo mismo
+
+`$$educ_i=\gamma_0 + \gamma_1 HopeGroup_i + e_i$$`
+
+
+```r
+summary(m1 &lt;- lm(educ ~ hopegroup,
+   data = bl))$coef[,c(1:2,4)]
+```
+
+```
+##              Estimate Std. Error      Pr(&gt;|t|)
+## (Intercept) 7.3137652  0.2626090 3.798815e-107
+## hopegroup   0.5550873  0.3532882  1.167107e-01
+```
+
+---
+
+# El balance
+
+Sin embargo, la prueba realizada anteriormente asume que los errores son independientes e idénticamente distribuidos (iid)
+
+En otras palabras, que los individuos en nuestra muestra reciben choques aleatorios que no están correlacionados
+
+Esto no sucede en nuestro caso: tenemos socias que son parte de grupos de crédito y ahorro y que, por tanto, reciben choques que están correlacionados (mercado laboral, clima, programas)
+
+Debemos tomar en cuenta que estos errores no son independientes para estimar correctamente la matriz de varianzas de `\(\hat{\beta}\)`
+
+---
+
+# El balance
+
+Recordemos que antes hemos usado *stargazer* para presentar resultados y *pasar* errores agrupados
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;educ&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Err. Clásicos&lt;/td&gt;&lt;td&gt;Err. Agrupados&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;hopegroup&lt;/td&gt;&lt;td&gt;0.5551&lt;/td&gt;&lt;td&gt;0.5551&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.3533)&lt;/td&gt;&lt;td&gt;(0.6022)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;7.3138&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;7.3138&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.2626)&lt;/td&gt;&lt;td&gt;(0.4568)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+# El balance
+
+En una evaluación, tenemos que verificar el supuesto de independencia al mostrar evidencia de que las características de los individuos **antes** de la intervención no difieren entre tratados y no tratados
+
+Estimo una regresión para cada características usando la especificación que usé antes para la educación
+
+
+```r
+#Para el resto de los covariables
+m2 &lt;- lm(age ~ hopegroup,
+         data = bl)
+
+m3 &lt;- lm(evangelical ~ hopegroup,
+                data = bl)
+
+m4 &lt;- lm(children ~ hopegroup,
+                data = bl)
+
+m5 &lt;- lm(bankleader ~ hopegroup,
+                data = bl)
+```
+
+---
+
+# El balance
+
+Puedo presentar los resultados de estimar la misma especificación para varias características usando *stargazer* y estimando los errores agrupados
+
+
+```r
+stargazer(m1, m2, m3, m4, m5,
+          dep.var.labels.include = F,
+          dep.var.caption	= "",
+          covariate.labels = c("Tratado","Constante (media en control)"),
+          column.labels = c("Educación", "Edad", "Evangélica", "Hijos", "Líder" ),
+          se = list(sqrt(diag(vcovCR(m1, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m2, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m3, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m4, type = "CR1S", cluster=bl$communitybank))),
+                    sqrt(diag(vcovCR(m5, type = "CR1S", cluster=bl$communitybank)))),
+          type="html",
+          keep.stat = "n",
+          digits = 4)
+```
+---
+
+# El balance
+
+Puedo presentar los resultados de estimar la misma especificación para varias características usando *stargazer* y estimando los errores agrupados
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Educación&lt;/td&gt;&lt;td&gt;Edad&lt;/td&gt;&lt;td&gt;Evangélica&lt;/td&gt;&lt;td&gt;Hijos&lt;/td&gt;&lt;td&gt;Líder&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;td&gt;(4)&lt;/td&gt;&lt;td&gt;(5)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Tratado&lt;/td&gt;&lt;td&gt;0.5551&lt;/td&gt;&lt;td&gt;2.6237&lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.0683&lt;/td&gt;&lt;td&gt;0.1087&lt;/td&gt;&lt;td&gt;-0.0244&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.6022)&lt;/td&gt;&lt;td&gt;(1.3571)&lt;/td&gt;&lt;td&gt;(0.0623)&lt;/td&gt;&lt;td&gt;(0.2182)&lt;/td&gt;&lt;td&gt;(0.0279)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constante (media en control)&lt;/td&gt;&lt;td&gt;7.3138&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;40.9960&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.2794&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;2.9109&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.2834&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.4568)&lt;/td&gt;&lt;td&gt;(0.7495)&lt;/td&gt;&lt;td&gt;(0.0473)&lt;/td&gt;&lt;td&gt;(0.1717)&lt;/td&gt;&lt;td&gt;(0.0239)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;td&gt;555&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;td&gt;552&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="6" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="5" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+---
+
+# El efecto del tratamiento
+
+Si el supuesto de independencia se cumple, el efecto del tratamiento en una variable `\(y\)` puede ser identificado simplmente al comparar `\(y\)` para tratados y no tratados **después de la intervención**
+
+Sabemos que podemos hacer esto con una regresión como sigue
+
+`$$y_i=\beta_0+\beta_1 HopeGroup_i + \varepsilon_i$$`
+
+donde `\(\hat{\beta_1}\)` es el efecto del tratamiento
+
+Estimemos el efecto de haber sido asignado a la intervención del Proyecto Esperanza sobre un índice de agencia, **StdAnderAgencyIndex** usando los datos recabados un año después del tratamiento
+
+---
+
+# El efecto del tratamiento
+
+Primero estimemos una regresión con errores robustos (ignorando errores agrupados)
+
+
+```r
+el &lt;- data %&gt;% 
+  filter(t==2)
+
+#Regresión corta
+summary(e1corta &lt;- lm(StdAnderAgencyIndex ~ hopegroup,
+                         data = el))$coef
+```
+
+```
+##                Estimate Std. Error    t value   Pr(&gt;|t|)
+## (Intercept) -0.03987771 0.05435526 -0.7336495 0.46339795
+## hopegroup    0.14335812 0.07334730  1.9545114 0.05102214
+```
+
+El tratamiento tiene un efecto positivo de 0.14 `\(\sigma\)` en el índice de agencia
+
+Este efecto es estadísticamente significativo, `\(p=0.054\)`
+
+---
+
+# El efecto del tratamiento
+
+Notemos qué pasa cuando agregamos un vector de *controles*
+
+Es común en evaluación estimar una *regresión larga*
+
+`$$y_i=\beta_0+\beta_1 HopeGroup_i + BX_i +  \varepsilon_i$$`
+
+donde `\(X_i\)` representa un vector de características que explican `\(y_i\)`, pero que no fueron afectadas por el tratamiento
+
+
+```r
+summary(e1 &lt;- lm(StdAnderAgencyIndex ~ hopegroup + age + educ + evangelical + children + children_under_18 + bankleader + Dwelling_Index + factor(pair_number),
+                        data = el))$coef
+```
+
+---
+
+# El efecto del tratamiento
+
+Comparamos las estimaciones que hemos hecho hasta ahora
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Corta&lt;/td&gt;&lt;td&gt;Larga&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;hopegroup&lt;/td&gt;&lt;td&gt;0.1434&lt;/td&gt;&lt;td&gt;0.1435&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.1148)&lt;/td&gt;&lt;td&gt;(0.0710)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;732&lt;/td&gt;&lt;td&gt;732&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+---
+
+# El efecto del tratamiento
+
+El efecto en un índice agregado de los componentes de la esperanza
+
+Construimos un índice, **StdAnderHope3Index**, que resume los tres componentes de la teoría de la esperanza
+
+
+
+```r
+summary(e6 &lt;- lm(StdAnderHope3Index ~ hopegroup + age + educ + evangelical + children + children_under_18 + bankleader + Dwelling_Index + factor(pair_number),
+                        data = el))$coef
+```
+
+
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Agencia&lt;/td&gt;&lt;td&gt;Hope 3&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;hopegroup&lt;/td&gt;&lt;td&gt;0.1435&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.1580&lt;sup&gt;**&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.0710)&lt;/td&gt;&lt;td&gt;(0.0672)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;732&lt;/td&gt;&lt;td&gt;732&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="2" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+---
+
+# Tarea
+
+¿Cuál es el impacto en los otros dos componentes de la esperanza, vistos de manera individual: aspiraciones (**StdAnderAspIndex**) y avenidas (**StdAnderAveIndex**)?
+
+¿Cuál es el impacto en el índice de desempeño de los negocios **StdAnderBPIndex**?
+
+
+
 
 ---
 
