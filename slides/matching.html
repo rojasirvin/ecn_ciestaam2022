@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Propensity score matching</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Propensity score matching
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+
+# Motivación
+
+Cuando tenemos datos a nivel individual de individuos tratados y no tratados podemos usar sus características observables para construir los contrafactuales de los tratados
+
+Podemos pensar que individuos que se parecen en una serie de características `\(X\)`, de las cuales tenemos datos, se parecerán en todo lo demás
+
+Asumiremos que los individuos no tratados que son muy parecidos a los tratados 
+
+
+---
+
+# Recordatorio del sesgo de selección
+ 
+Las razones que deteriminan la asignación del tratamiento determinen también el valor de `\(y\)`
+    
+$$
+`\begin{align}
+E(Y(1)|D=1)&amp;-E(Y(0)|D=1)=\\
+=&amp;\text{efecto del tratamiento}+E(Y(0)|D=1)-E(Y(0)|D=0)
+\end{align}`
+$$
+
+La diferencia `\(E(Y(0)|D=1)-E(Y(0)|D=0)\)` es el **sesgo de selección**
+
+Una forma de eliminar el sesgo de selección es mediante la asignación aleatoria del tratamiento
+
+---
+
+# Métodos de emparejamiento o *matching*
+
+Los métodos emparejamiento o *matching* recaen en el **supuesto de independencia condicional**
+
+Al *controlar* por una serie de características `\(X_i\)`, el tratamiento es *como* si fuera aleatorio
+
+Podemos escribir
+
+$$
+E(Y(1)|D=1,X)=E(Y(1)|D=0,X)
+$$
+
+$$
+E(Y(0)|D=1,X)=E(Y(0)|D=0,X)
+$$
+
+Esto es, los valores esperados de `\(Y(1)\)` y `\(Y(0)\)` son iguales cuando nos fijamos en cada valor de `\(X\)`
+
+---
+
+# Matching exacto
+ 
+Un estimador de matching exacto consiste en *emparejar* individuos tratados y no tratados para cada valor específico de las `\(X\)` y luego tomar el promedio ponderado de las diferencias
+  
+Tenemos datos observacionales de individuos que recibieron y no recibieron un tratamiento
+  
+Tenemos una serie de características discretizadas en `\(X_i\)`
+
+Asumimos que controlando por las características `\(X_i\)` podemos obtener diferencias causales
+
+Luego hacemos un promedio de dichas diferencias
+
+---
+
+# Supuestos estadísticos
+
+La teoría de los métodos de emparejamiento se basa entonces en dos condiciones
+
+**Inconfundibilidad**: indica que al observar las características `\(X\)` relevantes, la asignación del tratamiento es como si hubiera habido un experimento
+
+  - Supongamos que tengo dos características: rural/urbano y con universidad/sin universidad
+  
+  - El supuesto indica que si me fijo en los individuos rurales y con universidad, ahí la asignación de `\(D\)` es independiente de `\(y\)`
+
+
+**Traslape**: indica que tenemos individuos tratados y no tratados para hacer comparaciones
+
+  - En el ejemplo anterior, el traslape significa que dentro de los individuos rurales y con universidad, tenemos tanto tratados como no tratados
+  
+  - Si solo tuviéramos tratados en la celda de individuos rurales y con universidad, no podríamos construir su contrafactual
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+
+
+
+Supongamos que observamos los siguientes datos
+
+
+.pull-left[
+.tiny[
+
+```
+## # A tibble: 10 x 3
+##    unit_treat age_treat earnings_treat
+##         &lt;dbl&gt;     &lt;dbl&gt;          &lt;dbl&gt;
+##  1          1        18           9500
+##  2          2        29          12250
+##  3          3        24          11000
+##  4          4        27          11750
+##  5          5        33          13250
+##  6          6        22          10500
+##  7          7        19           9750
+##  8          8        20          10000
+##  9          9        21          10250
+## 10         10        30          12500
+```
+]
+]
+
+
+.pull-right[
+.tiny[
+
+```
+## # A tibble: 20 x 3
+##    unit_control age_control earnings_control
+##           &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1            1          20             8500
+##  2            2          27            10075
+##  3            3          21             8725
+##  4            4          39            12775
+##  5            5          38            12550
+##  6            6          29            10525
+##  7            7          39            12775
+##  8            8          33            11425
+##  9            9          24             9400
+## 10           10          30            10750
+## 11           11          33            11425
+## 12           12          36            12100
+## 13           13          22             8950
+## 14           14          18             8050
+## 15           15          43            13675
+## 16           16          39            12775
+## 17           17          19             8275
+## 18           18          30             9000
+## 19           19          51            15475
+## 20           20          48            14800
+```
+]
+]
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+Noten que si hicieramos diferencias simples obtendríamos
+
+.tiny[
+
+```r
+mean(data.treat$earnings_treat)
+```
+
+```
+## [1] 11075
+```
+
+```r
+mean(data.control$earnings_control)
+```
+
+```
+## [1] 11101.25
+```
+
+```r
+#Diferencia
+mean(data.treat$earnings_treat)- mean(data.control$earnings_control)
+```
+
+```
+## [1] -26.25
+```
+
+]
+
+Parece que en el grupo de control ganan más (efecto de tratamiento negativo)
+]
+
+
+.pull-right[
+
+El principal problema con esta diferencia es que sabemos que los ingresos crecen con la edad
+
+Pero notemos que la muestra de no tratados tiene mayor edad promedio
+
+.tiny[
+
+```r
+mean(data.treat$age_treat)
+```
+
+```
+## [1] 24.3
+```
+
+```r
+mean(data.control$age_control)
+```
+
+```
+## [1] 31.95
+```
+
+```r
+#Diferencia
+mean(data.treat$age_treat)- mean(data.control$age_control)
+```
+
+```
+## [1] -7.65
+```
+]
+
+- Estaríamos *confundiedo* el efecto de la edad
+
+]
+
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+Construyamos la muestra apareada
+
+Para cada individuo en el grupo tratado, buscaremos uno en el de control que tenga la misma edad
+
+Decimos que esa pareja hizo *match*
+
+Por ejemplo, la primera unidad tratada, con 18 años y un ingreso de 9500 estaría emparejada con la unidad 14 del grupo de control, que tiene también 18 años y un ingreso de 9500
+
+  - Para el individuo 1 construimos su ingreso contrafactual
+
+Cuando hay varias unidades en el grupo de control que pueden ser empatadas con la de tratamiento, podemos construir el ingreso contrafactual calulando el promedio
+
+  - Del grupo de control, los individuos 10 y 18 tienen 30 años, con ingresos 10750 y 9000, por lo que usamos el promedio (9875) para crear el contrafactual
+
+---
+
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+La muestra apareada o contrafactual será
+
+.tiny[
+
+```
+## # A tibble: 10 x 3
+##    unit_matched age_matched earnings_matched
+##           &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1            1          18             8050
+##  2            2          29            10525
+##  3            3          24             9400
+##  4            4          27            10075
+##  5            5          33            11425
+##  6            6          22             8950
+##  7            7          19             8275
+##  8            8          20             8500
+##  9            9          21             8725
+## 10           10          30             9875
+```
+]
+]
+
+.pull-right[
+
+Noten que la edad es la misma entre los tratados y la muestra apareada
+
+
+```r
+mean(data.treat$age_treat)
+```
+
+```
+## [1] 24.3
+```
+
+```r
+mean(data.matched$age_matched)
+```
+
+```
+## [1] 24.3
+```
+
+En este caso, decimos que la edad *está balanceada*
+
+]
+
+---
+
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+La muestra emparejada o contrafactual será
+
+.tiny[
+
+```
+## # A tibble: 10 x 3
+##    unit_matched age_matched earnings_matched
+##           &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1            1          18             8050
+##  2            2          29            10525
+##  3            3          24             9400
+##  4            4          27            10075
+##  5            5          33            11425
+##  6            6          22             8950
+##  7            7          19             8275
+##  8            8          20             8500
+##  9            9          21             8725
+## 10           10          30             9875
+```
+]
+]
+
+.pull-right[
+
+Y entonces podemos calcular el efecto de tratamiento como la diferencia de ingresos entre los tratados y la muestra emparejada
+
+.tiny[
+
+```r
+#Diferencia
+mean(data.treat$earnings_treat)- mean(data.matched$earnings_matched)
+```
+
+```
+## [1] 1695
+```
+]
+
+Hay un efecto positivo del programa de 1695 unidades monetarias
+
+]
+
+---
+
+# Importancia del soporte común
+
+Observemos lo que ocurre con la distribución de edades en ambos grupos
+
+.pull-left[
+Tratados
+![](figures/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+No tratados
+![](figures/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+]
+
+El supuesto de traslape para identificar el efecto del tratamiento significa que para cada unidad tratada, hay al menos un no tratado
+
+De otra forma, no podemos hacer la comparación
+---
+
+# Ejemplo de la vida real
+
+Tenemos varias características en `\(X_i\)`, no solo la edad
+
+Esto hace que cada valor `\(X_i=x_i\)` este representado por una *celda*
+    
+`\(X_i\)` incluye, por ejemplo, raza, año de solicitud de ingreso al programa, escolaridad, calificación en examen de aptitud, año de nacimiento (son las características del ejemplo que vermeos más adelante)
+  
+Estas características definen *celdas* y dentro de cada celda tenemos tratados y no tratados
+ 
+---
+
+# Matching exacto es impráctico
+ 
+En la práctica es difícil manejar problemas en espacios de múltiples dimensiones: **maldición de la dimensionalidad**
+ 
+El problema de la maldición de la dimensionalidad se exacerba con el tamaño limitado de las bases de datos
+ 
+Si `\(X\)` tuviera solo indicadores binarios, el número de posibles combinaciones sería `\(2^s\)`
+   
+Por ejemplo, si solo tuviéramos `\(X_1=\{\text{menor de 35 años}, \text{con 35 años o más}\}\)`, `\(X_2=\{\text{más que preparatoria}, \text{menos que preparatoria}\}\)`, `\(X_3=\{\text{indígena}, \text{no indígena}\}\)`, tendríamos que hacer ocho comparaciones:
+   
+  - menor de 35 años, más que preparatoria, indígena
+  - menor de 35 años, más que preparatoria, no indígena
+  - ...
+  - con 35 años o más, menos que preparatoria, no indígena
+
+Pero Si `\(X\)` incluye muchas variables, algunas tomando muchos valores, esto se vuelve imposible de realizar
+  
+---
+
+# Maldición de la dimensionalidad
+
+El requerimiento de soporte común significa que debemos tener tratados y no tratados para cada valor de `\(X_i\)` para hacer comparaciónes
+
+Cuando `\(X_i\)` tiene muchas dimensiones, resulta un problema de *escasez* o *sparseness*
+
+Algunas celdas estarán vacías, o solo tendrán tratados, o solo tendrán no tratados
+
+---
+
+# Teorema del PS
+
+Rosenbaum y Rubin (1983) demostraron que resulta lo mismo asumir la independencia condicional sobre las `\(X\)` que asumir la independencia condicional sobre **la probabilidad de ser tratado**
+
+A esto le llamamos **inconfundibilidad dado el propensity score**
+ 
+$$
+Y(0), Y(1) \perp  D|P(X)
+$$
+ 
+donde `\(P(X)=P(D=1|X)\)` es la probabilidad de ser tratado dado un conjunto de covariables `\(X\)`, el *propensity score* o PS
+  
+---
+
+# Estimación
+ 
+Debemos por tanto primero calcular el PS
+ 
+Luego emparejamos las unidades que fueron tratadas con unidades que no lo fueron usando el PS
+ 
+Se mide la diferencia en la variable de resultados entre estos grupos
+ 
+Se hace un promedio ponderado de las diferencias
+  
+---
+
+# Especificar el modelo del PS
+ 
+Se usa un modelo *probit* o *logit* para modelar la probabilidad de recibir el tratamiento de forma no lineal
+
+Especificamos un modelo para dicha probabilidad, que depende de las características `\(X\)`
+
+`$$\text{Propensity Score}=P(D_i=1)=F(X_i'\beta)$$`
+Este modelo se estima fácilmente en R y lo aprenderemos a hacer el viernes
+
+Las características `\(X\)` son características que afectan la probabilidad de ser tratado, pero que no se ven afectadas por el tratamiento
+
+Idealmente se introducen características que estaban fijas cuando se implementó el programa
+
+El propósito del PS es sobre todo generar balance de las variables en `\(X\)`
+    
+---
+
+# Algoritmos de matching más populares
+
+Una vez que hemos estimado el PS para cada unidad tratada y no tratada tenemos que elegir un algoritmo de emparejamiento
+
+Para cada unidad tratada, con un PS estimado dado, debemos escoger una o varias unidades no tratadas para ser su contrafactual
+
+Los algoritmos de matching nos dan reglas para asignar estos emparejamientos basadas en los valores del PS estimado
+
+---
+
+# Vecino más cercano
+ 
+A cada individuo del grupo tratado se le asigna uno del grupo de comparación en términos del PS
+ 
+Puede hacerse con remplazo o sin remplazo
+ 
+Puede emplearse también sobremuestreo (*oversampling*), es decir, asignar más de un individuo del grupo de comparación
+
+Por ejemplo NN 5 significa que a cada individuo tratado se le asignan los cinco individuos del grupo no tratado con los PS estimados más cercanos
+  
+  
+---
+
+# Vecino más cercano
+
+.pull-left[
+| Tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| a | 0.031 |
+| b | 0.042 |
+| c | 0.07 |
+| `\(\vdots\)` | `\(\vdots\)` |
+]
+
+
+.pull-rights[
+| No tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| A | 0.034 |
+| B | 0.068 |
+| C | 0.21 |
+| `\(\vdots\)` | `\(\vdots\)` |
+]
+
+
+Con vecino más cercano, el individuo `\(a\)` tratado estaría emparejado con el `\(A\)` no tratado
+
+Si el emparejamiento es con reemplazo, `\(A\)` podría ser usado otra vez
+y `\(b\)` también sería emparejado con `\(A\)`
+
+Pero si el emparejamiento es sin reemplazo, `\(A\)` ya no puede ser usado y a `\(b\)` se le emparejaría con `\(B\)`
+
+Cuando hacemos el pareamiento sin reemplazo, debemos tener una muestra lo suficientemente grande
+
+- El pareamiento sin reemplazo depende del orden en que se realice el procedimiento
+
+---
+
+# Caliper y radio
+ 
+El método de vecino más cercano puede generar malos emparejamientos si el vecino más cercano está muy lejos en términos del PS
+  
+Especificar un *caliper* consiste en definir una vecindad aceptable de matching (el caliper) y elegir solo el vecino más cercano dentro del caliper
+ 
+Con las funciones de R que usaremos más adelante, el *radio* consiste en definir cuántos individuos deberán ser apareados dado que están dentro del caliper
+  
+---
+
+# Caliper
+
+.pull-left[
+| Tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| a | 0.031 |
+| b | 0.042 |
+| c | 0.07 |
+| d | 0.11 |
+| `\(\vdots\)` | `\(\vdots\)` |
+]
+
+.pull-rights[
+| No tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| A | 0.034 |
+| B | 0.068 |
+| C | 0.21 |
+| D | 0.40 |
+| `\(\vdots\)` | `\(\vdots\)` |
+] 
+
+El primer paso es fijar el caliper, por ejemplo, de 0.1
+
+El caliper implica buscar al vecino más cercano dentro de una vecindad de 0.1
+
+En este ejemplo `\(c\)` podría ser solo emparejado con `\(B\)` si `\(B\)` aún está disponible (porque no ha sido emparejado con nadie o porque aunque haya sido emparejado, el procedimiento se hace con reemplazo)
+
+---
+
+# Caliper con sobremuestreo
+
+.pull-left[
+| Tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| d | 0.31 |
+| e | 0.39 |
+| f | 0.44 |
+| g | 0.52 |
+| h | 0.55 |
+| i | 0.62 |
+| `\(\vdots\)` | `\(\vdots\)` |
+]
+
+.pull-rights[
+| No tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| R | 0.27 |
+| S | 0.29 |
+| T | 0.33 |
+| U | 0.49 |
+| V | 0.57 |
+| W | 0.61 |
+| `\(\vdots\)` | `\(\vdots\)` |
+] 
+
+Si el caliper se realiza con sobremuestreo, con un caliper de 0.10 y 2 vecinos a `\(g\)` se le asignarían `\(U\)` y `\(V\)` (si estuvieran disponibles)
+
+Es decir, dentro del caliper, los dos individuos con el PS más cercano
+
+---
+
+# Radio
+
+.pull-left[
+| Tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| d | 0.31 |
+| e | 0.39 |
+| f | 0.44 |
+| g | 0.52 |
+| h | 0.55 |
+| i | 0.62 |
+| `\(\vdots\)` | `\(\vdots\)` |
+]
+
+.pull-rights[
+| No tratados | `\(\hat{p}\)` |
+|:---: |:---:|
+| R | 0.27 |
+| S | 0.29 |
+| T | 0.33 |
+| U | 0.49 |
+| V | 0.57 |
+| W | 0.61 |
+| `\(\vdots\)` | `\(\vdots\)` |
+] 
+
+Pero si ahora implementamos radio con un caliper de 0.10, a `\(g\)` se le asignarían `\(U\)`, `\(V\)` y `\(W\)` (si estuvieran disponibles)
+
+Es decir, todos los individuos dentro del caliper
+
+---
+
+# ¿Qué método usar?
+ 
+No hay un método claramente superior a todos los demás
+ 
+Más aún, el desempeño de cada método depende de cada aplicación
+ 
+La ruta más seguida es usar varios algoritmos y mostrar la robustez de los resultados a esta elección
+  
+---
+
+# Comprobar empíricamente los supuestos
+ 
+.pull-left[
+El efecto del tratamiento solo se calcula sobre la región de sporte común por lo que se debe verificar el traslape del PS calculado para los tratados y no tratados
+ 
+Otro de los teoremas de Rosenbaum y Rubin (1983) implica que
+
+$$
+X \perp  D|P(X)
+$$
+ 
+Esto es, que al controlar por el PS, las variables `\(X\)` no deben proveer información sobre `\(D\)`
+
+Tenemos que mostrar que en la muestra emparejada las características `\(X\)` son independientes del tratamiento
+
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="../slides/figures/Gertler_PSOverlap.png" alt="Fuente: Gertler et al. (2017)" width="100%" /&gt;
+&lt;p class="caption"&gt;Fuente: Gertler et al. (2017)&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+class: inverse, middle, center
+
+# Ejemplo: Jóvenes Construyendo el Futuro
+
+---
+
+# Jóvenes Construyendo el Futuro
+
+El año pasado se presentaron los resultados de [una evaluación](https://www.gob.mx/cms/uploads/attachment/file/669952/Estudio_EL_EFECTO_DEL_PROGRAMA_JCF_DURANTE_LA_PANDEMIA.pdf) del impacto del programa Jóvenes Construyendo el Futuro (JCF), realizada usando métodos de matching
+
+---
+
+# Datos
+
+Los datos en *datos_jcf_analisis.csv* están listos para analizarse. Estos se construyeron a partir de la ENIGH 2020, que incluyó un módulo especial para el programa JCF y que pueden descargar de [aquí](https://www.inegi.org.mx/programas/enigh/nc/2020/#Microdatos)
+
+El propensity score (PS) usado en la evaluación usa los siguientes regresores: **mujer** (dummy de sexo), **indigena** (dummy de pertenencia a una etnia), **rural** (dummy del ámbito rural), **escoacum** (años de escolaridad), **casadounion** (dummy para casados o en unión libre), **jefehog** (dummy para jefes del hogar), **haymenores** (dummy para la presencia de menores de edad en el hogar), **proggob** (dummy para beneficiarios de programas de gobierno), y **tot_integ** (número de miembros del hogar), así como dummies de estado, **cve_ent**
+
+
+```r
+data.jcf &lt;- read.csv("data/datos_jcf_analisis.csv") 
+```
+
+Buscamos estimar el impacto de JCF en el ingreso trimestral **ingtot_tri**
+
+Se comparan a los beneficiarios de JCF con los jóvenes que no asisten a la escuela y no están empleados
+
+Los beneficiarios tienen *jcf2==1* y los jóvenes que no asisten a la escuela y no están empleados tienen *jcf2==0*
+
+---
+
+# Estadística descriptiva
+
+Usemos la función *datasummary_balance* del paquete *modelsummary* para construir tablas que presenten estadística descriptiva por grupos
+
+
+```r
+datasummary_balance(~jcf2,
+                    fmt = "%.2f",
+                    data = select(data.jcf,jcf2,ingtot_tri,tot_integ, mujer, indigena, rural, escoacum, 
+           casadounion, jefehog, haymenores, proggob),
+                    dinm_statistic = "p.value",
+                    title = "Diferencias entre grupos",
+                    notes = "Fuente: Datos de la ENIGH2020 del INEGI")
+```
+
+---
+
+# Estadística descriptiva
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table"&gt;
+&lt;caption&gt;Diferencias entre grupos&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;0&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;1&lt;/div&gt;&lt;/th&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="2"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Mean &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Std. Dev. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Mean  &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Std. Dev.  &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Diff. in Means &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ingtot_tri &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1140.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5719.56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10105.54 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6765.53 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8965.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; tot_integ &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.93 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.03 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; mujer &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.59 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; indigena &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; rural &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.42 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; escoacum &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.27 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; casadounion &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.54 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.39 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; jefehog &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; haymenores &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; proggob &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.48 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Fuente: Datos de la ENIGH2020 del INEGI&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+
+# Preparación de datos
+
+Nos quedamos con las variables que usaremos para estimar el PS
+
+*complete.cases* nos permite quedarnos con las filas que no tienen ningún *NA*
+
+
+```r
+sub.data &lt;- data.jcf %&gt;% 
+  dplyr::select(ingtot_tri, jcf2, mujer, indigena, cve_ent, rural, escoacum, 
+           casadounion, jefehog, haymenores, proggob, tot_integ)
+
+sub.data &lt;- sub.data[complete.cases(sub.data), ] 
+```
+
+---
+
+# Construcción de muestra pareada
+
+Usamos la librería *matchit* para construir las muestras pareadas
+
+*nearest* especifica vecino más cercano
+
+*glm* indica que usaremos un probit para estimar el PS
+
+
+```r
+m.out.a &lt;- matchit(formula=jcf2 ~ mujer + indigena + factor(cve_ent) + rural  + escoacum + 
+                   casadounion + jefehog + haymenores + proggob + tot_integ,
+                 method = "nearest",
+                 distance= "glm",
+                 replace = FALSE,
+                 data = sub.data)
+```
+---
+
+# Muestra emparejada
+
+Podemos ver la muestra emparejada
+
+
+```r
+head(arrange(match.data(m.out.a),subclass))
+```
+
+```
+##   ingtot_tri jcf2 mujer indigena cve_ent rural escoacum casadounion jefehog
+## 1       0.00    0     1        1       7     1       12           0       0
+## 2   14783.72    1     0        1      21     1       15           0       1
+## 3       0.00    0     1        1      21     1       12           1       0
+## 4    5282.60    1     1        1      21     1       12           1       0
+## 5   15737.70    0     0        0       6     0        9           0       0
+## 6    8804.34    1     1        1      22     0       15           0       1
+##   haymenores proggob tot_integ   distance weights subclass
+## 1          1       0         6 0.26363694       1        1
+## 2          0       0         1 0.26350015       1        1
+## 3          1       0         5 0.02933718       1        2
+## 4          1       0         5 0.02933718       1        2
+## 5          0       0         5 0.05627992       1        3
+## 6          0       0         1 0.05628937       1        3
+```
+
+---
+
+# Muestra emparejada
+
+Veamos un resumen del emparejamiento
+
+
+```r
+#Con esto elimino las dummies de estado de la salida
+m.out.a[["X"]][["factor(cve_ent)"]] &lt;- NULL
+
+summary(m.out.a, standardize=T)
+```
+---
+
+# Muestra emparejada
+
+Una propuesta para determinar si el emparejamiento fue exitoso es observar las diferencias promedio estandarizadas (SMD) entre los grupos tratados y no tratados, antes y después del emparejamiento. 
+`$$SMD_X=\frac{\bar{X}_T-\bar{X}_{NT}}{\sqrt{S^2_T+S^2_{NT}}}$$`
+    
+También vale la pena no perder de vista la razón de varianzas (VR). Se espera que este ratio no sea muy distinto de 1 después de hacer el emparejamiento:*
+    
+`$$VR=\frac{S^2_T}{S^2_{NT}}$$`
+Como regla de dedo, una diferencia de 0.1 o menos en el SMD se considera un buen balance
+
+Todas las variables están balanceadas después del emparejamiento. Por ejemplo, la escolaridad acumulada tenía un SDM de 0.4698 en la muestra en bruto, pero con el emparejamiento el SDM se vuelve de solo 0.0749.
+
+---
+
+# *Love plot*
+
+.pull-left[
+
+Usando la librería *cobalt* podemos construir un *love plot* que representa gráficamente las diferencias antes y después del emparejamiento
+
+
+```r
+love.plot(bal.tab(m.out.a),
+          threshold = .1)
+```
+]
+
+.pull-right[
+![](figures/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Efecto del tratamiento
+
+Podemos ahora tratar la muestra emparejada como si viniera de un experimento
+
+Los errores estándar deben ser calculados agrupados a nivel *subclass*, es decir, tomando en cuenta las parejas o *n*-pletas
+
+
+```r
+r1 &lt;- lm(ingtot_tri ~ jcf2,
+           data = match.data(m.out.a))
+
+coeftest(r1,
+         vcovCR(r1,
+                cluster = match.data(m.out.a)$subclass,
+                type ="CR1S"))
+```
+
+---
+
+# Efecto del tratamiento
+
+JCF incrementa el ingreso, comparado con otros jóvenes que no asisten a la escuela ni estudian, en 8476 pesos por trimestre (ee. 333.81)
+
+
+```
+## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)  1629.54     240.90  6.7644 1.831e-11 ***
+## jcf2         8476.00     333.81 25.3919 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+# Tarea
+
+Estime ahora el TOT del programa en la probabilidad de encontrar empleo, **encontro**, 
+
+Para esto, se comparan a los jóvenes que recibieron el programa con todos los demás jóvenes (esta variable es **jcf**)
+
+Los beneficiarios tienen *jcf==1*, mientras que el resto de los jóvenes tienen *jcf==0*, pero debera usar solo a las personas que tienen *transicion == 1*, es decir, que dejaron su trabajo
+
+Realice la estimación del TOT de manera análoga a lo realizado en clase, pero ahora use
+
+  - Dos vecinos, incluyendo *ratio = 1* en el proceso *matchit*
+  - Un caliper de 0.05, incluyendo *caliper = 0.05* en el proceso de *matchit*
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

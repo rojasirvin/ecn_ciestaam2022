@@ -1,0 +1,839 @@
+---
+title: "Propensity score matching"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+  - \usepackage{amsmath} 
+  - \usepackage[utf8]{inputenc}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = F,
+                      message = F, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+library(kableExtra)
+library(stargazer)
+library(MatchIt)
+library(Zelig)
+library(cobalt)
+library(modelsummary)
+library(sandwich)
+library(clubSandwich)
+library(lmtest)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+.title[
+# Propensity score matching
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+
+# Motivación
+
+Cuando tenemos datos a nivel individual de individuos tratados y no tratados podemos usar sus características observables para construir los contrafactuales de los tratados
+
+Podemos pensar que individuos que se parecen en una serie de características $X$, de las cuales tenemos datos, se parecerán en todo lo demás
+
+Asumiremos que los individuos no tratados que son muy parecidos a los tratados 
+
+
+---
+
+# Recordatorio del sesgo de selección
+ 
+Las razones que deteriminan la asignación del tratamiento determinen también el valor de $y$
+    
+$$
+\begin{align}
+E(Y(1)|D=1)&-E(Y(0)|D=1)=\\
+=&\text{efecto del tratamiento}+E(Y(0)|D=1)-E(Y(0)|D=0)
+\end{align}
+$$
+
+La diferencia $E(Y(0)|D=1)-E(Y(0)|D=0)$ es el **sesgo de selección**
+
+Una forma de eliminar el sesgo de selección es mediante la asignación aleatoria del tratamiento
+
+---
+
+# Métodos de emparejamiento o *matching*
+
+Los métodos emparejamiento o *matching* recaen en el **supuesto de independencia condicional**
+
+Al *controlar* por una serie de características $X_i$, el tratamiento es *como* si fuera aleatorio
+
+Podemos escribir
+
+$$
+E(Y(1)|D=1,X)=E(Y(1)|D=0,X)
+$$
+
+$$
+E(Y(0)|D=1,X)=E(Y(0)|D=0,X)
+$$
+
+Esto es, los valores esperados de $Y(1)$ y $Y(0)$ son iguales cuando nos fijamos en cada valor de $X$
+
+---
+
+# Matching exacto
+ 
+Un estimador de matching exacto consiste en *emparejar* individuos tratados y no tratados para cada valor específico de las $X$ y luego tomar el promedio ponderado de las diferencias
+  
+Tenemos datos observacionales de individuos que recibieron y no recibieron un tratamiento
+  
+Tenemos una serie de características discretizadas en $X_i$
+
+Asumimos que controlando por las características $X_i$ podemos obtener diferencias causales
+
+Luego hacemos un promedio de dichas diferencias
+
+---
+
+# Supuestos estadísticos
+
+La teoría de los métodos de emparejamiento se basa entonces en dos condiciones
+
+**Inconfundibilidad**: indica que al observar las características $X$ relevantes, la asignación del tratamiento es como si hubiera habido un experimento
+
+  - Supongamos que tengo dos características: rural/urbano y con universidad/sin universidad
+  
+  - El supuesto indica que si me fijo en los individuos rurales y con universidad, ahí la asignación de $D$ es independiente de $y$
+
+
+**Traslape**: indica que tenemos individuos tratados y no tratados para hacer comparaciones
+
+  - En el ejemplo anterior, el traslape significa que dentro de los individuos rurales y con universidad, tenemos tanto tratados como no tratados
+  
+  - Si solo tuviéramos tratados en la celda de individuos rurales y con universidad, no podríamos construir su contrafactual
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+```{r echo=F}
+read_data <- function(df)
+{
+  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
+                     df, sep = "")
+  df <- haven::read_dta(full_path)
+  return(df)
+}
+
+training_example <- read_data("training_example.dta") %>% 
+  slice(1:20)
+
+data.treat <- training_example %>% 
+  select(unit_treat, age_treat, earnings_treat) %>% 
+  slice(1:10) %>% 
+  mutate(earnings_treat=as.numeric(earnings_treat))
+
+data.control <- training_example %>% 
+  select(unit_control, age_control, earnings_control)
+
+data.matched <- training_example %>% 
+  select(unit_matched, age_matched, earnings_matched) %>% 
+  slice(1:10)
+
+```
+
+
+Supongamos que observamos los siguientes datos
+
+
+.pull-left[
+.tiny[
+```{r}
+data.treat
+
+```
+]
+]
+
+
+.pull-right[
+.tiny[
+```{r}
+data.control
+```
+]
+]
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+Noten que si hicieramos diferencias simples obtendríamos
+
+.tiny[
+```{r echo=T, message=F, warning=F }
+mean(data.treat$earnings_treat)
+mean(data.control$earnings_control)
+
+#Diferencia
+mean(data.treat$earnings_treat)- mean(data.control$earnings_control)
+```
+
+]
+
+Parece que en el grupo de control ganan más (efecto de tratamiento negativo)
+]
+
+
+.pull-right[
+
+El principal problema con esta diferencia es que sabemos que los ingresos crecen con la edad
+
+Pero notemos que la muestra de no tratados tiene mayor edad promedio
+
+.tiny[
+```{r echo=T, message=F, warning=F }
+mean(data.treat$age_treat)
+mean(data.control$age_control)
+
+#Diferencia
+mean(data.treat$age_treat)- mean(data.control$age_control)
+```
+]
+
+- Estaríamos *confundiedo* el efecto de la edad
+
+]
+
+
+---
+
+# Ejemplo: programa hipotético de empleo
+
+Construyamos la muestra apareada
+
+Para cada individuo en el grupo tratado, buscaremos uno en el de control que tenga la misma edad
+
+Decimos que esa pareja hizo *match*
+
+Por ejemplo, la primera unidad tratada, con 18 años y un ingreso de 9500 estaría emparejada con la unidad 14 del grupo de control, que tiene también 18 años y un ingreso de 9500
+
+  - Para el individuo 1 construimos su ingreso contrafactual
+
+Cuando hay varias unidades en el grupo de control que pueden ser empatadas con la de tratamiento, podemos construir el ingreso contrafactual calulando el promedio
+
+  - Del grupo de control, los individuos 10 y 18 tienen 30 años, con ingresos 10750 y 9000, por lo que usamos el promedio (9875) para crear el contrafactual
+
+---
+
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+La muestra apareada o contrafactual será
+
+.tiny[
+```{r}
+data.matched
+
+```
+]
+]
+
+.pull-right[
+
+Noten que la edad es la misma entre los tratados y la muestra apareada
+
+```{r echo=T}
+mean(data.treat$age_treat)
+mean(data.matched$age_matched)
+```
+
+En este caso, decimos que la edad *está balanceada*
+
+]
+
+---
+
+
+# Ejemplo: programa hipotético de empleo
+
+
+.pull-left[
+
+La muestra emparejada o contrafactual será
+
+.tiny[
+```{r}
+data.matched
+
+```
+]
+]
+
+.pull-right[
+
+Y entonces podemos calcular el efecto de tratamiento como la diferencia de ingresos entre los tratados y la muestra emparejada
+
+.tiny[
+```{r echo=T, message=F, warning=F }
+#Diferencia
+mean(data.treat$earnings_treat)- mean(data.matched$earnings_matched)
+```
+]
+
+Hay un efecto positivo del programa de 1695 unidades monetarias
+
+]
+
+---
+
+# Importancia del soporte común
+
+Observemos lo que ocurre con la distribución de edades en ambos grupos
+
+.pull-left[
+Tratados
+```{r echo=F, fig.height=4}
+ggplot(training_example, aes(x=age_treat)) +
+  stat_bin(bins = 10, na.rm = TRUE)
+```
+]
+
+.pull-right[
+No tratados
+```{r echo=F, fig.height=4}
+ggplot(training_example, aes(x=age_control)) +
+  geom_histogram(bins = 10, na.rm = TRUE)
+```
+
+]
+
+El supuesto de traslape para identificar el efecto del tratamiento significa que para cada unidad tratada, hay al menos un no tratado
+
+De otra forma, no podemos hacer la comparación
+---
+
+# Ejemplo de la vida real
+
+Tenemos varias características en $X_i$, no solo la edad
+
+Esto hace que cada valor $X_i=x_i$ este representado por una *celda*
+    
+$X_i$ incluye, por ejemplo, raza, año de solicitud de ingreso al programa, escolaridad, calificación en examen de aptitud, año de nacimiento (son las características del ejemplo que vermeos más adelante)
+  
+Estas características definen *celdas* y dentro de cada celda tenemos tratados y no tratados
+ 
+---
+
+# Matching exacto es impráctico
+ 
+En la práctica es difícil manejar problemas en espacios de múltiples dimensiones: **maldición de la dimensionalidad**
+ 
+El problema de la maldición de la dimensionalidad se exacerba con el tamaño limitado de las bases de datos
+ 
+Si $X$ tuviera solo indicadores binarios, el número de posibles combinaciones sería $2^s$
+   
+Por ejemplo, si solo tuviéramos $X_1=\{\text{menor de 35 años}, \text{con 35 años o más}\}$, $X_2=\{\text{más que preparatoria}, \text{menos que preparatoria}\}$, $X_3=\{\text{indígena}, \text{no indígena}\}$, tendríamos que hacer ocho comparaciones:
+   
+  - menor de 35 años, más que preparatoria, indígena
+  - menor de 35 años, más que preparatoria, no indígena
+  - ...
+  - con 35 años o más, menos que preparatoria, no indígena
+
+Pero Si $X$ incluye muchas variables, algunas tomando muchos valores, esto se vuelve imposible de realizar
+  
+---
+
+# Maldición de la dimensionalidad
+
+El requerimiento de soporte común significa que debemos tener tratados y no tratados para cada valor de $X_i$ para hacer comparaciónes
+
+Cuando $X_i$ tiene muchas dimensiones, resulta un problema de *escasez* o *sparseness*
+
+Algunas celdas estarán vacías, o solo tendrán tratados, o solo tendrán no tratados
+
+---
+
+# Teorema del PS
+
+Rosenbaum y Rubin (1983) demostraron que resulta lo mismo asumir la independencia condicional sobre las $X$ que asumir la independencia condicional sobre **la probabilidad de ser tratado**
+
+A esto le llamamos **inconfundibilidad dado el propensity score**
+ 
+$$
+Y(0), Y(1) \perp  D|P(X)
+$$
+ 
+donde $P(X)=P(D=1|X)$ es la probabilidad de ser tratado dado un conjunto de covariables $X$, el *propensity score* o PS
+  
+---
+
+# Estimación
+ 
+Debemos por tanto primero calcular el PS
+ 
+Luego emparejamos las unidades que fueron tratadas con unidades que no lo fueron usando el PS
+ 
+Se mide la diferencia en la variable de resultados entre estos grupos
+ 
+Se hace un promedio ponderado de las diferencias
+  
+---
+
+# Especificar el modelo del PS
+ 
+Se usa un modelo *probit* o *logit* para modelar la probabilidad de recibir el tratamiento de forma no lineal
+
+Especificamos un modelo para dicha probabilidad, que depende de las características $X$
+
+$$\text{Propensity Score}=P(D_i=1)=F(X_i'\beta)$$
+Este modelo se estima fácilmente en R y lo aprenderemos a hacer el viernes
+
+Las características $X$ son características que afectan la probabilidad de ser tratado, pero que no se ven afectadas por el tratamiento
+
+Idealmente se introducen características que estaban fijas cuando se implementó el programa
+
+El propósito del PS es sobre todo generar balance de las variables en $X$
+    
+---
+
+# Algoritmos de matching más populares
+
+Una vez que hemos estimado el PS para cada unidad tratada y no tratada tenemos que elegir un algoritmo de emparejamiento
+
+Para cada unidad tratada, con un PS estimado dado, debemos escoger una o varias unidades no tratadas para ser su contrafactual
+
+Los algoritmos de matching nos dan reglas para asignar estos emparejamientos basadas en los valores del PS estimado
+
+---
+
+# Vecino más cercano
+ 
+A cada individuo del grupo tratado se le asigna uno del grupo de comparación en términos del PS
+ 
+Puede hacerse con remplazo o sin remplazo
+ 
+Puede emplearse también sobremuestreo (*oversampling*), es decir, asignar más de un individuo del grupo de comparación
+
+Por ejemplo NN 5 significa que a cada individuo tratado se le asignan los cinco individuos del grupo no tratado con los PS estimados más cercanos
+  
+  
+---
+
+# Vecino más cercano
+
+.pull-left[
+| Tratados | $\hat{p}$ |
+|:---: |:---:|
+| a | 0.031 |
+| b | 0.042 |
+| c | 0.07 |
+| $\vdots$ | $\vdots$ |
+]
+
+
+.pull-rights[
+| No tratados | $\hat{p}$ |
+|:---: |:---:|
+| A | 0.034 |
+| B | 0.068 |
+| C | 0.21 |
+| $\vdots$ | $\vdots$ |
+]
+
+
+Con vecino más cercano, el individuo $a$ tratado estaría emparejado con el $A$ no tratado
+
+Si el emparejamiento es con reemplazo, $A$ podría ser usado otra vez
+y $b$ también sería emparejado con $A$
+
+Pero si el emparejamiento es sin reemplazo, $A$ ya no puede ser usado y a $b$ se le emparejaría con $B$
+
+Cuando hacemos el pareamiento sin reemplazo, debemos tener una muestra lo suficientemente grande
+
+- El pareamiento sin reemplazo depende del orden en que se realice el procedimiento
+
+---
+
+# Caliper y radio
+ 
+El método de vecino más cercano puede generar malos emparejamientos si el vecino más cercano está muy lejos en términos del PS
+  
+Especificar un *caliper* consiste en definir una vecindad aceptable de matching (el caliper) y elegir solo el vecino más cercano dentro del caliper
+ 
+Con las funciones de R que usaremos más adelante, el *radio* consiste en definir cuántos individuos deberán ser apareados dado que están dentro del caliper
+  
+---
+
+# Caliper
+
+.pull-left[
+| Tratados | $\hat{p}$ |
+|:---: |:---:|
+| a | 0.031 |
+| b | 0.042 |
+| c | 0.07 |
+| d | 0.11 |
+| $\vdots$ | $\vdots$ |
+]
+
+.pull-rights[
+| No tratados | $\hat{p}$ |
+|:---: |:---:|
+| A | 0.034 |
+| B | 0.068 |
+| C | 0.21 |
+| D | 0.40 |
+| $\vdots$ | $\vdots$ |
+] 
+
+El primer paso es fijar el caliper, por ejemplo, de 0.1
+
+El caliper implica buscar al vecino más cercano dentro de una vecindad de 0.1
+
+En este ejemplo $c$ podría ser solo emparejado con $B$ si $B$ aún está disponible (porque no ha sido emparejado con nadie o porque aunque haya sido emparejado, el procedimiento se hace con reemplazo)
+
+---
+
+# Caliper con sobremuestreo
+
+.pull-left[
+| Tratados | $\hat{p}$ |
+|:---: |:---:|
+| d | 0.31 |
+| e | 0.39 |
+| f | 0.44 |
+| g | 0.52 |
+| h | 0.55 |
+| i | 0.62 |
+| $\vdots$ | $\vdots$ |
+]
+
+.pull-rights[
+| No tratados | $\hat{p}$ |
+|:---: |:---:|
+| R | 0.27 |
+| S | 0.29 |
+| T | 0.33 |
+| U | 0.49 |
+| V | 0.57 |
+| W | 0.61 |
+| $\vdots$ | $\vdots$ |
+] 
+
+Si el caliper se realiza con sobremuestreo, con un caliper de 0.10 y 2 vecinos a $g$ se le asignarían $U$ y $V$ (si estuvieran disponibles)
+
+Es decir, dentro del caliper, los dos individuos con el PS más cercano
+
+---
+
+# Radio
+
+.pull-left[
+| Tratados | $\hat{p}$ |
+|:---: |:---:|
+| d | 0.31 |
+| e | 0.39 |
+| f | 0.44 |
+| g | 0.52 |
+| h | 0.55 |
+| i | 0.62 |
+| $\vdots$ | $\vdots$ |
+]
+
+.pull-rights[
+| No tratados | $\hat{p}$ |
+|:---: |:---:|
+| R | 0.27 |
+| S | 0.29 |
+| T | 0.33 |
+| U | 0.49 |
+| V | 0.57 |
+| W | 0.61 |
+| $\vdots$ | $\vdots$ |
+] 
+
+Pero si ahora implementamos radio con un caliper de 0.10, a $g$ se le asignarían $U$, $V$ y $W$ (si estuvieran disponibles)
+
+Es decir, todos los individuos dentro del caliper
+
+---
+
+# ¿Qué método usar?
+ 
+No hay un método claramente superior a todos los demás
+ 
+Más aún, el desempeño de cada método depende de cada aplicación
+ 
+La ruta más seguida es usar varios algoritmos y mostrar la robustez de los resultados a esta elección
+  
+---
+
+# Comprobar empíricamente los supuestos
+ 
+.pull-left[
+El efecto del tratamiento solo se calcula sobre la región de sporte común por lo que se debe verificar el traslape del PS calculado para los tratados y no tratados
+ 
+Otro de los teoremas de Rosenbaum y Rubin (1983) implica que
+
+$$
+X \perp  D|P(X)
+$$
+ 
+Esto es, que al controlar por el PS, las variables $X$ no deben proveer información sobre $D$
+
+Tenemos que mostrar que en la muestra emparejada las características $X$ son independientes del tratamiento
+
+]
+
+.pull-right[
+```{r out.width="100%", fig.cap='Fuente: Gertler et al. (2017)', fig.align='center'}
+knitr::include_graphics("../slides/figures/Gertler_PSOverlap.png", error = F)
+```
+]
+
+---
+
+class: inverse, middle, center
+
+# Ejemplo: Jóvenes Construyendo el Futuro
+
+---
+
+# Jóvenes Construyendo el Futuro
+
+El año pasado se presentaron los resultados de [una evaluación](https://www.gob.mx/cms/uploads/attachment/file/669952/Estudio_EL_EFECTO_DEL_PROGRAMA_JCF_DURANTE_LA_PANDEMIA.pdf) del impacto del programa Jóvenes Construyendo el Futuro (JCF), realizada usando métodos de matching
+
+---
+
+# Datos
+
+Los datos en *datos_jcf_analisis.csv* están listos para analizarse. Estos se construyeron a partir de la ENIGH 2020, que incluyó un módulo especial para el programa JCF y que pueden descargar de [aquí](https://www.inegi.org.mx/programas/enigh/nc/2020/#Microdatos)
+
+El propensity score (PS) usado en la evaluación usa los siguientes regresores: **mujer** (dummy de sexo), **indigena** (dummy de pertenencia a una etnia), **rural** (dummy del ámbito rural), **escoacum** (años de escolaridad), **casadounion** (dummy para casados o en unión libre), **jefehog** (dummy para jefes del hogar), **haymenores** (dummy para la presencia de menores de edad en el hogar), **proggob** (dummy para beneficiarios de programas de gobierno), y **tot_integ** (número de miembros del hogar), así como dummies de estado, **cve_ent**
+
+```{r echo = T}
+data.jcf <- read.csv("data/datos_jcf_analisis.csv") 
+```
+
+Buscamos estimar el impacto de JCF en el ingreso trimestral **ingtot_tri**
+
+Se comparan a los beneficiarios de JCF con los jóvenes que no asisten a la escuela y no están empleados
+
+Los beneficiarios tienen *jcf2==1* y los jóvenes que no asisten a la escuela y no están empleados tienen *jcf2==0*
+
+---
+
+# Estadística descriptiva
+
+Usemos la función *datasummary_balance* del paquete *modelsummary* para construir tablas que presenten estadística descriptiva por grupos
+
+```{r echo=T, eval=F}
+datasummary_balance(~jcf2,
+                    fmt = "%.2f",
+                    data = select(data.jcf,jcf2,ingtot_tri,tot_integ, mujer, indigena, rural, escoacum, 
+           casadounion, jefehog, haymenores, proggob),
+                    dinm_statistic = "p.value",
+                    title = "Diferencias entre grupos",
+                    notes = "Fuente: Datos de la ENIGH2020 del INEGI")
+```
+
+---
+
+# Estadística descriptiva
+
+```{r echo=F, eval=T}
+datasummary_balance(~jcf2,
+                    fmt = "%.2f",
+                    data = select(data.jcf,jcf2,ingtot_tri,tot_integ, mujer, indigena, rural, escoacum, 
+           casadounion, jefehog, haymenores, proggob),
+                    dinm_statistic = "p.value",
+                    title = "Diferencias entre grupos",
+                    notes = "Fuente: Datos de la ENIGH2020 del INEGI")
+```
+
+---
+
+# Preparación de datos
+
+Nos quedamos con las variables que usaremos para estimar el PS
+
+*complete.cases* nos permite quedarnos con las filas que no tienen ningún *NA*
+
+```{r echo=T, results='hide'}
+sub.data <- data.jcf %>% 
+  dplyr::select(ingtot_tri, jcf2, mujer, indigena, cve_ent, rural, escoacum, 
+           casadounion, jefehog, haymenores, proggob, tot_integ)
+
+sub.data <- sub.data[complete.cases(sub.data), ] 
+```
+
+---
+
+# Construcción de muestra pareada
+
+Usamos la librería *matchit* para construir las muestras pareadas
+
+*nearest* especifica vecino más cercano
+
+*glm* indica que usaremos un probit para estimar el PS
+
+```{r echo = T}
+m.out.a <- matchit(formula=jcf2 ~ mujer + indigena + factor(cve_ent) + rural  + escoacum + 
+                   casadounion + jefehog + haymenores + proggob + tot_integ,
+                 method = "nearest",
+                 distance= "glm",
+                 replace = FALSE,
+                 data = sub.data)
+
+```
+---
+
+# Muestra emparejada
+
+Podemos ver la muestra emparejada
+
+```{r echo=T}
+head(arrange(match.data(m.out.a),subclass))
+```
+
+---
+
+# Muestra emparejada
+
+Veamos un resumen del emparejamiento
+
+```{r echo=T, results='hide'}
+#Con esto elimino las dummies de estado de la salida
+m.out.a[["X"]][["factor(cve_ent)"]] <- NULL
+
+summary(m.out.a, standardize=T)
+```
+---
+
+# Muestra emparejada
+
+Una propuesta para determinar si el emparejamiento fue exitoso es observar las diferencias promedio estandarizadas (SMD) entre los grupos tratados y no tratados, antes y después del emparejamiento. 
+$$SMD_X=\frac{\bar{X}_T-\bar{X}_{NT}}{\sqrt{S^2_T+S^2_{NT}}}$$
+    
+También vale la pena no perder de vista la razón de varianzas (VR). Se espera que este ratio no sea muy distinto de 1 después de hacer el emparejamiento:*
+    
+$$VR=\frac{S^2_T}{S^2_{NT}}$$
+Como regla de dedo, una diferencia de 0.1 o menos en el SMD se considera un buen balance
+
+Todas las variables están balanceadas después del emparejamiento. Por ejemplo, la escolaridad acumulada tenía un SDM de 0.4698 en la muestra en bruto, pero con el emparejamiento el SDM se vuelve de solo 0.0749.
+
+---
+
+# *Love plot*
+
+.pull-left[
+
+Usando la librería *cobalt* podemos construir un *love plot* que representa gráficamente las diferencias antes y después del emparejamiento
+
+```{r echo=T, eval=F}
+love.plot(bal.tab(m.out.a),
+          threshold = .1)
+```
+]
+
+.pull-right[
+```{r echo=F}
+love.plot(bal.tab(m.out.a),
+          threshold = .1)
+```
+]
+
+---
+
+# Efecto del tratamiento
+
+Podemos ahora tratar la muestra emparejada como si viniera de un experimento
+
+Los errores estándar deben ser calculados agrupados a nivel *subclass*, es decir, tomando en cuenta las parejas o *n*-pletas
+
+```{r echo=T, results='hide'}
+r1 <- lm(ingtot_tri ~ jcf2,
+           data = match.data(m.out.a))
+
+coeftest(r1,
+         vcovCR(r1,
+                cluster = match.data(m.out.a)$subclass,
+                type ="CR1S"))
+```
+
+---
+
+# Efecto del tratamiento
+
+JCF incrementa el ingreso, comparado con otros jóvenes que no asisten a la escuela ni estudian, en 8476 pesos por trimestre (ee. 333.81)
+
+```{r echo=F}
+r1 <- lm(ingtot_tri ~ jcf2,
+           data = match.data(m.out.a))
+
+coeftest(r1,
+         vcovCR(r1,
+                cluster = match.data(m.out.a)$subclass,
+                type ="CR1S"))
+```
+
+---
+
+# Tarea
+
+Estime ahora el TOT del programa en la probabilidad de encontrar empleo, **encontro**, 
+
+Para esto, se comparan a los jóvenes que recibieron el programa con todos los demás jóvenes (esta variable es **jcf**)
+
+Los beneficiarios tienen *jcf==1*, mientras que el resto de los jóvenes tienen *jcf==0*, pero debera usar solo a las personas que tienen *transicion == 1*, es decir, que dejaron su trabajo
+
+Realice la estimación del TOT de manera análoga a lo realizado en clase, pero ahora use
+
+  - Dos vecinos, incluyendo *ratio = 1* en el proceso *matchit*
+  - Un caliper de 0.05, incluyendo *caliper = 0.05* en el proceso de *matchit*
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

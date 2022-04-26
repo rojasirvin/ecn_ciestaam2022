@@ -45,9 +45,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 21. [Métodos experimentales](./slides/experimentales.html)
 
-22. Diferencia en diferencias
-
-23. Propensity score matching
+23. [Propensity score matching](./slides/matching.html)
 
 24. Diseños con discontinuidades
 
