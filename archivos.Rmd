@@ -84,3 +84,5 @@ knitr::opts_chunk$set(echo = TRUE)
 [num_robo.csv](./data/num_robo.csv)
 
 [analysis_hope.dta](./data/analysis_hope.dta)
+
+[datos_jcf_analisis.dta](./data/datos_jcf_analisis.dta)
