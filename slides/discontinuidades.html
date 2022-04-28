@@ -254,6 +254,308 @@ Se recomienda estimar el modelo con distintos anchos de banda y observar el comp
 
 ---
 
+class: inverse, middle, center
+
+# Ejemplo: un programa de combate a la pobreza
+
+---
+
+
+# Un programa de combate a la pobreza
+
+El archivo *datos_pobreza.csv* contiene datos de 2,810 municipios de cierto país
+
+Un programa otorgó fondos de su componente de salud a todos los municipios con un índice de pobreza superior a 59.1968
+
+
+```r
+data.hs &lt;- read_csv("data/datos_pobreza.csv")
+x0 &lt;- 59.1968
+```
+
+La variable **mort_age59_related_postHS** indica la mortalidad infantil en cada municipio
+
+La variable **povrate60** es el índice de pobreza para cada municipio
+
+Se desea estimar el efecto del programa en la mortalidad infantil empleando un diseño de regresión discontinua
+
+---
+
+# Variables
+
+Algunas de las variables que usaremos son
+
+**mort_age59_related_postHS** la mortalidad en niños de 5 a 9 años
+
+**povrate60** el porcentaje de la población que vive en pobreza en el municipio
+
+**census1960_pop** la población del municipio
+
+**census1960_pcturban** el porcentaje de la población urbana
+
+**census1960_pctblack** el porcentaje de la población de raza negra
+
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+Usaremos el paquete *rdrobust*
+
+Recuerden que antes de usar un paquete debemos instalarlo y llamarlo
+
+¿Cuáles eran las funciones para instalar y llamar paquetes?
+
+Construyamos el gráfico correspondiente
+
+]
+
+.pull-right[
+![](figures/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+```
+## Call: rdplot
+## 
+## Number of Obs.                 2783
+## Kernel                      Uniform
+## 
+## Number of Obs.                 2489             294
+## Eff. Number of Obs.            2489             294
+## Order poly. fit (p)               1               1
+## BW poly. fit (h)             43.988          22.373
+## Number of bins scale          1.000           1.000
+```
+]
+
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+
+Especificamos el eje `\(y\)`: la mortalidad
+
+Especificamos el eje `\(x\)`: el índice de pobreza
+
+Especificamos el límite de elegibilidad `\(x_0\)`
+
+*nbins* es el número de puntos a graficar
+
+*p* es el orden del polinomio
+
+
+
+
+```r
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 1))
+```
+
+]
+
+.pull-right[
+![](figures/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+```
+## Call: rdplot
+## 
+## Number of Obs.                 2783
+## Kernel                      Uniform
+## 
+## Number of Obs.                 2489             294
+## Eff. Number of Obs.            2489             294
+## Order poly. fit (p)               1               1
+## BW poly. fit (h)             43.988          22.373
+## Number of bins scale          1.000           1.000
+```
+]
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+
+Podemos cambiar el orden del polinomio para permitir no linealidades
+
+Un polinomio de orden dos significa que estimamos un modelo del tipo
+
+`$$y_i=\alpha + \tau pobre_i + \beta_1 indice_i + \beta_2 indice_i^2+\varepsilon_i$$`
+
+Recuerden que `\(\tau\)` es una medida del salto en el valor esperado
+
+
+
+```r
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 2))
+```
+
+]
+
+.pull-right[
+![](figures/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+```
+## Call: rdplot
+## 
+## Number of Obs.                 2783
+## Kernel                      Uniform
+## 
+## Number of Obs.                 2489             294
+## Eff. Number of Obs.            2489             294
+## Order poly. fit (p)               2               2
+## BW poly. fit (h)             43.988          22.373
+## Number of bins scale          1.000           1.000
+```
+]
+
+
+---
+
+# Estimación paramétrica
+
+
+La estimación paramétrica nos permite cuantificar el tamaño del salto y calcular su error estándar
+
+Con nuestros datos, vamos a crear una nueva variable
+
+La variable *ispoor* será 1 si el municipio es pobre y 0 si no lo es
+
+Noten como usamos *mutate* para añadir una columna
+
+Usamos *ifelse* para condicionar el valor de la nueva columna **ispoor**
+
+
+
+```r
+data.hs &lt;- data.hs %&gt;% 
+  mutate(ispoor=ifelse(povrate60&gt;=x0,1,0))
+```
+
+Recuerden que tenemos que decidir qué tan cerca del corte `\(x_0\)` vamos a centrar el análisis: el ancho de ventana
+
+
+```r
+b &lt;- 10
+```
+
+
+
+---
+
+# Estimación paramétrica
+
+.pull-left[
+
+Estimaremos entonces el siguiente modelo usando una regresión lineal
+
+`$$y_i=\alpha + \tau pobre_i + \beta_1 indice_i + \beta_2 +\varepsilon_i$$`
+
+Usamos *lm*, como aprendimos antes con el análisis experimental
+
+
+```r
+summary(lm(mort_age59_related_postHS ~ povrate60 + ispoor,
+           data=filter(data.hs,
+                       povrate60&gt;=x0-b &amp; povrate60&lt;=x0+b)))
+```
+
+¿Cómo interpretamos el coeficiente sobre *ispoor*?
+
+]
+
+
+
+.pull-right[
+
+```
+## 
+## Call:
+## lm(formula = mort_age59_related_postHS ~ povrate60 + ispoor, 
+##     data = filter(data.hs, povrate60 &gt;= x0 - b &amp; povrate60 &lt;= 
+##         x0 + b))
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -3.479 -2.905 -2.331  1.774 61.686 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept) -1.63212    4.43998  -0.368   0.7133  
+## povrate60    0.08643    0.08188   1.056   0.2916  
+## ispoor      -1.53264    0.89167  -1.719   0.0862 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.409 on 568 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.006279,	Adjusted R-squared:  0.00278 
+## F-statistic: 1.795 on 2 and 568 DF,  p-value: 0.1671
+```
+]
+
+---
+
+# Validación de los supuestos
+
+.pull-left[
+El supuesto clave en el diseño con discontinuidades es que en la vecindad del corte de elegibilidad es como si hubiéramos tenido un experimento
+
+Entonces, el resto de características de los municipios no deberían variar alrededor de `\(x_0\)`
+
+Podemos mostrar esto gráficamente
+
+
+```r
+#Población: census1960_pop
+(rdplot(y = data.hs$census1960_pop,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 3))
+```
+
+]
+
+
+.pull-right[
+![](figures/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+```
+## Call: rdplot
+## 
+## Number of Obs.                 2804
+## Kernel                      Uniform
+## 
+## Number of Obs.                 2504             300
+## Eff. Number of Obs.            2504             300
+## Order poly. fit (p)               3               3
+## BW poly. fit (h)             43.988          33.875
+## Number of bins scale          1.000           1.000
+```
+]
+
+---
+
+# Ejercicio
+
+Estimemos ahora el modelo con discontinuidades con una ventana de
+  - 15 puntos
+  - 5 puntos
+
+Luego agregue un polinomio de orden 3 y una ventana de 10 puntos a la estimación paramétrica
+
+---
+
 class: center, middle
 Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
 

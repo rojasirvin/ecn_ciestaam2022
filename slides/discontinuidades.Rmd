@@ -39,6 +39,7 @@ library(modelsummary)
 library(sandwich)
 library(clubSandwich)
 library(lmtest)
+library(rdrobust)
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
@@ -273,6 +274,256 @@ Donde $b$ es el ancho de banda
 Un ancho de banda menor implica menos datos y por tanto mayor varianza muestral
 
 Se recomienda estimar el modelo con distintos anchos de banda y observar el comportamiento de los efectos estimados
+
+---
+
+class: inverse, middle, center
+
+# Ejemplo: un programa de combate a la pobreza
+
+---
+
+
+# Un programa de combate a la pobreza
+
+El archivo *datos_pobreza.csv* contiene datos de 2,810 municipios de cierto país
+
+Un programa otorgó fondos de su componente de salud a todos los municipios con un índice de pobreza superior a 59.1968
+
+```{r echo=T, eval=T, message=F, warning=F}
+
+data.hs <- read_csv("data/datos_pobreza.csv")
+x0 <- 59.1968
+```
+
+La variable **mort_age59_related_postHS** indica la mortalidad infantil en cada municipio
+
+La variable **povrate60** es el índice de pobreza para cada municipio
+
+Se desea estimar el efecto del programa en la mortalidad infantil empleando un diseño de regresión discontinua
+
+---
+
+# Variables
+
+Algunas de las variables que usaremos son
+
+**mort_age59_related_postHS** la mortalidad en niños de 5 a 9 años
+
+**povrate60** el porcentaje de la población que vive en pobreza en el municipio
+
+**census1960_pop** la población del municipio
+
+**census1960_pcturban** el porcentaje de la población urbana
+
+**census1960_pctblack** el porcentaje de la población de raza negra
+
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+Usaremos el paquete *rdrobust*
+
+Recuerden que antes de usar un paquete debemos instalarlo y llamarlo
+
+¿Cuáles eran las funciones para instalar y llamar paquetes?
+
+Construyamos el gráfico correspondiente
+
+]
+
+.pull-right[
+```{r echo=F, eval=T, message=F, warning=F}
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 1))
+```
+]
+
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+
+Especificamos el eje $y$: la mortalidad
+
+Especificamos el eje $x$: el índice de pobreza
+
+Especificamos el límite de elegibilidad $x_0$
+
+*nbins* es el número de puntos a graficar
+
+*p* es el orden del polinomio
+
+
+
+```{r echo=T, eval=F, message=F, warning=F}
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 1))
+```
+
+]
+
+.pull-right[
+```{r echo=F, eval=T}
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 1))
+```
+]
+
+---
+
+# Evidencia gráfica
+
+.pull-left[
+
+Podemos cambiar el orden del polinomio para permitir no linealidades
+
+Un polinomio de orden dos significa que estimamos un modelo del tipo
+
+$$y_i=\alpha + \tau pobre_i + \beta_1 indice_i + \beta_2 indice_i^2+\varepsilon_i$$
+
+Recuerden que $\tau$ es una medida del salto en el valor esperado
+
+
+```{r echo=T, eval=F, message=F, warning=F}
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 2))
+```
+
+]
+
+.pull-right[
+```{r echo=F, eval=T}
+(rdplot(y = data.hs$mort_age59_related_postHS,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 2))
+```
+]
+
+
+---
+
+# Estimación paramétrica
+
+
+La estimación paramétrica nos permite cuantificar el tamaño del salto y calcular su error estándar
+
+Con nuestros datos, vamos a crear una nueva variable
+
+La variable *ispoor* será 1 si el municipio es pobre y 0 si no lo es
+
+Noten como usamos *mutate* para añadir una columna
+
+Usamos *ifelse* para condicionar el valor de la nueva columna **ispoor**
+
+
+```{r echo=T, eval=T, message=F, warning=F}
+data.hs <- data.hs %>% 
+  mutate(ispoor=ifelse(povrate60>=x0,1,0))
+```
+
+Recuerden que tenemos que decidir qué tan cerca del corte $x_0$ vamos a centrar el análisis: el ancho de ventana
+
+```{r echo=T, eval=T, message=F, warning=F}
+b <- 10
+```
+
+
+
+---
+
+# Estimación paramétrica
+
+.pull-left[
+
+Estimaremos entonces el siguiente modelo usando una regresión lineal
+
+$$y_i=\alpha + \tau pobre_i + \beta_1 indice_i + \beta_2 +\varepsilon_i$$
+
+Usamos *lm*, como aprendimos antes con el análisis experimental
+
+```{r echo=T, eval=F, message=F, warning=F}
+summary(lm(mort_age59_related_postHS ~ povrate60 + ispoor,
+           data=filter(data.hs,
+                       povrate60>=x0-b & povrate60<=x0+b)))
+
+```
+
+¿Cómo interpretamos el coeficiente sobre *ispoor*?
+
+]
+
+
+
+.pull-right[
+```{r echo=F, eval=T, message=F, warning=F}
+summary(lm(mort_age59_related_postHS ~ povrate60 + ispoor,
+           data=filter(data.hs, povrate60>=x0-b & povrate60<=x0+b)))
+
+```
+]
+
+---
+
+# Validación de los supuestos
+
+.pull-left[
+El supuesto clave en el diseño con discontinuidades es que en la vecindad del corte de elegibilidad es como si hubiéramos tenido un experimento
+
+Entonces, el resto de características de los municipios no deberían variar alrededor de $x_0$
+
+Podemos mostrar esto gráficamente
+
+```{r echo=T, eval=F, message=F, warning=F}
+#Población: census1960_pop
+(rdplot(y = data.hs$census1960_pop,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 3))
+```
+
+]
+
+
+.pull-right[
+```{r echo=F, eval=T, message=F, warning=F}
+#Población: census1960_pop
+(rdplot(y = data.hs$census1960_pop,
+        x = data.hs$povrate60,
+        c = x0,
+        nbins = 40,
+        p = 3))
+```
+]
+
+---
+
+# Ejercicio
+
+Estimemos ahora el modelo con discontinuidades con una ventana de
+  - 15 puntos
+  - 5 puntos
+
+Luego agregue un polinomio de orden 3 y una ventana de 10 puntos a la estimación paramétrica
 
 ---
 
