@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Diseños con discontinuidades</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide
+
+
+
+.title[
+# Diseños con discontinuidades
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+---
+
+# Motivación
+
+	 
+El mundo está lleno de reglas
+ 
+Podemos explotar estas reglas para aproximar experimentos
+ 
+Ejemplos:
+	 
+  - Índice de pobreza en PROGRESA
+  
+  - Edad legal para tomar
+  
+  - Seguros catastróficos
+  
+¿Qué programas o intervenciones conocen que funcionen así?
+
+
+En los diseños con discontinuidades nos enfocaremos en unidades que están muy cercana de los límites de elegibilidad, donde podemos asumir que las características observables y no observables de tratados y no tratados son idénticas
+
+---
+	 
+# Un ejemplo de un programa agrícola
+ 
+.pull-left[
+Consideremos un programa agrícola que busca incrementar la producción de arroz otorgando fertilizantes a los productores
+
+El programa se diseña exclusivamente para atender a los productores con menos de 50 hectáreas
+
+Podemos esperar entonces que los productores alrededor del corte de elegibilidad sean muy parecidos
+
+Por ejemplo, un productor con 49.9 hectáreas será muy parecido a uno de 50.1
+
+A medida que nos alejamos del corte de elegibilidad las diferencias entre productores y fincas será mayor
+]
+ 
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="../slides/figures/arroz_produccion.png" alt="Fuente: Gertler et al. (2017)" width="100%" /&gt;
+&lt;p class="caption"&gt;Fuente: Gertler et al. (2017)&lt;/p&gt;
+&lt;/div&gt;
+]
+---
+
+# Impacto del programa
+ 
+.pull-left[
+El impacto del programa puede ser estimado como la diferencia en `\(y\)` entre las unidades que están a ambos lados del corte de elegibilidad
+
+Nuestro grupo tratado se compara con el no tratado que no recibió el programa por tener más de 50 hectáreas
+
+El supuesto es que las unidades antes y después del corte eran muy parecidas en todos los aspectos antes de recibir el programa
+
+En la vecindad del corte de elegibilidad tenemos *casi* un experimento aleatorio
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="../slides/figures/arroz_rd.png" alt="Fuente: Gertler et al. (2017)" width="100%" /&gt;
+&lt;p class="caption"&gt;Fuente: Gertler et al. (2017)&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+# Modelo de discontinuidades nítidas
+ 
+`\(D_a\)` es el estado del tratamiento
+
+$$
+D_a =
+`\begin{cases}
+1  &amp; \text{si } a \leq 50 \\
+0  &amp; \text{si } a &gt; 50
+\end{cases}`
+$$
+	 
+	 
+`\(a\)` es conocida como *running variable*, *score*, variable de selección, variable de asignación, etc.
+ 
+El tratamiento es una función determinística de `\(a\)`
+
+  - Si conocemos `\(a\)` entonces conocemos `\(D_a\)`
+ 
+El tratamiento es discontinuo sobre `\(a\)`
+
+  - No importa qué tanto nos acercamos al corte, el estatus de tratamiento es el mismo hasta `\(a\)`
+ 
+  
+---
+
+# Discontinuidades níticas y regresión
+ 
+Formulamos un modelo estadístico que nos permite describir la producción en función del área y de si se recibe o no el programa
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma a + \epsilon_a
+$$
+
+A este lo llamamos **un modelo para el valor esperado de `\(y\)` dado `\(X\)`**, `\(E(y|X)\)`
+
+`\(\bar{P}_a\)` es la cantidad producida promedio para los productores con `\(a\)` hectáreas
+
+`\(\rho\)` captura el salto en la producción
+
+`\(\hat{\rho}=\text{distancia A-B}\)` es la producción adicional por recibir el programa
+
+En la sesión práctica aprenderemos a estimar este tipo de modelos
+	
+ 
+---
+
+# Diferencias con otros diseños
+ 
+A diferencia de los métodos, aquí no hay valores de `\(a\)` para los que observemos individuos en ambos estados del tratamiento
+ 
+La interpretación de la RD es en la vecindad de la discontinuidad, es decir, se trata de un impacto **local**
+
+Es poco creíble que los efectos sean válidos para productores con 5 hectáreas o con 500
+ 
+---
+
+# No linealidad vs discontinuidad
+ 
+.pull-left[
+Estimar el modelo de RD cuando la relación entre `\(E[y|X]\)` es como en el tercer panel nos llevaría a inferir un salto donde no existe
+ 
+Al usar RD debemos asegurarnos que estamos identificando una discontinuidad
+ 
+ - Modelar la no linearidad
+ - Concentrarnos solo en una ventana cercana a `\(a_0\)`
+]
+  
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="../slides/figures/discontinuity_nonlinearity.png" alt="Fuente: Angrist &amp;amp; Pischke (2014)" width="70%" /&gt;
+&lt;p class="caption"&gt;Fuente: Angrist &amp; Pischke (2014)&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+# No linealidades
+ 
+Podemos usar polinomios de `\(a\)` para describir una relación no lineal entre el área y la producción
+
+Idealmente, las conclusiones no deberían cambiar de acuerdo al grado del polinomio usado
+
+El consejo es intentar varias especificaciones y no solo la que se ajuste más a nuestras expectativas de los resultados
+
+Podemos especificar directamente un polinomio cuadrático del área
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma_1 a + \gamma_2 a^2 + \epsilon_a
+$$
+
+En la práctica, casi nunca usamos un polinomio mayor a 3
+
+
+---
+
+# No linealidades
+
+También podemos espcificar un coeficiente diferente para `\(a\)` antes y después de `\(a_0\)`
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma(a-a_0) + \delta[(a-a_0)D_a] + \epsilon_a
+$$
+
+Esto nos ayuda a modelar mejor el salto discreto
+
+Qué pasa cuando el productor recibe el programa, `\(D=1\)`
+
+$$
+`\begin{align}
+\bar{P}_{a,D=1}&amp;=\alpha+\rho + \gamma(a-a_0) + \delta(a-a_0) + \epsilon_a \\
+&amp;=\alpha+\rho+(\gamma+\delta)(a-a_0)+\epsilon_a
+\end{align}`
+$$
+Y cuando no lo recibe, `\(D=0\)`
+
+$$
+`\begin{align}
+\bar{P}_{a,D=0}&amp;=\alpha+ \gamma(a-a_0) + \epsilon_a 
+\end{align}`
+$$
+Es decir, asumimos un modelo diferente para el valor esperado de la producción para productores que recibien y que no reciben el programa
+
+---
+
+# No linealidades
+
+Podemos emplear una combinación de no linealidades y cambios en pendiente:
+
+$$
+`\begin{aligned}
+\bar{P}_a&amp;=\alpha+\rho D_a + \gamma_1(a-a_0) +\gamma_2(a-a_0)^2+\delta_1[(a-a_0)D_a]+ \delta_2[(a-a_0)^2D_a] + \epsilon_a
+\end{aligned}`
+$$
+
+En todos los casos, se interpreta a `\(\rho\)` como el efecto del tratamiento
+ 
+---
+
+# Efectos estimados con distintas ventanas
+ 
+En la práctica debemos concentrarnos en *ventanas* cercanas a `\(a_0\)`:
+
+$$
+\bar{M}_a=\alpha+\rho D_a + \gamma a + \epsilon_a, \quad \quad a_0-b\leq a\leq a_o+b
+$$
+
+Donde `\(b\)` es el ancho de banda
+
+Un ancho de banda menor implica menos datos y por tanto mayor varianza muestral
+
+Se recomienda estimar el modelo con distintos anchos de banda y observar el comportamiento de los efectos estimados
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

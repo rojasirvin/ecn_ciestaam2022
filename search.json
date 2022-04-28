@@ -27,7 +27,7 @@
       "title": "Sesiones",
       "author": [],
       "contents": "\r\nIntroducción a R\r\nManejo de datos en R, parte 1\r\nManejo de datos en R, parte 2\r\nRevisión del modelo lineal con muestras finitas\r\nTeoría asintótica para MCO\r\nEstimadores extremos\r\nModelos de variable dependiente categórica\r\nInferencia estadística\r\nModelos con variable dependiente de conteo\r\nModelos de riesgo y sobrevivencia\r\nModelos de selección\r\nVariables instrumentales\r\nTemas de errores estándar\r\nModelos y estimadores de panel lineal\r\nMétodos no paramétricos y semi paramétricos\r\nRegresión cuantil\r\nIntroducción a econometría espacial\r\nIntroducción a la inferencia causal\r\nMétodos experimentales\r\nPropensity score matching\r\nDiseños con discontinuidades\r\nControl sintético\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-04-26T14:52:34-05:00"
+      "last_modified": "2022-04-28T11:09:48-05:00"
     }
   ],
   "collections": []

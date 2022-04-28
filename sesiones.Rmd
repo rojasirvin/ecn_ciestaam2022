@@ -47,6 +47,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 23. [Propensity score matching](./slides/matching.html)
 
-24. Diseños con discontinuidades
+24. [Diseños con discontinuidades](./slides/discontinuidades.html)
 
 25. Control sintético

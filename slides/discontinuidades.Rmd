@@ -1,0 +1,286 @@
+---
+title: "Diseños con discontinuidades"
+author: "Irvin Rojas"
+header-includes:
+  - \usepackage{tikz}
+  - \usetikzlibrary{shapes, shadows,arrows}
+  - \usepackage{amsmath} 
+  - \usepackage[utf8]{inputenc}
+output:
+  xaringan::moon_reader:
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+        scroll: false
+---
+
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = F,
+                      message = F, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+library(kableExtra)
+library(stargazer)
+library(cobalt)
+library(modelsummary)
+library(sandwich)
+library(clubSandwich)
+library(lmtest)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+knitr::opts_knit$set(root.dir = "C:/Users/rojas/Dropbox/presentations_sites/ecn_ciestaam2022")
+```
+
+.title[
+# Diseños con discontinuidades
+]
+
+.subtitle[
+## Taller de Econometría CIESTAAM-UACh 2022
+]
+
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+---
+
+# Motivación
+
+	 
+El mundo está lleno de reglas
+ 
+Podemos explotar estas reglas para aproximar experimentos
+ 
+Ejemplos:
+	 
+  - Índice de pobreza en PROGRESA
+  
+  - Edad legal para tomar
+  
+  - Seguros catastróficos
+  
+¿Qué programas o intervenciones conocen que funcionen así?
+
+
+En los diseños con discontinuidades nos enfocaremos en unidades que están muy cercana de los límites de elegibilidad, donde podemos asumir que las características observables y no observables de tratados y no tratados son idénticas
+
+---
+	 
+# Un ejemplo de un programa agrícola
+ 
+.pull-left[
+Consideremos un programa agrícola que busca incrementar la producción de arroz otorgando fertilizantes a los productores
+
+El programa se diseña exclusivamente para atender a los productores con menos de 50 hectáreas
+
+Podemos esperar entonces que los productores alrededor del corte de elegibilidad sean muy parecidos
+
+Por ejemplo, un productor con 49.9 hectáreas será muy parecido a uno de 50.1
+
+A medida que nos alejamos del corte de elegibilidad las diferencias entre productores y fincas será mayor
+]
+ 
+.pull-right[
+```{r out.width="100%",fig.cap='Fuente: Gertler et al. (2017)',fig.align='center'}
+knitr::include_graphics("../slides/figures/arroz_produccion.png", error=F)
+```
+]
+---
+
+# Impacto del programa
+ 
+.pull-left[
+El impacto del programa puede ser estimado como la diferencia en $y$ entre las unidades que están a ambos lados del corte de elegibilidad
+
+Nuestro grupo tratado se compara con el no tratado que no recibió el programa por tener más de 50 hectáreas
+
+El supuesto es que las unidades antes y después del corte eran muy parecidas en todos los aspectos antes de recibir el programa
+
+En la vecindad del corte de elegibilidad tenemos *casi* un experimento aleatorio
+]
+
+.pull-right[
+```{r, out.width="100%",fig.cap='Fuente: Gertler et al. (2017)',fig.align='center'}
+knitr::include_graphics("../slides/figures/arroz_rd.png", error=F)
+```
+]
+
+---
+
+# Modelo de discontinuidades nítidas
+ 
+$D_a$ es el estado del tratamiento
+
+$$
+D_a =
+\begin{cases}
+1  & \text{si } a \leq 50 \\
+0  & \text{si } a > 50
+\end{cases}
+$$
+	 
+	 
+$a$ es conocida como *running variable*, *score*, variable de selección, variable de asignación, etc.
+ 
+El tratamiento es una función determinística de $a$
+
+  - Si conocemos $a$ entonces conocemos $D_a$
+ 
+El tratamiento es discontinuo sobre $a$
+
+  - No importa qué tanto nos acercamos al corte, el estatus de tratamiento es el mismo hasta $a$
+ 
+  
+---
+
+# Discontinuidades níticas y regresión
+ 
+Formulamos un modelo estadístico que nos permite describir la producción en función del área y de si se recibe o no el programa
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma a + \epsilon_a
+$$
+
+A este lo llamamos **un modelo para el valor esperado de $y$ dado $X$**, $E(y|X)$
+
+$\bar{P}_a$ es la cantidad producida promedio para los productores con $a$ hectáreas
+
+$\rho$ captura el salto en la producción
+
+$\hat{\rho}=\text{distancia A-B}$ es la producción adicional por recibir el programa
+
+En la sesión práctica aprenderemos a estimar este tipo de modelos
+	
+ 
+---
+
+# Diferencias con otros diseños
+ 
+A diferencia de los métodos, aquí no hay valores de $a$ para los que observemos individuos en ambos estados del tratamiento
+ 
+La interpretación de la RD es en la vecindad de la discontinuidad, es decir, se trata de un impacto **local**
+
+Es poco creíble que los efectos sean válidos para productores con 5 hectáreas o con 500
+ 
+---
+
+# No linealidad vs discontinuidad
+ 
+.pull-left[
+Estimar el modelo de RD cuando la relación entre $E[y|X]$ es como en el tercer panel nos llevaría a inferir un salto donde no existe
+ 
+Al usar RD debemos asegurarnos que estamos identificando una discontinuidad
+ 
+ - Modelar la no linearidad
+ - Concentrarnos solo en una ventana cercana a $a_0$
+]
+  
+.pull-right[
+```{r, out.width='70%', fig.cap='Fuente: Angrist & Pischke (2014)',fig.align='center'}
+knitr::include_graphics("../slides/figures/discontinuity_nonlinearity.png", error=F)
+```
+]
+
+---
+
+# No linealidades
+ 
+Podemos usar polinomios de $a$ para describir una relación no lineal entre el área y la producción
+
+Idealmente, las conclusiones no deberían cambiar de acuerdo al grado del polinomio usado
+
+El consejo es intentar varias especificaciones y no solo la que se ajuste más a nuestras expectativas de los resultados
+
+Podemos especificar directamente un polinomio cuadrático del área
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma_1 a + \gamma_2 a^2 + \epsilon_a
+$$
+
+En la práctica, casi nunca usamos un polinomio mayor a 3
+
+
+---
+
+# No linealidades
+
+También podemos espcificar un coeficiente diferente para $a$ antes y después de $a_0$
+
+$$
+\bar{P}_a=\alpha+\rho D_a + \gamma(a-a_0) + \delta[(a-a_0)D_a] + \epsilon_a
+$$
+
+Esto nos ayuda a modelar mejor el salto discreto
+
+Qué pasa cuando el productor recibe el programa, $D=1$
+
+$$
+\begin{align}
+\bar{P}_{a,D=1}&=\alpha+\rho + \gamma(a-a_0) + \delta(a-a_0) + \epsilon_a \\
+&=\alpha+\rho+(\gamma+\delta)(a-a_0)+\epsilon_a
+\end{align}
+$$
+Y cuando no lo recibe, $D=0$
+
+$$
+\begin{align}
+\bar{P}_{a,D=0}&=\alpha+ \gamma(a-a_0) + \epsilon_a 
+\end{align}
+$$
+Es decir, asumimos un modelo diferente para el valor esperado de la producción para productores que recibien y que no reciben el programa
+
+---
+
+# No linealidades
+
+Podemos emplear una combinación de no linealidades y cambios en pendiente:
+
+$$
+\begin{aligned}
+\bar{P}_a&=\alpha+\rho D_a + \gamma_1(a-a_0) +\gamma_2(a-a_0)^2+\delta_1[(a-a_0)D_a]+ \delta_2[(a-a_0)^2D_a] + \epsilon_a
+\end{aligned}
+$$
+
+En todos los casos, se interpreta a $\rho$ como el efecto del tratamiento
+ 
+---
+
+# Efectos estimados con distintas ventanas
+ 
+En la práctica debemos concentrarnos en *ventanas* cercanas a $a_0$:
+
+$$
+\bar{M}_a=\alpha+\rho D_a + \gamma a + \epsilon_a, \quad \quad a_0-b\leq a\leq a_o+b
+$$
+
+Donde $b$ es el ancho de banda
+
+Un ancho de banda menor implica menos datos y por tanto mayor varianza muestral
+
+Se recomienda estimar el modelo con distintos anchos de banda y observar el comportamiento de los efectos estimados
+
+---
+
+class: center, middle
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
