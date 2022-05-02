@@ -43,6 +43,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [discontinuidades.R](./scripts/discontinuidades.R)
 
+[control_sintetico.R](./scripts/control_sintetico.R)
+
 # Datos
 
 [mundata.csv](./data/mundata.csv)
@@ -89,4 +91,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [datos_jcf_analisis.csv](./data/datos_jcf_analisis.csv)
 
-[datos_pobreza.csv](,/data/datos_pobreza.csv)
+[datos_pobreza.csv](./data/datos_pobreza.csv)
+
+[california_panel.csv](./data/california_panel.csv)

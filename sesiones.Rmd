@@ -49,4 +49,4 @@ knitr::opts_chunk$set(echo = TRUE)
 
 24. [Diseños con discontinuidades](./slides/discontinuidades.html)
 
-25. Control sintético
+25. [Control sintético](./slides/control_sintetico.html)
