@@ -748,6 +748,16 @@ placebos %>%
 
 ---
 
+# Conclusión
+
+- La construcción del CS se basa en lo que dicen los datos (*data driven*) para la selección de las unidades que son usadas y los pesos
+ 
+- El investigador debe ser transparente al mostrar qué tan bueno es el CS que construye
+ 
+- Para construir el CS no se usan los datos post-intervención por lo que, al menos en teoría, el investigador no debería seleccionar el CS guíado por las conclusiones que resultan
+
+---
+
 class: center, middle
 Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
 
